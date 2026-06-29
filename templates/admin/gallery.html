@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% block title %}Galereya — DUO Charity Admin{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">Galereya</h1>
+    <p class="page-subtitle">Sayt galereyasiga rasm qo'shish va o'chirish</p>
+
+    <form method="post" action="{{ url_for('admin_gallery_upload') }}" enctype="multipart/form-data" class="upload-form">
+        <input type="file" name="image" accept=".png,.jpg,.jpeg,.webp" required>
+        <input type="text" name="caption" placeholder="Tavsif (ixtiyoriy)">
+        <button type="submit" class="btn btn-primary">Yuklash</button>
+    </form>
+
+    {% if images %}
+    <div class="admin-gallery-grid">
+        {% for image in images %}
+        <div class="admin-gallery-item">
+            <img src="{{ url_for('static', filename='uploads/' + image.filename) }}">
+            {% if image.caption %}<p>{{ image.caption }}</p>{% endif %}
+            <form method="post" action="{{ url_for('admin_gallery_delete', image_id=image.id) }}"
+                  onsubmit="return confirm('Rasmni o\'chirishni tasdiqlaysizmi?');">
+                <button type="submit" class="btn-small btn-small-danger">O'chirish</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-state-admin">Hozircha galereyada rasmlar yo'q.</p>
+    {% endif %}
+{% endblock %}

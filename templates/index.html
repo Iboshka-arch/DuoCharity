@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}DUO Charity{% endblock %}
+
+{% block content %}
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+        <div class="container hero-inner">
+            <div class="hero-text">
+                <span class="eyebrow">{{ t('hero_eyebrow') }}</span>
+                <h1>{{ t('hero_title_1') }} <span class="text-accent">{{ t('hero_title_accent') }}</span> {{ t('hero_title_2') }}</h1>
+                <p class="lead">{{ t('hero_lead') }}</p>
+                <div class="hero-actions">
+                    <a href="#donate" class="btn btn-primary">{{ t('hero_btn_donate') }}</a>
+                    <a href="{{ url_for('volunteer_form') }}" class="btn btn-outline">{{ t('hero_btn_volunteer') }}</a>
+                </div>
+            </div>
+            <div class="hero-media">
+                {% if hero_images %}
+                <div class="hero-carousel" id="heroCarousel">
+                    <div class="hero-carousel-track">
+                        {% for image in hero_images %}
+                        <img src="{{ url_for('static', filename='uploads/' + image.filename) }}"
+                             class="hero-carousel-slide {{ 'active' if loop.first }}" alt="DUO Charity">
+                        {% endfor %}
+                    </div>
+                    {% if hero_images|length > 1 %}
+                    <button class="hero-carousel-arrow hero-carousel-prev" aria-label="Previous">‹</button>
+                    <button class="hero-carousel-arrow hero-carousel-next" aria-label="Next">›</button>
+                    <div class="hero-carousel-dots">
+                        {% for image in hero_images %}
+                        <button class="hero-carousel-dot {{ 'active' if loop.first }}" data-index="{{ loop.index0 }}"></button>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="placeholder-box hero-photo">hero photo placeholder</div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats">
+        <div class="container stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.families }}</span>
+                <span class="stat-label">{{ t('stat_families') }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.kids_elderly }}</span>
+                <span class="stat-label">{{ t('stat_kids') }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.volunteers }}</span>
+                <span class="stat-label">{{ t('stat_volunteers') }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.events }}</span>
+                <span class="stat-label">{{ t('stat_events') }}</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about" id="about">
+        <div class="container about-grid">
+            {% if settings.get('about_photo') %}
+            <img src="{{ url_for('static', filename='uploads/' + settings.get('about_photo')) }}"
+                 class="about-photo" alt="DUO Charity">
+            {% else %}
+            <div class="placeholder-box about-photo">about photo placeholder</div>
+            {% endif %}
+            <div class="about-text">
+                <span class="eyebrow">{{ t('about_eyebrow') }}</span>
+                <h2>{{ t('about_title') }}</h2>
+                <p>{{ t('about_text_1') }}</p>
+                <p>{{ t('about_text_2') }}</p>
+                <ul class="check-list">
+                    <li>{{ t('about_check_1') }}</li>
+                    <li>{{ t('about_check_2') }}</li>
+                    <li>{{ t('about_check_3') }}</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="gallery" id="gallery">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow">{{ t('gallery_eyebrow') }}</span>
+                    <h2>{{ t('gallery_title') }}</h2>
+                </div>
+                <a href="#gallery" class="link-arrow">{{ t('gallery_see_all') }}</a>
+            </div>
+            <div class="gallery-grid">
+                {% if gallery_images %}
+                    {% for image in gallery_images %}
+                    <img src="{{ url_for('static', filename='uploads/' + image.filename) }}"
+                         class="gallery-photo" alt="{{ image.caption or 'DUO Charity' }}">
+                    {% endfor %}
+                {% else %}
+                    {% for i in range(5) %}
+                    <div class="placeholder-box gallery-photo">photo placeholder</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- NEWS -->
+    <section class="news" id="news">
+        <div class="container">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow">{{ t('news_eyebrow') }}</span>
+                    <h2>{{ t('news_title') }}</h2>
+                </div>
+                <a href="#news" class="link-arrow">{{ t('news_see_all') }}</a>
+            </div>
+            <div class="news-grid">
+                {% if news_items %}
+                    {% for item in news_items %}
+                    <a href="{{ url_for('news_detail', post_id=item.id) }}" class="news-card">
+                        {% if item.image_filename %}
+                        <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}"
+                             class="news-photo" alt="{{ item.title }}">
+                        {% else %}
+                        <div class="placeholder-box news-photo">photo placeholder</div>
+                        {% endif %}
+                        <span class="news-date">{{ item.formatted_date() }}</span>
+                        <h3>{{ item.title }}</h3>
+                        <p>{{ item.excerpt() }}</p>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <p class="empty-state">{{ t('news_empty') }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- DONATE -->
+    <section class="donate" id="donate">
+        <div class="container">
+            <span class="eyebrow">{{ t('donate_eyebrow') }}</span>
+            <h2>{{ t('donate_title') }}</h2>
+            <p class="lead">{{ t('donate_lead') }}</p>
+
+            <div class="donate-options">
+                <a href="#" class="donate-card">
+                    <span class="donate-method">Payme</span>
+                    <span class="donate-value">{{ settings.get('payme_value', '—') }}</span>
+                    <span class="donate-arrow">→</span>
+                </a>
+                <a href="#" class="donate-card">
+                    <span class="donate-method">Click</span>
+                    <span class="donate-value">{{ settings.get('click_value', '—') }}</span>
+                    <span class="donate-arrow">→</span>
+                </a>
+                <a href="#" class="donate-card">
+                    <span class="donate-method">{{ t('donate_card') }}</span>
+                    <span class="donate-value">{{ settings.get('card_value', '—') }}</span>
+                    <span class="donate-arrow">→</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- VOLUNTEER -->
+    <section class="volunteer" id="volunteer">
+        <div class="container volunteer-inner">
+            <span class="eyebrow">{{ t('volunteer_eyebrow') }}</span>
+            <h2>{{ t('volunteer_title') }}</h2>
+            <p class="lead">{{ t('volunteer_lead') }}</p>
+            <a href="{{ url_for('volunteer_form') }}" class="btn btn-primary btn-large">{{ t('hero_btn_volunteer') }}</a>
+        </div>
+    </section>
+
+{% endblock %}

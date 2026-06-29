@@ -1,0 +1,54 @@
+{% extends "admin/base.html" %}
+{% block title %}Yangiliklar — DUO Charity Admin{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1 class="page-title">Yangiliklar</h1>
+            <p class="page-subtitle">Sayt uchun yangiliklar va hisobotlarni boshqarish</p>
+        </div>
+        <a href="{{ url_for('admin_post_new') }}" class="btn btn-primary">+ Yangi post</a>
+    </div>
+
+    {% if posts %}
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Rasm</th>
+                    <th>Sarlavha</th>
+                    <th>Sana</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in posts %}
+                <tr>
+                    <td>
+                        {% if post.image_filename %}
+                        <img src="{{ url_for('static', filename='uploads/' + post.image_filename) }}" class="table-thumb">
+                        {% else %}
+                        <div class="table-thumb table-thumb-empty"></div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong>{{ post.title }}</strong>
+                        <p class="table-excerpt">{{ post.excerpt() }}</p>
+                    </td>
+                    <td>{{ post.formatted_date() }}</td>
+                    <td class="table-actions">
+                        <a href="{{ url_for('admin_post_edit', post_id=post.id) }}" class="btn-small">Tahrirlash</a>
+                        <form method="post" action="{{ url_for('admin_post_delete', post_id=post.id) }}"
+                              onsubmit="return confirm('Postni o\'chirishni tasdiqlaysizmi?');">
+                            <button type="submit" class="btn-small btn-small-danger">O'chirish</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state-admin">Hozircha postlar yo'q. Birinchi postni qo'shing!</p>
+    {% endif %}
+{% endblock %}

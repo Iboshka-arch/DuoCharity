@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} — DUO Charity{% endblock %}
+
+{% block content %}
+    <section class="news-detail-page">
+        <div class="container news-detail-inner">
+            <a href="{{ url_for('home') }}#news" class="back-link">← {{ t('nav_news') }}</a>
+
+            <span class="news-date">{{ post.formatted_date() }}</span>
+            <h1>{{ post.title }}</h1>
+
+            {% if post.image_filename %}
+            <img src="{{ url_for('static', filename='uploads/' + post.image_filename) }}"
+                 class="news-detail-photo" alt="{{ post.title }}">
+            {% endif %}
+
+            <div class="news-detail-content">
+                {{ post.content }}
+            </div>
+        </div>
+    </section>
+{% endblock %}

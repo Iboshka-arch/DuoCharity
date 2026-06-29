@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t('volunteer_title') }} — DUO Charity{% endblock %}
+
+{% block content %}
+    <section class="volunteer-page">
+        <div class="container volunteer-page-inner">
+            <a href="{{ url_for('home') }}" class="back-link">← {{ t('nav_home') }}</a>
+
+            <span class="eyebrow">{{ t('volunteer_eyebrow') }}</span>
+            <h1>{{ t('volunteer_title') }}</h1>
+            <p class="lead">{{ t('volunteer_lead') }}</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            <form class="volunteer-full-form" method="post" action="{{ url_for('volunteer_submit') }}">
+
+                <div class="form-section">
+                    <h3>{{ t('vf_personal_info') }}</h3>
+                    <div class="form-row">
+                        <input type="text" name="full_name" placeholder="{{ t('volunteer_name') }}" required>
+                        <input type="tel" name="phone" placeholder="{{ t('vf_phone') }}" required>
+                    </div>
+                    <div class="form-row">
+                        <input type="text" name="telegram" placeholder="{{ t('vf_telegram') }}">
+                        <input type="number" name="age" placeholder="{{ t('vf_age') }}" min="14" max="100">
+                    </div>
+                    <input type="text" name="occupation" placeholder="{{ t('vf_occupation') }}">
+                </div>
+
+                <div class="form-section">
+                    <h3>{{ t('vf_gender') }}</h3>
+                    <div class="radio-row">
+                        <label class="radio-pill">
+                            <input type="radio" name="gender" value="male">
+                            <span>{{ t('vf_male') }}</span>
+                        </label>
+                        <label class="radio-pill">
+                            <input type="radio" name="gender" value="female">
+                            <span>{{ t('vf_female') }}</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>{{ t('vf_message_title') }}</h3>
+                    <textarea name="message" placeholder="{{ t('volunteer_message') }}" rows="4"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-large">{{ t('volunteer_submit') }}</button>
+            </form>
+        </div>
+    </section>
+{% endblock %}

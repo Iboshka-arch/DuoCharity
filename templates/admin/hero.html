@@ -1,0 +1,44 @@
+{% extends "admin/base.html" %}
+{% block title %}Hero karusel — DUO Charity Admin{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">Hero karusel</h1>
+    <p class="page-subtitle">Bosh sahifaning yuqorisidagi avtomatik almashinuvchi rasmlar</p>
+
+    <form method="post" action="{{ url_for('admin_hero_upload') }}" enctype="multipart/form-data" class="upload-form">
+        <input type="file" name="image" accept=".png,.jpg,.jpeg,.webp" required>
+        <button type="submit" class="btn btn-primary">Yuklash</button>
+    </form>
+
+    {% if images %}
+    <div class="admin-gallery-grid">
+        {% for image in images %}
+        <div class="admin-gallery-item">
+            <img src="{{ url_for('static', filename='uploads/' + image.filename) }}">
+            <form method="post" action="{{ url_for('admin_hero_delete', image_id=image.id) }}"
+                  onsubmit="return confirm('Rasmni o\'chirishni tasdiqlaysizmi?');">
+                <button type="submit" class="btn-small btn-small-danger">O'chirish</button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-state-admin">
+        Hozircha hero rasmlari yo'q. Birinchi rasmni qo'shing — sayt asosiy sahifasida
+        avtomatik karusel sifatida ko'rinadi.
+    </p>
+    {% endif %}
+
+    <h3 class="form-section-title">"Biz haqimizda" bo'limidagi rasm</h3>
+    <form method="post" action="{{ url_for('admin_about_photo_upload') }}" enctype="multipart/form-data" class="upload-form">
+        <input type="file" name="about_photo" accept=".png,.jpg,.jpeg,.webp" required>
+        <button type="submit" class="btn btn-primary">Yuklash</button>
+    </form>
+
+    {% if settings.get('about_photo') %}
+    <div class="current-image-preview">
+        <span>Joriy rasm:</span>
+        <img src="{{ url_for('static', filename='uploads/' + settings.get('about_photo')) }}">
+    </div>
+    {% endif %}
+{% endblock %}

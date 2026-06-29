@@ -1,0 +1,84 @@
+{% extends "admin/base.html" %}
+{% block title %}Volontyorlar — DUO Charity Admin{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">Volontyor arizalari</h1>
+    <p class="page-subtitle">Jami: {{ applications|length }} ta ariza. Batafsil ma'lumot uchun qatorni bosing.</p>
+
+    {% if applications %}
+    <div class="volunteer-list">
+        {% for app in applications %}
+        <div class="volunteer-row {{ 'row-new' if app.status == 'new' }}" data-app-id="{{ app.id }}">
+            <div class="volunteer-row-summary" onclick="toggleVolunteerDetails({{ app.id }})">
+                <div class="volunteer-row-main">
+                    <strong>{{ app.full_name }}</strong>
+                    {% if app.occupation %}<span class="volunteer-row-occupation">{{ app.occupation }}</span>{% endif %}
+                </div>
+                <span class="volunteer-row-date">{{ app.created_at.strftime('%d.%m.%Y') }}</span>
+                <span class="status-badge status-badge-{{ app.status }}">
+                    {% if app.status == 'new' %}Yangi{% elif app.status == 'contacted' %}Bog'lanildi{% else %}Yopilgan{% endif %}
+                </span>
+                <span class="volunteer-row-chevron">▾</span>
+            </div>
+
+            <div class="volunteer-row-details" id="details-{{ app.id }}">
+                <div class="volunteer-detail-grid">
+                    <div>
+                        <span class="detail-label">Telefon</span>
+                        <a href="tel:{{ app.phone }}" class="detail-value detail-link">{{ app.phone }}</a>
+                    </div>
+                    <div>
+                        <span class="detail-label">Telegram</span>
+                        {% if app.telegram_url() %}
+                        <a href="{{ app.telegram_url() }}" target="_blank" class="detail-value detail-link">{{ app.telegram }} ↗</a>
+                        {% else %}
+                        <span class="detail-value">—</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <span class="detail-label">Jinsi / Yoshi</span>
+                        <span class="detail-value">
+                            {% if app.gender == 'male' %}Erkak{% elif app.gender == 'female' %}Ayol{% else %}—{% endif %}
+                            {% if app.age %} / {{ app.age }} yosh{% endif %}
+                        </span>
+                    </div>
+                    <div class="detail-full">
+                        <span class="detail-label">Xabar</span>
+                        <span class="detail-value">{{ app.message or '—' }}</span>
+                    </div>
+                </div>
+
+                <form method="post" action="{{ url_for('admin_volunteer_status', app_id=app.id) }}" class="detail-status-form">
+                    <label>Holatini o'zgartirish:</label>
+                    <select name="status" onchange="this.form.submit()" class="status-select status-{{ app.status }}">
+                        <option value="new" {{ 'selected' if app.status == 'new' }}>Yangi</option>
+                        <option value="contacted" {{ 'selected' if app.status == 'contacted' }}>Bog'lanildi</option>
+                        <option value="closed" {{ 'selected' if app.status == 'closed' }}>Yopilgan</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        function toggleVolunteerDetails(appId) {
+            const details = document.getElementById('details-' + appId);
+            const row = details.closest('.volunteer-row');
+            const isOpen = details.classList.contains('open');
+
+            document.querySelectorAll('.volunteer-row-details.open').forEach(function (el) {
+                el.classList.remove('open');
+                el.closest('.volunteer-row').classList.remove('expanded');
+            });
+
+            if (!isOpen) {
+                details.classList.add('open');
+                row.classList.add('expanded');
+            }
+        }
+    </script>
+    {% else %}
+    <p class="empty-state-admin">Hozircha arizalar yo'q.</p>
+    {% endif %}
+{% endblock %}

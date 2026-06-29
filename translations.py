@@ -1,0 +1,322 @@
+"""
+Словарь переводов для публичного сайта и админки.
+Языки: uz (узбекский, по умолчанию), ru (русский), en (английский).
+
+Использование в шаблонах: {{ t('nav_home') }}
+"""
+
+TRANSLATIONS = {
+    "uz": {
+        # Навигация
+        "nav_home": "Bosh sahifa",
+        "nav_about": "Biz haqimizda",
+        "nav_gallery": "Galereya",
+        "nav_news": "Yangiliklar",
+        "nav_volunteer": "Volontyorlik",
+        "nav_contact": "Aloqa",
+        "nav_donate": "Yordam berish",
+
+        # Hero
+        "hero_eyebrow": "Ezgu niyat bilan yaxshilik qil",
+        "hero_title_1": "Birga",
+        "hero_title_accent": "yaxshilik",
+        "hero_title_2": "qilamiz.",
+        "hero_lead": "DUO Charity — O'zbekistondagi muhtoj oilalar, bolalar va keksalarga ko'maklashuvchi xayriya jamg'armasi. Har bir yaxshilik — kimningdir umidi.",
+        "hero_btn_donate": "Yordam berish",
+        "hero_btn_volunteer": "Volontyor bo'lish",
+
+        # Stats
+        "stat_families": "Oilalarga yordam",
+        "stat_kids": "Bola va keksalar",
+        "stat_volunteers": "Faol volontyorlar",
+        "stat_events": "O'tkazilgan tadbirlar",
+
+        # About
+        "about_eyebrow": "Biz haqimizda",
+        "about_title": "Oilalar, bolalar va muhtojlarga ko'mak.",
+        "about_text_1": "DUO Charity — bu kichik, lekin samimiy jamoa. Biz O'zbekistonning turli viloyatlarida muhtoj oilalarni qo'llab-quvvatlaymiz: oziq-ovqat yordami, qish kiyimlari, tibbiy yordam va bolalar uchun ta'lim imkoniyatlari.",
+        "about_text_2": "Har bir hissangiz — kimningdir hayotidagi yorug' kun. Sizning ishonchingiz bilan biz birga yanada ko'proq odamga yetib bora olamiz.",
+        "about_check_1": "Shaffof hisobotlar va ochiq faoliyat",
+        "about_check_2": "Mahalliy jamoalar bilan bevosita ishlash",
+        "about_check_3": "Har bir so'mning manziliga yetishi",
+
+        # Gallery
+        "gallery_eyebrow": "Galereya",
+        "gallery_title": "So'nggi tadbirlardan lavhalar",
+        "gallery_see_all": "Barchasini ko'rish →",
+
+        # News
+        "news_eyebrow": "Yangiliklar",
+        "news_title": "Hisobotlar va yangiliklar",
+        "news_see_all": "Barchasi →",
+        "news_empty": "Hozircha yangiliklar yo'q. Tez orada qo'shamiz!",
+
+        # Donate
+        "donate_eyebrow": "Yordam berish",
+        "donate_title": "Kichik yordam — katta o'zgarish.",
+        "donate_lead": "Quyidagi to'lov usullari orqali jamg'armani qo'llab-quvvatlashingiz mumkin. Har bir so'm muhtojlarga yetkaziladi.",
+        "donate_card": "Bank karta",
+
+        # Volunteer
+        "volunteer_eyebrow": "Volontyorlik",
+        "volunteer_title": "Jamoamizga qo'shiling",
+        "volunteer_lead": "Vaqtingiz, mahoratingiz yoki yuragingizdagi mehribonlik bilan yordam bera olasiz. Anketani to'ldiring — biz siz bilan bog'lanamiz.",
+        "volunteer_name": "Ismingiz",
+        "volunteer_contact": "Telefon raqam yoki email",
+        "volunteer_message": "Qisqacha o'zingiz haqingizda yozing...",
+        "volunteer_submit": "Yuborish",
+
+        # Расширенная форма волонтёра
+        "vf_personal_info": "Shaxsiy ma'lumotlar",
+        "vf_phone": "Telefon raqam",
+        "vf_telegram": "Telegram username (@...)",
+        "vf_age": "Yoshingiz",
+        "vf_gender": "Jinsingiz",
+        "vf_male": "Erkak",
+        "vf_female": "Ayol",
+        "vf_occupation": "O'qiysiz yoki ishlaysizmi? (masalan: talaba, dasturchi)",
+        "vf_directions": "Qaysi yo'nalishda yordam bera olasiz?",
+        "vf_ready_all": "Barcha tadbirlarga tayyorman",
+        "vf_dir_food": "Oziq-ovqat yordami",
+        "vf_dir_medical": "Tibbiy yordam",
+        "vf_dir_education": "Ta'lim va bolalar bilan ishlash",
+        "vf_dir_events": "Tadbirlarni tashkillashtirish",
+        "vf_dir_smm": "Ijtimoiy tarmoqlar (SMM)",
+        "vf_message_title": "Qo'shimcha xabar (ixtiyoriy)",
+        "vf_thanks_title": "Rahmat!",
+        "vf_thanks_text": "Arizangiz muvaffaqiyatli qabul qilindi. Tez orada jamoamiz siz bilan bog'lanadi.",
+        "vf_thanks_button": "Bosh sahifaga qaytish",
+
+        # Footer
+        "footer_tagline": "Ezgu niyat bilan yaxshilik qil. DUO Charity — muhtojlarga yordam beruvchi xayriya jamg'armasi.",
+        "footer_contact": "Bog'lanish",
+        "footer_nav": "Navigatsiya",
+        "footer_rights": "Barcha huquqlar himoyalangan.",
+
+        # Админка (интерфейс)
+        "adm_dashboard": "Bosh sahifa",
+        "adm_news": "Yangiliklar",
+        "adm_gallery": "Galereya",
+        "adm_hero": "Hero karusel",
+        "adm_volunteers": "Volontyorlar",
+        "adm_settings": "Sozlamalar",
+        "adm_view_site": "Saytni ko'rish",
+        "adm_logout": "Chiqish",
+        "adm_welcome": "DUO Charity sayti boshqaruv paneliga xush kelibsiz",
+        "adm_news_count": "Yangiliklar",
+        "adm_gallery_count": "Galereya rasmlari",
+        "adm_new_applications": "Yangi arizalar",
+        "adm_new_post": "+ Yangi post",
+        "adm_add_photo": "+ Rasm qo'shish",
+    },
+
+    "ru": {
+        "nav_home": "Главная",
+        "nav_about": "О нас",
+        "nav_gallery": "Галерея",
+        "nav_news": "Новости",
+        "nav_volunteer": "Волонтёрство",
+        "nav_contact": "Контакты",
+        "nav_donate": "Помочь",
+
+        "hero_eyebrow": "Делай добро с благими намерениями",
+        "hero_title_1": "Вместе мы",
+        "hero_title_accent": "творим",
+        "hero_title_2": "добро.",
+        "hero_lead": "DUO Charity — благотворительный фонд в Узбекистане, помогающий нуждающимся семьям, детям и пожилым людям. Каждое доброе дело — это чья-то надежда.",
+        "hero_btn_donate": "Помочь",
+        "hero_btn_volunteer": "Стать волонтёром",
+
+        "stat_families": "Семьям помогли",
+        "stat_kids": "Детей и пожилых",
+        "stat_volunteers": "Активных волонтёров",
+        "stat_events": "Проведённых мероприятий",
+
+        "about_eyebrow": "О нас",
+        "about_title": "Помощь семьям, детям и нуждающимся.",
+        "about_text_1": "DUO Charity — небольшая, но искренняя команда. Мы поддерживаем нуждающиеся семьи в разных регионах Узбекистана: продуктовая помощь, зимняя одежда, медицинская помощь и образовательные возможности для детей.",
+        "about_text_2": "Каждый ваш вклад — это светлый день в чьей-то жизни. Благодаря вашему доверию мы можем помочь ещё большему числу людей.",
+        "about_check_1": "Прозрачные отчёты и открытая деятельность",
+        "about_check_2": "Прямая работа с местными сообществами",
+        "about_check_3": "Каждая сумма доходит до адресата",
+
+        "gallery_eyebrow": "Галерея",
+        "gallery_title": "Кадры с последних мероприятий",
+        "gallery_see_all": "Смотреть все →",
+
+        "news_eyebrow": "Новости",
+        "news_title": "Отчёты и новости",
+        "news_see_all": "Все новости →",
+        "news_empty": "Новостей пока нет. Скоро добавим!",
+
+        "donate_eyebrow": "Помочь",
+        "donate_title": "Маленькая помощь — большие перемены.",
+        "donate_lead": "Вы можете поддержать фонд через следующие способы оплаты. Каждая сумма доходит до нуждающихся.",
+        "donate_card": "Банковская карта",
+
+        "volunteer_eyebrow": "Волонтёрство",
+        "volunteer_title": "Присоединяйтесь к нашей команде",
+        "volunteer_lead": "Вы можете помочь своим временем, навыками или просто добрым сердцем. Заполните анкету — мы с вами свяжемся.",
+        "volunteer_name": "Ваше имя",
+        "volunteer_contact": "Телефон или email",
+        "volunteer_message": "Расскажите немного о себе...",
+        "volunteer_submit": "Отправить",
+
+        # Расширенная форма волонтёра
+        "vf_personal_info": "Личные данные",
+        "vf_phone": "Номер телефона",
+        "vf_telegram": "Telegram username (@...)",
+        "vf_age": "Ваш возраст",
+        "vf_gender": "Ваш пол",
+        "vf_male": "Мужчина",
+        "vf_female": "Женщина",
+        "vf_occupation": "Учитесь или работаете? (например: студент, программист)",
+        "vf_directions": "В каком направлении можете помочь?",
+        "vf_ready_all": "Готов(а) на все мероприятия",
+        "vf_dir_food": "Продуктовая помощь",
+        "vf_dir_medical": "Медицинская помощь",
+        "vf_dir_education": "Образование и работа с детьми",
+        "vf_dir_events": "Организация мероприятий",
+        "vf_dir_smm": "Соцсети (SMM)",
+        "vf_message_title": "Дополнительное сообщение (необязательно)",
+        "vf_thanks_title": "Спасибо!",
+        "vf_thanks_text": "Ваша заявка успешно принята. Скоро наша команда свяжется с вами.",
+        "vf_thanks_button": "Вернуться на главную",
+
+        "footer_tagline": "Делай добро с благими намерениями. DUO Charity — благотворительный фонд помощи нуждающимся.",
+        "footer_contact": "Контакты",
+        "footer_nav": "Навигация",
+        "footer_rights": "Все права защищены.",
+
+        # Админка (интерфейс)
+        "adm_dashboard": "Главная",
+        "adm_news": "Новости",
+        "adm_gallery": "Галерея",
+        "adm_hero": "Hero карусель",
+        "adm_volunteers": "Волонтёры",
+        "adm_settings": "Настройки",
+        "adm_view_site": "Смотреть сайт",
+        "adm_logout": "Выйти",
+        "adm_welcome": "Добро пожаловать в панель управления DUO Charity",
+        "adm_news_count": "Новости",
+        "adm_gallery_count": "Фото галереи",
+        "adm_new_applications": "Новые заявки",
+        "adm_new_post": "+ Новая новость",
+        "adm_add_photo": "+ Добавить фото",
+    },
+
+    "en": {
+        "nav_home": "Home",
+        "nav_about": "About Us",
+        "nav_gallery": "Gallery",
+        "nav_news": "News",
+        "nav_volunteer": "Volunteer",
+        "nav_contact": "Contact",
+        "nav_donate": "Donate",
+
+        "hero_eyebrow": "Do good with good intentions",
+        "hero_title_1": "Together we",
+        "hero_title_accent": "create",
+        "hero_title_2": "good.",
+        "hero_lead": "DUO Charity is a charitable foundation in Uzbekistan supporting families, children, and elderly people in need. Every good deed is someone's hope.",
+        "hero_btn_donate": "Donate",
+        "hero_btn_volunteer": "Become a volunteer",
+
+        "stat_families": "Families helped",
+        "stat_kids": "Children and elderly",
+        "stat_volunteers": "Active volunteers",
+        "stat_events": "Events held",
+
+        "about_eyebrow": "About Us",
+        "about_title": "Helping families, children, and those in need.",
+        "about_text_1": "DUO Charity is a small but sincere team. We support families in need across various regions of Uzbekistan: food assistance, winter clothing, medical aid, and educational opportunities for children.",
+        "about_text_2": "Every contribution of yours is a bright day in someone's life. With your trust, we can reach even more people together.",
+        "about_check_1": "Transparent reports and open activity",
+        "about_check_2": "Direct work with local communities",
+        "about_check_3": "Every dollar reaches its destination",
+
+        "gallery_eyebrow": "Gallery",
+        "gallery_title": "Highlights from recent events",
+        "gallery_see_all": "See all →",
+
+        "news_eyebrow": "News",
+        "news_title": "Reports and news",
+        "news_see_all": "See all →",
+        "news_empty": "No news yet. Coming soon!",
+
+        "donate_eyebrow": "Donate",
+        "donate_title": "Small help — big change.",
+        "donate_lead": "You can support the foundation through the payment methods below. Every dollar reaches those in need.",
+        "donate_card": "Bank card",
+
+        "volunteer_eyebrow": "Volunteer",
+        "volunteer_title": "Join our team",
+        "volunteer_lead": "You can help with your time, skills, or simply a kind heart. Fill out the form — we'll get in touch with you.",
+        "volunteer_name": "Your name",
+        "volunteer_contact": "Phone number or email",
+        "volunteer_message": "Tell us a bit about yourself...",
+        "volunteer_submit": "Submit",
+
+        # Расширенная форма волонтёра
+        "vf_personal_info": "Personal Information",
+        "vf_phone": "Phone number",
+        "vf_telegram": "Telegram username (@...)",
+        "vf_age": "Your age",
+        "vf_gender": "Your gender",
+        "vf_male": "Male",
+        "vf_female": "Female",
+        "vf_occupation": "Studying or working? (e.g. student, developer)",
+        "vf_directions": "Which area can you help with?",
+        "vf_ready_all": "Ready for any event",
+        "vf_dir_food": "Food assistance",
+        "vf_dir_medical": "Medical assistance",
+        "vf_dir_education": "Education and working with children",
+        "vf_dir_events": "Event organization",
+        "vf_dir_smm": "Social media (SMM)",
+        "vf_message_title": "Additional message (optional)",
+        "vf_thanks_title": "Thank you!",
+        "vf_thanks_text": "Your application has been successfully received. Our team will contact you soon.",
+        "vf_thanks_button": "Back to home",
+
+        "footer_tagline": "Do good with good intentions. DUO Charity — a charitable foundation helping those in need.",
+        "footer_contact": "Contact",
+        "footer_nav": "Navigation",
+        "footer_rights": "All rights reserved.",
+
+        # Админка (интерфейс)
+        "adm_dashboard": "Dashboard",
+        "adm_news": "News",
+        "adm_gallery": "Gallery",
+        "adm_hero": "Hero Carousel",
+        "adm_volunteers": "Volunteers",
+        "adm_settings": "Settings",
+        "adm_view_site": "View site",
+        "adm_logout": "Log out",
+        "adm_welcome": "Welcome to the DUO Charity admin panel",
+        "adm_news_count": "News",
+        "adm_gallery_count": "Gallery photos",
+        "adm_new_applications": "New applications",
+        "adm_new_post": "+ New post",
+        "adm_add_photo": "+ Add photo",
+    },
+}
+
+LANGUAGES = {
+    "uz": {"label": "O'zbekcha", "flag": "🇺🇿"},
+    "ru": {"label": "Русский", "flag": "🇷🇺"},
+    "en": {"label": "English", "flag": "🇬🇧"},
+}
+
+DEFAULT_LANGUAGE = "uz"
+
+
+def get_translator(lang_code):
+    """Возвращает функцию t(key) для конкретного языка с фоллбэком на uz."""
+    lang_code = lang_code if lang_code in TRANSLATIONS else DEFAULT_LANGUAGE
+    table = TRANSLATIONS[lang_code]
+    fallback = TRANSLATIONS[DEFAULT_LANGUAGE]
+
+    def t(key):
+        return table.get(key, fallback.get(key, key))
+
+    return t

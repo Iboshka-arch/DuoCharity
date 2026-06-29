@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin — DUO Charity{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <img src="{{ url_for('static', filename='images/duo-logo.png') }}" alt="DUO Charity">
+                <span>DUO Admin</span>
+            </div>
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin_dashboard') }}" class="{{ 'active' if request.endpoint == 'admin_dashboard' }}">{{ t('adm_dashboard') }}</a>
+                <a href="{{ url_for('admin_posts') }}" class="{{ 'active' if request.endpoint and 'admin_post' in request.endpoint }}">{{ t('adm_news') }}</a>
+                <a href="{{ url_for('admin_gallery') }}" class="{{ 'active' if request.endpoint and 'admin_gallery' in request.endpoint }}">{{ t('adm_gallery') }}</a>
+                <a href="{{ url_for('admin_hero') }}" class="{{ 'active' if request.endpoint and 'admin_hero' in request.endpoint }}">{{ t('adm_hero') }}</a>
+                <a href="{{ url_for('admin_volunteers') }}" class="{{ 'active' if request.endpoint and 'admin_volunteer' in request.endpoint }}">{{ t('adm_volunteers') }}</a>
+                <a href="{{ url_for('admin_settings') }}" class="{{ 'active' if request.endpoint == 'admin_settings' }}">{{ t('adm_settings') }}</a>
+            </nav>
+            <div class="admin-sidebar-footer">
+                <div class="admin-lang-switcher">
+                    {% for code, lang in languages.items() %}
+                    <a href="{{ url_for('set_language', lang_code=code) }}" class="{{ 'active' if code == current_lang }}">
+                        {{ lang.flag }}
+                    </a>
+                    {% endfor %}
+                </div>
+                <a href="{{ url_for('home') }}" target="_blank">{{ t('adm_view_site') }} ↗</a>
+                <a href="{{ url_for('admin_logout') }}">{{ t('adm_logout') }}</a>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+</body>
+</html>

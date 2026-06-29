@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DUO Charity{% endblock %}</title>
+    <meta name="description" content="DUO Charity — O'zbekistondagi muhtoj oilalar, bolalar va keksalarga ko'maklashuvchi xayriya jamg'armasi.">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="{{ url_for('home') }}" class="logo">
+                <img src="{{ url_for('static', filename='images/duo-logo.png') }}" alt="DUO Charity logo">
+                <span class="logo-text"><strong>DUO</strong>Charity</span>
+            </a>
+
+            <nav class="main-nav">
+                <a href="{{ url_for('home') }}#home">{{ t('nav_home') }}</a>
+                <a href="{{ url_for('home') }}#about">{{ t('nav_about') }}</a>
+                <a href="{{ url_for('home') }}#gallery">{{ t('nav_gallery') }}</a>
+                <a href="{{ url_for('home') }}#news">{{ t('nav_news') }}</a>
+                <a href="{{ url_for('volunteer_form') }}">{{ t('nav_volunteer') }}</a>
+                <a href="{{ url_for('home') }}#contact">{{ t('nav_contact') }}</a>
+            </nav>
+
+            <div class="header-actions">
+                <div class="lang-switcher">
+                    <button class="lang-current" id="langToggle">
+                        {{ languages[current_lang].flag }} {{ current_lang|upper }}
+                    </button>
+                    <div class="lang-dropdown" id="langDropdown">
+                        {% for code, lang in languages.items() %}
+                        <a href="{{ url_for('set_language', lang_code=code) }}" class="{{ 'active' if code == current_lang }}">
+                            {{ lang.flag }} {{ lang.label }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <a href="{{ url_for('home') }}#donate" class="btn btn-primary">{{ t('nav_donate') }}</a>
+            </div>
+
+            <button class="burger" id="burgerBtn" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+
+        <nav class="mobile-nav" id="mobileNav">
+            <a href="{{ url_for('home') }}#home">{{ t('nav_home') }}</a>
+            <a href="{{ url_for('home') }}#about">{{ t('nav_about') }}</a>
+            <a href="{{ url_for('home') }}#gallery">{{ t('nav_gallery') }}</a>
+            <a href="{{ url_for('home') }}#news">{{ t('nav_news') }}</a>
+            <a href="{{ url_for('volunteer_form') }}">{{ t('nav_volunteer') }}</a>
+            <a href="{{ url_for('home') }}#contact">{{ t('nav_contact') }}</a>
+
+            <div class="mobile-lang-switcher">
+                {% for code, lang in languages.items() %}
+                <a href="{{ url_for('set_language', lang_code=code) }}" class="{{ 'active' if code == current_lang }}">
+                    {{ lang.flag }} {{ lang.label }}
+                </a>
+                {% endfor %}
+            </div>
+
+            <a href="{{ url_for('home') }}#donate" class="btn btn-primary">{{ t('nav_donate') }}</a>
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer" id="contact">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <img src="{{ url_for('static', filename='images/duo-logo.png') }}" alt="DUO Charity logo">
+                <p class="footer-tagline">{{ t('footer_tagline') }}</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Instagram">IG</a>
+                    <a href="#" aria-label="Telegram">TG</a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>{{ t('footer_contact') }}</h4>
+                <p>{{ settings.get('contact_address', '') if settings else "Toshkent shahri, Mirzo Ulug'bek tumani" }}</p>
+                <p>{{ settings.get('contact_phone', '') if settings else '+998 90 000 00 00' }}</p>
+                <p>{{ settings.get('contact_email', '') if settings else 'info@duocharity.uz' }}</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>{{ t('footer_nav') }}</h4>
+                <a href="{{ url_for('home') }}#about">{{ t('nav_about') }}</a>
+                <a href="{{ url_for('home') }}#gallery">{{ t('nav_gallery') }}</a>
+                <a href="{{ url_for('home') }}#news">{{ t('nav_news') }}</a>
+                <a href="{{ url_for('home') }}#donate">{{ t('nav_donate') }}</a>
+                <a href="{{ url_for('volunteer_form') }}">{{ t('nav_volunteer') }}</a>
+            </div>
+        </div>
+
+        <div class="footer-bottom container">
+            <p>&copy; 2026 DUO Charity. {{ t('footer_rights') }}</p>
+            <p>{{ t('hero_eyebrow') }} 🤲</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

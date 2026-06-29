@@ -1,0 +1,27 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ t('adm_dashboard') }} — DUO Charity Admin{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ t('adm_dashboard') }}</h1>
+    <p class="page-subtitle">{{ t('adm_welcome') }}</p>
+
+    <div class="dashboard-cards">
+        <a href="{{ url_for('admin_posts') }}" class="dashboard-card">
+            <span class="dashboard-number">{{ posts_count }}</span>
+            <span class="dashboard-label">{{ t('adm_news_count') }}</span>
+        </a>
+        <a href="{{ url_for('admin_gallery') }}" class="dashboard-card">
+            <span class="dashboard-number">{{ images_count }}</span>
+            <span class="dashboard-label">{{ t('adm_gallery_count') }}</span>
+        </a>
+        <a href="{{ url_for('admin_volunteers') }}" class="dashboard-card {{ 'highlight' if new_applications_count > 0 }}">
+            <span class="dashboard-number">{{ new_applications_count }}</span>
+            <span class="dashboard-label">{{ t('adm_new_applications') }}</span>
+        </a>
+    </div>
+
+    <div class="quick-actions">
+        <a href="{{ url_for('admin_post_new') }}" class="btn btn-primary">{{ t('adm_new_post') }}</a>
+        <a href="{{ url_for('admin_gallery') }}" class="btn btn-outline">{{ t('adm_add_photo') }}</a>
+    </div>
+{% endblock %}
