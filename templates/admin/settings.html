@@ -1,80 +1,44 @@
 {% extends "admin/base.html" %}
-{% block title %}Sozlamalar — DUO Charity Admin{% endblock %}
+{% block title %}{{ t('adm_settings') }} — DUO Charity Admin{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">Sozlamalar</h1>
-    <p class="page-subtitle">Bosh sahifadagi statistika, aloqa ma'lumotlari va to'lov rekvizitlari</p>
+    <h1 class="page-title">{{ t('adm_settings') }}</h1>
+    <p class="page-subtitle">{{ t('adm_settings_sub') }}</p>
 
     <form method="post" class="admin-form">
-        <h3 class="form-section-title">Statistika</h3>
+        <h3 class="form-section-title">{{ t('adm_stats_section') }}</h3>
         <div class="form-grid">
-            <label>
-                Oilalarga yordam
-                <input type="text" name="stat_families" value="{{ settings.get('stat_families', '') }}">
-            </label>
-            <label>
-                Bola va keksalar
-                <input type="text" name="stat_kids_elderly" value="{{ settings.get('stat_kids_elderly', '') }}">
-            </label>
-            <label>
-                Faol volontyorlar
-                <input type="text" name="stat_volunteers" value="{{ settings.get('stat_volunteers', '') }}">
-            </label>
-            <label>
-                O'tkazilgan tadbirlar
-                <input type="text" name="stat_events" value="{{ settings.get('stat_events', '') }}">
-            </label>
+            <label>{{ t('stat_families') }}<input type="text" name="stat_families" value="{{ settings.get('stat_families', '') }}"></label>
+            <label>{{ t('stat_kids') }}<input type="text" name="stat_kids_elderly" value="{{ settings.get('stat_kids_elderly', '') }}"></label>
+            <label>{{ t('stat_volunteers') }}<input type="text" name="stat_volunteers" value="{{ settings.get('stat_volunteers', '') }}"></label>
+            <label>{{ t('stat_events') }}<input type="text" name="stat_events" value="{{ settings.get('stat_events', '') }}"></label>
         </div>
 
-        <h3 class="form-section-title">Aloqa ma'lumotlari</h3>
+        <h3 class="form-section-title">{{ t('adm_contacts_section') }}</h3>
         <div class="form-grid">
-            <label>
-                Telefon
-                <input type="text" name="contact_phone" value="{{ settings.get('contact_phone', '') }}">
-            </label>
-            <label>
-                Email
-                <input type="text" name="contact_email" value="{{ settings.get('contact_email', '') }}">
-            </label>
-            <label class="full-width">
-                Manzil
-                <input type="text" name="contact_address" value="{{ settings.get('contact_address', '') }}">
-            </label>
+            <label>{{ t('vf_phone') }}<input type="text" name="contact_phone" value="{{ settings.get('contact_phone', '') }}"></label>
+            <label>Email<input type="text" name="contact_email" value="{{ settings.get('contact_email', '') }}"></label>
+            <label class="full-width">{{ t('footer_contact') }}<input type="text" name="contact_address" value="{{ settings.get('contact_address', '') }}"></label>
         </div>
 
-        <h3 class="form-section-title">To'lov rekvizitlari</h3>
+        <h3 class="form-section-title">{{ t('adm_payments_section') }}</h3>
         <div class="form-grid">
-            <label>
-                Payme
-                <input type="text" name="payme_value" value="{{ settings.get('payme_value', '') }}">
-            </label>
-            <label>
-                Click
-                <input type="text" name="click_value" value="{{ settings.get('click_value', '') }}">
-            </label>
-            <label>
-                Bank karta
-                <input type="text" name="card_value" value="{{ settings.get('card_value', '') }}">
-            </label>
+            <label>Payme<input type="text" name="payme_value" value="{{ settings.get('payme_value', '') }}"></label>
+            <label>Click<input type="text" name="click_value" value="{{ settings.get('click_value', '') }}"></label>
+            <label>{{ t('donate_card') }}<input type="text" name="card_value" value="{{ settings.get('card_value', '') }}"></label>
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Saqlash</button>
+            <button type="submit" class="btn btn-primary">{{ t('adm_save') }}</button>
         </div>
     </form>
 
-    <h3 class="form-section-title">Parolni o'zgartirish</h3>
+    <h3 class="form-section-title">{{ t('adm_change_password') }}</h3>
     <form method="post" class="admin-form">
-        <label>
-            Yangi parol
-            <input type="password" name="new_password" placeholder="Kamida 6 belgi" minlength="6">
-        </label>
-        <label>
-            Yangi parolni qaytaring
-            <input type="password" name="new_password_repeat" minlength="6">
-        </label>
+        <label>{{ t('adm_new_password') }}<input type="password" name="new_password" minlength="6"></label>
+        <label>{{ t('adm_repeat_password') }}<input type="password" name="new_password_repeat" minlength="6"></label>
         <div class="form-actions">
-            <button type="submit" class="btn btn-outline">Parolni o'zgartirish</button>
+            <button type="submit" class="btn btn-outline">{{ t('adm_change_password') }}</button>
         </div>
     </form>
 {% endblock %}

@@ -35,6 +35,10 @@ with app.app_context():
     else:
         print("Администратор уже существует, пропускаю создание")
 
+@app.route("/uploads/<path:filename>")
+def uploaded_file(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
     # Создаём базовые настройки, если их ещё нет
     for key, value in DEFAULT_SETTINGS.items():
         if not SiteSetting.query.filter_by(key=key).first():

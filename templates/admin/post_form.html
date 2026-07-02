@@ -1,35 +1,35 @@
 {% extends "admin/base.html" %}
-{% block title %}{{ 'Postni tahrirlash' if post else 'Yangi post' }} — DUO Charity Admin{% endblock %}
+{% block title %}{{ t('adm_edit_post') if post else t('adm_new_post') }} — DUO Charity Admin{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">{{ 'Postni tahrirlash' if post else 'Yangi post qo\'shish' }}</h1>
+    <h1 class="page-title">{{ t('adm_edit_post') if post else t('adm_new_post') }}</h1>
 
     <form method="post" enctype="multipart/form-data" class="admin-form">
         <label>
-            Sarlavha
+            {{ t('adm_col_title') }}
             <input type="text" name="title" value="{{ post.title if post else '' }}" required>
         </label>
 
         <label>
-            Matn
+            {{ t('adm_content') }}
             <textarea name="content" rows="10" required>{{ post.content if post else '' }}</textarea>
         </label>
 
         <label>
-            Rasm {{ '(joriy rasmni almashtirish uchun yangisini tanlang)' if post else '' }}
+            {{ t('adm_image') }} {{ '(' + t('adm_replace_image') + ')' if post else '' }}
             <input type="file" name="image" accept=".png,.jpg,.jpeg,.webp">
         </label>
 
         {% if post and post.image_filename %}
         <div class="current-image-preview">
-            <span>Joriy rasm:</span>
-            <img src="{{ url_for('static', filename='uploads/' + post.image_filename) }}">
+            <span>{{ t('adm_current_image') }}</span>
+            <img src="{{ url_for('uploaded_file', filename=post.image_filename) }}">
         </div>
         {% endif %}
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">{{ 'Saqlash' if post else 'Qo\'shish' }}</button>
-            <a href="{{ url_for('admin_posts') }}" class="btn btn-outline">Bekor qilish</a>
+            <button type="submit" class="btn btn-primary">{{ t('adm_save') if post else t('adm_add') }}</button>
+            <a href="{{ url_for('admin_posts') }}" class="btn btn-outline">{{ t('adm_cancel') }}</a>
         </div>
     </form>
 {% endblock %}

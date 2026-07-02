@@ -2,7 +2,7 @@ import os
 from datetime import datetime, timedelta
 from functools import wraps
 
-from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response
+from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response, send_from_directory
 from werkzeug.utils import secure_filename
 
 from models import db, Admin, Post, GalleryImage, HeroImage, VolunteerApplication, SiteSetting
