@@ -21,6 +21,10 @@ app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024  # максимум 8 МБ н
 
 db.init_app(app)
 
+@app.route("/uploads/<path:filename>")
+def uploaded_file(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
 
 # ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ----------
 
