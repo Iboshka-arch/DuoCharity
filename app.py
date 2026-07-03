@@ -29,9 +29,12 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 db.init_app(app)
 
 @app.before_request
-def create_tables():
-    db.create_all()
-
+def initialize_database():
+    if not hasattr(app, '_db_initialized'):
+        with app.app_context():
+            db.create_all()
+        app._db_initialized = True
+        
 @app.route("/uploads/<path:filename>")
 def uploaded_file(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
