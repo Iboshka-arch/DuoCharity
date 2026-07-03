@@ -28,6 +28,12 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db.init_app(app)
 
+@app.route("/debug-db")
+def debug_db():
+    import os
+    db_url = os.environ.get("DATABASE_URL", "NOT SET")
+    return f"DATABASE_URL starts with: {db_url[:30] if db_url != 'NOT SET' else 'NOT SET'}"
+
 @app.before_request
 def initialize_database():
     if not hasattr(app, '_db_initialized'):
