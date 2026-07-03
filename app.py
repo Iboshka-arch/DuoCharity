@@ -13,23 +13,29 @@ UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "change-this-secret-key-in-production"
+app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key-local")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024  # максимум 8 МБ на файл
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-    "DATABASE_URL",
-    f"sqlite:///{os.path.join(BASE_DIR, 'duocharity.db')}"
-)
+app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
+
+
+database_url = os.environ.get("DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, 'duocharity.db')}")
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db.init_app(app)
+
+with app.app_context():
+    db.create_all()
 
 @app.route("/uploads/<path:filename>")
 def uploaded_file(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
 
-# ---------- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ----------
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS

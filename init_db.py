@@ -1,11 +1,3 @@
-"""
-Скрипт первоначальной настройки базы данных.
-Запускать ОДИН РАЗ при первом старте проекта (или после удаления базы):
-
-    python init_db.py
-
-Создаёт все таблицы, одного администратора и базовые настройки сайта.
-"""
 from app import app
 from models import db, Admin, SiteSetting
 
@@ -25,19 +17,14 @@ DEFAULT_SETTINGS = {
 with app.app_context():
     db.create_all()
 
-    # Создаём первого администратора, если его ещё нет
     if not Admin.query.filter_by(username="admin").first():
         admin = Admin(username="admin")
-        admin.set_password("changeme123")  # ОБЯЗАТЕЛЬНО смени после первого входа
+        admin.set_password("changeme123") 
         db.session.add(admin)
         print("Создан администратор: логин 'admin', пароль 'changeme123'")
         print("ВАЖНО: смени пароль после первого входа в /admin/settings")
     else:
         print("Администратор уже существует, пропускаю создание")
-
-@app.route("/uploads/<path:filename>")
-def uploaded_file(filename):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
     # Создаём базовые настройки, если их ещё нет
     for key, value in DEFAULT_SETTINGS.items():

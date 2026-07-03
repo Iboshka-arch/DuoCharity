@@ -6,7 +6,6 @@ db = SQLAlchemy()
 
 
 class Admin(db.Model):
-    """Администратор сайта (логин в админ-панель)."""
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
@@ -19,7 +18,6 @@ class Admin(db.Model):
 
 
 class Post(db.Model):
-    """Новость или отчёт."""
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
@@ -30,14 +28,12 @@ class Post(db.Model):
         return self.created_at.strftime("%d.%m.%Y")
 
     def excerpt(self, length=140):
-        """Автоматически обрезает текст для показа в карточках."""
         if len(self.content) <= length:
             return self.content
         return self.content[:length].rsplit(" ", 1)[0] + "…"
 
 
 class GalleryImage(db.Model):
-    """Фото в галерее."""
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(255), nullable=False)
     caption = db.Column(db.String(200), nullable=True)
@@ -45,7 +41,6 @@ class GalleryImage(db.Model):
 
 
 class HeroImage(db.Model):
-    """Фото для карусели на главном экране (hero)."""
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(255), nullable=False)
     order = db.Column(db.Integer, default=0)  # порядок показа в карусели
@@ -53,7 +48,6 @@ class HeroImage(db.Model):
 
 
 class VolunteerApplication(db.Model):
-    """Заявка от волонтёра (расширенная анкета)."""
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(120), nullable=False)
     phone = db.Column(db.String(50), nullable=False)
@@ -66,7 +60,6 @@ class VolunteerApplication(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def telegram_url(self):
-        """Возвращает кликабельную ссылку t.me/username из юзернейма (с @ или без)."""
         if not self.telegram:
             return None
         clean = self.telegram.strip().lstrip("@")
