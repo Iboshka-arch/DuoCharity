@@ -28,7 +28,8 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db.init_app(app)
 
-with app.app_context():
+@app.before_request
+def create_tables():
     db.create_all()
 
 @app.route("/uploads/<path:filename>")
