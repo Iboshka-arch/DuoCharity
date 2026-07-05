@@ -14,7 +14,7 @@
     <div class="admin-gallery-grid">
         {% for image in images %}
         <div class="admin-gallery-item">
-            <img src="{{ url_for('uploaded_file', filename=image.filename) }}">
+            <img src="{{ image.filename }}">
             <form method="post" action="{{ url_for('admin_hero_delete', image_id=image.id) }}"
                   onsubmit="return confirm('{{ t('adm_confirm_delete') }}');">
                 <button type="submit" class="btn-small btn-small-danger">{{ t('adm_delete') }}</button>
@@ -35,7 +35,7 @@
     {% if settings.get('about_photo') %}
     <div class="current-image-preview">
         <span>{{ t('adm_current_image') }}</span>
-        <img src="{{ url_for('uploaded_file', filename=settings.get('about_photo')) }}">
+        <img src="{{ settings.get('about_photo') }}">
     </div>
     {% endif %}
 {% endblock %}

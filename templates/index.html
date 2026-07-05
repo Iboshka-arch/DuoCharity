@@ -21,7 +21,7 @@
                 <div class="hero-carousel" id="heroCarousel">
                     <div class="hero-carousel-track">
                         {% for image in hero_images %}
-                        <img src="{{ url_for('static', filename='uploads/' + image.filename) }}"
+                        <img src="{{ image.filename }}"
                              class="hero-carousel-slide {{ 'active' if loop.first }}" alt="DUO Charity">
                         {% endfor %}
                     </div>
@@ -68,7 +68,7 @@
     <section class="about" id="about">
         <div class="container about-grid">
             {% if settings.get('about_photo') %}
-            <img src="{{ url_for('static', filename='uploads/' + settings.get('about_photo')) }}"
+            <img src="{{ settings.get('about_photo') }}"
                  class="about-photo" alt="DUO Charity">
             {% else %}
             <div class="placeholder-box about-photo">about photo placeholder</div>
@@ -100,7 +100,7 @@
             <div class="gallery-grid">
                 {% if gallery_images %}
                     {% for image in gallery_images %}
-                    <img src="{{ url_for('static', filename='uploads/' + image.filename) }}"
+                    <img src="{{ image.filename }}"
                          class="gallery-photo" alt="{{ image.caption or 'DUO Charity' }}">
                     {% endfor %}
                 {% else %}
@@ -127,7 +127,7 @@
                     {% for item in news_items %}
                     <a href="{{ url_for('news_detail', post_id=item.id) }}" class="news-card">
                         {% if item.image_filename %}
-                        <img src="{{ url_for('static', filename='uploads/' + item.image_filename) }}"
+                        <img src="{{ item.image_filename }}"
                              class="news-photo" alt="{{ item.title }}">
                         {% else %}
                         <div class="placeholder-box news-photo">photo placeholder</div>

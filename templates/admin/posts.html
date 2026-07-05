@@ -26,7 +26,7 @@
                 <tr>
                     <td>
                         {% if post.image_filename %}
-                        <img src="{{ url_for('uploaded_file', filename=post.image_filename) }}" class="table-thumb">
+                        <img src="{{ post.image_filename }}" class="table-thumb">
                         {% else %}
                         <div class="table-thumb table-thumb-empty"></div>
                         {% endif %}

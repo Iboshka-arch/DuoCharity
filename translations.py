@@ -218,7 +218,7 @@ TRANSLATIONS = {
         "footer_nav": "Навигация",
         "footer_rights": "Все права защищены.",
 
-        # Админка (интерфейс)
+        # Админка 
         "adm_dashboard": "Главная",
         "adm_news": "Новости",
         "adm_gallery": "Галерея",

@@ -41,38 +41,46 @@ def initialize_database():
             db.create_all()
         app._db_initialized = True
         
-@app.route("/uploads/<path:filename>")
-def uploaded_file(filename):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
-
-
-
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def save_uploaded_file(file_storage):
-    """Сохраняет загруженный файл с безопасным именем, возвращает имя файла или None."""
     if not file_storage or file_storage.filename == "":
         return None
     if not allowed_file(file_storage.filename):
         return None
 
-    filename = secure_filename(file_storage.filename)
-    # Добавляем временную метку, чтобы избежать перезаписи одинаковых имён
-    import time
-    unique_name = f"{int(time.time())}_{filename}"
-    file_storage.save(os.path.join(app.config["UPLOAD_FOLDER"], unique_name))
-    return unique_name
+    try:
+        from imagekitio import ImageKit
+        from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
+        import time
 
+        imagekit = ImageKit(
+            private_key=os.environ.get("IMAGEKIT_PRIVATE_KEY"),
+            public_key=os.environ.get("IMAGEKIT_PUBLIC_KEY"),
+            url_endpoint=os.environ.get("IMAGEKIT_URL_ENDPOINT"),
+        )
+
+        filename = secure_filename(file_storage.filename)
+        unique_name = f"{int(time.time())}_{filename}"
+        file_data = file_storage.read()
+
+        result = imagekit.upload(
+            file=file_data,
+            file_name=unique_name,
+        )
+        return result.url
+
+    except Exception as e:
+        print(f"ImageKit upload error: {e}")
+        return None
 
 def get_settings():
-    """Возвращает все настройки сайта как словарь {key: value}."""
     return {s.key: s.value for s in SiteSetting.query.all()}
 
 
 def login_required(view_func):
-    """Декоратор: пускает в админку только залогиненных пользователей."""
     @wraps(view_func)
     def wrapped(*args, **kwargs):
         if not session.get("admin_id"):
@@ -83,13 +91,11 @@ def login_required(view_func):
 
 
 def get_current_language():
-    """Определяет текущий язык из cookie, с фоллбэком на узбекский."""
     return request.cookies.get("lang", DEFAULT_LANGUAGE)
 
 
 @app.context_processor
 def inject_translator():
-    """Делает функцию t() и список языков доступными во всех шаблонах."""
     lang = get_current_language()
     return {
         "t": get_translator(lang),
@@ -100,7 +106,6 @@ def inject_translator():
 
 @app.route("/set-language/<lang_code>")
 def set_language(lang_code):
-    """Переключает язык сайта и запоминает выбор в cookie на год."""
     if lang_code not in LANGUAGES:
         lang_code = DEFAULT_LANGUAGE
 
