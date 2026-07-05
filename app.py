@@ -57,15 +57,14 @@ def init_db_route():
 
 db.init_app(app)
 
-@app.before_first_request
-def initialize_database():
+@app.route("/init-db")
+def init_db_route():
     try:
         with app.app_context():
             db.create_all()
-            from init_db import DEFAULT_SETTINGS, Admin 
-            print("Database initialized successfully")
+            return "✅ Tables created successfully! (только таблицы)"
     except Exception as e:
-        print(f"DB init warning: {e}")  
+        return f"❌ Error: {str(e)}", 500
 
 @app.route("/init-db")
 def init_db_route():
