@@ -19,14 +19,60 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
 
 
-database_url = os.environ.get("DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, 'duocharity.db')}")
-if database_url.startswith("postgres://"):
+database_url = os.environ.get("DATABASE_URL")
+if not database_url:
+    database_url = f"sqlite:///{os.path.join(BASE_DIR, 'duocharity.db')}"
+elif database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
+if "neon.tech" in database_url or "postgres" in database_url:
+    separator = "&" if "?" in database_url else "?"
+    database_url += f"{separator}connect_timeout=20"
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db.init_app(app)
+
+@app.before_first_request
+def initialize_database():
+    try:
+        with app.app_context():
+            db.create_all()
+            from init_db import DEFAULT_SETTINGS, Admin, SiteSetting
+            if not Admin.query.filter_by(username="admin").first():
+                admin = Admin(username="admin")
+                admin.set_password("changeme123")
+                db.session.add(admin)
+            for key, value in DEFAULT_SETTINGS.items():
+                if not SiteSetting.query.filter_by(key=key).first():
+                    db.session.add(SiteSetting(key=key, value=value))
+            db.session.commit()
+    except Exception as e:
+        print(f"DB init warning: {e}")
+
+@app.route("/init-db")
+def init_db_route():
+    initialize_database()
+    return "Database initialized"
+
+db.init_app(app)
+
+@app.before_first_request
+def initialize_database():
+    try:
+        with app.app_context():
+            db.create_all()
+            from init_db import DEFAULT_SETTINGS, Admin 
+            print("Database initialized successfully")
+    except Exception as e:
+        print(f"DB init warning: {e}")  
+
+@app.route("/init-db")
+def init_db_route():
+    with app.app_context():
+        db.create_all()
+        print("Tables created")
+    return "Database initialized"
 
 @app.route("/debug-db")
 def debug_db():
