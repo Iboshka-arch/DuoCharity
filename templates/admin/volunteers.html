@@ -1,9 +1,9 @@
 {% extends "admin/base.html" %}
-{% block title %}Volontyorlar — DUO Charity Admin{% endblock %}
+{% block title %}{{ t('adm_volunteers') }} — DUO Charity Admin{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">Volontyor arizalari</h1>
-    <p class="page-subtitle">Jami: {{ applications|length }} ta ariza. Batafsil ma'lumot uchun qatorni bosing.</p>
+    <h1 class="page-title">{{ t('adm_volunteers') }}</h1>
+    <p class="page-subtitle">{{ applications|length }} {{ t('adm_applications_count') }}</p>
 
     {% if applications %}
     <div class="volunteer-list">
@@ -16,7 +16,9 @@
                 </div>
                 <span class="volunteer-row-date">{{ app.created_at.strftime('%d.%m.%Y') }}</span>
                 <span class="status-badge status-badge-{{ app.status }}">
-                    {% if app.status == 'new' %}Yangi{% elif app.status == 'contacted' %}Bog'lanildi{% else %}Yopilgan{% endif %}
+                    {% if app.status == 'new' %}{{ t('adm_status_new') }}
+                    {% elif app.status == 'contacted' %}{{ t('adm_status_contacted') }}
+                    {% else %}{{ t('adm_status_closed') }}{% endif %}
                 </span>
                 <span class="volunteer-row-chevron">▾</span>
             </div>
@@ -24,7 +26,7 @@
             <div class="volunteer-row-details" id="details-{{ app.id }}">
                 <div class="volunteer-detail-grid">
                     <div>
-                        <span class="detail-label">Telefon</span>
+                        <span class="detail-label">{{ t('vf_phone') }}</span>
                         <a href="tel:{{ app.phone }}" class="detail-value detail-link">{{ app.phone }}</a>
                     </div>
                     <div>
@@ -36,24 +38,26 @@
                         {% endif %}
                     </div>
                     <div>
-                        <span class="detail-label">Jinsi / Yoshi</span>
+                        <span class="detail-label">{{ t('vf_gender') }} / {{ t('vf_age') }}</span>
                         <span class="detail-value">
-                            {% if app.gender == 'male' %}Erkak{% elif app.gender == 'female' %}Ayol{% else %}—{% endif %}
-                            {% if app.age %} / {{ app.age }} yosh{% endif %}
+                            {% if app.gender == 'male' %}{{ t('vf_male') }}
+                            {% elif app.gender == 'female' %}{{ t('vf_female') }}
+                            {% else %}—{% endif %}
+                            {% if app.age %} / {{ app.age }}{% endif %}
                         </span>
                     </div>
                     <div class="detail-full">
-                        <span class="detail-label">Xabar</span>
+                        <span class="detail-label">{{ t('vf_message_title') }}</span>
                         <span class="detail-value">{{ app.message or '—' }}</span>
                     </div>
                 </div>
 
                 <form method="post" action="{{ url_for('admin_volunteer_status', app_id=app.id) }}" class="detail-status-form">
-                    <label>Holatini o'zgartirish:</label>
+                    <label>{{ t('adm_change_status') }}</label>
                     <select name="status" onchange="this.form.submit()" class="status-select status-{{ app.status }}">
-                        <option value="new" {{ 'selected' if app.status == 'new' }}>Yangi</option>
-                        <option value="contacted" {{ 'selected' if app.status == 'contacted' }}>Bog'lanildi</option>
-                        <option value="closed" {{ 'selected' if app.status == 'closed' }}>Yopilgan</option>
+                        <option value="new" {{ 'selected' if app.status == 'new' }}>{{ t('adm_status_new') }}</option>
+                        <option value="contacted" {{ 'selected' if app.status == 'contacted' }}>{{ t('adm_status_contacted') }}</option>
+                        <option value="closed" {{ 'selected' if app.status == 'closed' }}>{{ t('adm_status_closed') }}</option>
                     </select>
                 </form>
             </div>
@@ -66,12 +70,10 @@
             const details = document.getElementById('details-' + appId);
             const row = details.closest('.volunteer-row');
             const isOpen = details.classList.contains('open');
-
             document.querySelectorAll('.volunteer-row-details.open').forEach(function (el) {
                 el.classList.remove('open');
                 el.closest('.volunteer-row').classList.remove('expanded');
             });
-
             if (!isOpen) {
                 details.classList.add('open');
                 row.classList.add('expanded');
@@ -79,6 +81,6 @@
         }
     </script>
     {% else %}
-    <p class="empty-state-admin">Hozircha arizalar yo'q.</p>
+    <p class="empty-state-admin">{{ t('adm_no_volunteers') }}</p>
     {% endif %}
 {% endblock %}

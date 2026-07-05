@@ -137,7 +137,13 @@ TRANSLATIONS = {
         "adm_payments_section": "To'lov rekvizitlari",
         "adm_change_password": "Parolni o'zgartirish",
         "adm_new_password": "Yangi parol",
-        "adm_repeat_password": "Yangi parolni qaytaring",
+        "adm_repeat_password": "Yangi parolni qaytaring"
+        "adm_applications_count": "ta ariza. Batafsil uchun qatorni bosing.",
+        "adm_status_new": "Yangi",
+        "adm_status_contacted": "Bog'lanildi",
+        "adm_status_closed": "Yopilgan",
+        "adm_change_status": "Holatini o'zgartirish:",
+        "adm_no_volunteers": "Hozircha arizalar yo'q.",
     },
 
     "ru": {
@@ -262,7 +268,13 @@ TRANSLATIONS = {
         "adm_payments_section": "Реквизиты для оплаты",
         "adm_change_password": "Сменить пароль",
         "adm_new_password": "Новый пароль",
-        "adm_repeat_password": "Повторите новый пароль",
+        "adm_repeat_password": "Повторите новый пароль"
+        "adm_applications_count": "заявок. Нажмите на строку для деталей.",
+        "adm_status_new": "Новая",
+        "adm_status_contacted": "Связались",
+        "adm_status_closed": "Закрыта",
+        "adm_change_status": "Изменить статус:",
+        "adm_no_volunteers": "Заявок пока нет.",
     },
 
     "en": {
@@ -387,7 +399,13 @@ TRANSLATIONS = {
         "adm_payments_section": "Payment details",
         "adm_change_password": "Change password",
         "adm_new_password": "New password",
-        "adm_repeat_password": "Repeat new password",
+        "adm_repeat_password": "Repeat new password"
+        "adm_applications_count": "applications. Click a row for details.",
+        "adm_status_new": "New",
+        "adm_status_contacted": "Contacted",
+        "adm_status_closed": "Closed",
+        "adm_change_status": "Change status:",
+        "adm_no_volunteers": "No applications yet.",
     },
 }
 

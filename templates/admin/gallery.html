@@ -1,14 +1,14 @@
 {% extends "admin/base.html" %}
-{% block title %}Galereya — DUO Charity Admin{% endblock %}
+{% block title %}{{ t('adm_gallery') }} — DUO Charity Admin{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">Galereya</h1>
-    <p class="page-subtitle">Sayt galereyasiga rasm qo'shish va o'chirish</p>
+    <h1 class="page-title">{{ t('adm_gallery') }}</h1>
+    <p class="page-subtitle">{{ t('adm_gallery_sub') }}</p>
 
     <form method="post" action="{{ url_for('admin_gallery_upload') }}" enctype="multipart/form-data" class="upload-form">
         <input type="file" name="image" accept=".png,.jpg,.jpeg,.webp" required>
-        <input type="text" name="caption" placeholder="Tavsif (ixtiyoriy)">
-        <button type="submit" class="btn btn-primary">Yuklash</button>
+        <input type="text" name="caption" placeholder="{{ t('adm_caption') }}">
+        <button type="submit" class="btn btn-primary">{{ t('adm_upload') }}</button>
     </form>
 
     {% if images %}
@@ -18,13 +18,13 @@
             <img src="{{ image.filename }}">
             {% if image.caption %}<p>{{ image.caption }}</p>{% endif %}
             <form method="post" action="{{ url_for('admin_gallery_delete', image_id=image.id) }}"
-                  onsubmit="return confirm('Rasmni o\'chirishni tasdiqlaysizmi?');">
-                <button type="submit" class="btn-small btn-small-danger">O'chirish</button>
+                  onsubmit="return confirm('{{ t('adm_confirm_delete') }}');">
+                <button type="submit" class="btn-small btn-small-danger">{{ t('adm_delete') }}</button>
             </form>
         </div>
         {% endfor %}
     </div>
     {% else %}
-    <p class="empty-state-admin">Hozircha galereyada rasmlar yo'q.</p>
+    <p class="empty-state-admin">{{ t('adm_no_gallery') }}</p>
     {% endif %}
 {% endblock %}

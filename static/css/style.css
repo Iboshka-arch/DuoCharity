@@ -1122,3 +1122,67 @@ h2 {
         grid-template-columns: 1.4fr 1fr 1fr;
     }
 }
+
+.mobile-header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mobile-lang-inline {
+    display: flex;
+    gap: 6px;
+}
+
+.mobile-lang-inline a {
+    font-size: 1.1rem;
+    opacity: 0.5;
+    text-decoration: none;
+}
+
+.mobile-lang-inline a.active {
+    opacity: 1;
+}
+
+@media (min-width: 920px) {
+    .mobile-header-right {
+        display: none;
+    }
+}
+
+.vf-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.vf-field label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--navy-dark);
+}
+
+.vf-field input,
+.vf-field textarea {
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--bg-soft);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vf-field input:focus,
+.vf-field textarea:focus {
+    outline: none;
+    border-color: var(--coral);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(255, 107, 82, 0.12);
+}
+
+.vf-field input::placeholder,
+.vf-field textarea::placeholder {
+    color: #b0b8c9;
+}

@@ -21,19 +21,30 @@
                 {% endif %}
             {% endwith %}
 
-            <form class="volunteer-full-form" method="post" action="{{ url_for('volunteer_submit') }}">
+                        <form class="volunteer-full-form" method="post" action="{{ url_for('volunteer_submit') }}">
 
                 <div class="form-section">
                     <h3>{{ t('vf_personal_info') }}</h3>
-                    <div class="form-row">
-                        <input type="text" name="full_name" placeholder="{{ t('volunteer_name') }}" required>
-                        <input type="tel" name="phone" placeholder="{{ t('vf_phone') }}" required>
+                    <div class="vf-field">
+                        <label>{{ t('volunteer_name') }} *</label>
+                        <input type="text" name="full_name" placeholder="Ibrohim Yusupov" required>
                     </div>
-                    <div class="form-row">
-                        <input type="text" name="telegram" placeholder="{{ t('vf_telegram') }}">
-                        <input type="number" name="age" placeholder="{{ t('vf_age') }}" min="14" max="100">
+                    <div class="vf-field">
+                        <label>{{ t('vf_phone') }} *</label>
+                        <input type="tel" name="phone" placeholder="+998 90 000 00 00" required>
                     </div>
-                    <input type="text" name="occupation" placeholder="{{ t('vf_occupation') }}">
+                    <div class="vf-field">
+                        <label>{{ t('vf_telegram') }}</label>
+                        <input type="text" name="telegram" placeholder="@username">
+                    </div>
+                    <div class="vf-field">
+                        <label>{{ t('vf_age') }}</label>
+                        <input type="number" name="age" placeholder="20" min="14" max="100">
+                    </div>
+                    <div class="vf-field">
+                        <label>{{ t('vf_occupation') }}</label>
+                        <input type="text" name="occupation" placeholder="Talaba / Dasturchi / ...">
+                    </div>
                 </div>
 
                 <div class="form-section">
@@ -52,7 +63,9 @@
 
                 <div class="form-section">
                     <h3>{{ t('vf_message_title') }}</h3>
-                    <textarea name="message" placeholder="{{ t('volunteer_message') }}" rows="4"></textarea>
+                    <div class="vf-field">
+                        <textarea name="message" placeholder="{{ t('volunteer_message') }}" rows="4"></textarea>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-large">{{ t('volunteer_submit') }}</button>
