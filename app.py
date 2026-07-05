@@ -38,22 +38,13 @@ def initialize_database():
     try:
         with app.app_context():
             db.create_all()
-            from init_db import DEFAULT_SETTINGS, Admin, SiteSetting
-            if not Admin.query.filter_by(username="admin").first():
-                admin = Admin(username="admin")
-                admin.set_password("changeme123")
-                db.session.add(admin)
-            for key, value in DEFAULT_SETTINGS.items():
-                if not SiteSetting.query.filter_by(key=key).first():
-                    db.session.add(SiteSetting(key=key, value=value))
-            db.session.commit()
     except Exception as e:
         print(f"DB init warning: {e}")
-
+        
 @app.route("/init-db")
 def init_db_route():
     return "Пока просто тест. Если видишь этот текст - init-db работает."
-    
+
 @app.route("/debug-db")
 def debug_db():
     import os
