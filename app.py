@@ -52,27 +52,8 @@ def initialize_database():
 
 @app.route("/init-db")
 def init_db_route():
-    initialize_database()
-    return "Database initialized"
-
-db.init_app(app)
-
-@app.route("/init-db")
-def init_db_route():
-    try:
-        with app.app_context():
-            db.create_all()
-            return "✅ Tables created successfully! (только таблицы)"
-    except Exception as e:
-        return f"❌ Error: {str(e)}", 500
-
-@app.route("/init-db")
-def init_db_route():
-    with app.app_context():
-        db.create_all()
-        print("Tables created")
-    return "Database initialized"
-
+    return "Пока просто тест. Если видишь этот текст - init-db работает."
+    
 @app.route("/debug-db")
 def debug_db():
     import os
