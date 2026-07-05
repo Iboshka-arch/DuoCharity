@@ -137,7 +137,7 @@ TRANSLATIONS = {
         "adm_payments_section": "To'lov rekvizitlari",
         "adm_change_password": "Parolni o'zgartirish",
         "adm_new_password": "Yangi parol",
-        "adm_repeat_password": "Yangi parolni qaytaring"
+        "adm_repeat_password": "Yangi parolni qaytaring",
         "adm_applications_count": "ta ariza. Batafsil uchun qatorni bosing.",
         "adm_status_new": "Yangi",
         "adm_status_contacted": "Bog'lanildi",
