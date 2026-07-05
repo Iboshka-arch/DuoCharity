@@ -33,14 +33,6 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db.init_app(app)
 
-@app.before_first_request
-def initialize_database():
-    try:
-        with app.app_context():
-            db.create_all()
-    except Exception as e:
-        print(f"DB init warning: {e}")
-        
 @app.route("/init-db")
 def init_db_route():
     return "Пока просто тест. Если видишь этот текст - init-db работает."
