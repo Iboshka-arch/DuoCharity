@@ -33,13 +33,6 @@ def debug_db():
     import os
     db_url = os.environ.get("DATABASE_URL", "NOT SET")
     return f"DATABASE_URL starts with: {db_url[:30] if db_url != 'NOT SET' else 'NOT SET'}"
-
-@app.before_request
-def initialize_database():
-    if not hasattr(app, '_db_initialized'):
-        with app.app_context():
-            db.create_all()
-        app._db_initialized = True
         
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
