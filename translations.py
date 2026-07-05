@@ -268,7 +268,7 @@ TRANSLATIONS = {
         "adm_payments_section": "Реквизиты для оплаты",
         "adm_change_password": "Сменить пароль",
         "adm_new_password": "Новый пароль",
-        "adm_repeat_password": "Повторите новый пароль"
+        "adm_repeat_password": "Повторите новый пароль",
         "adm_applications_count": "заявок. Нажмите на строку для деталей.",
         "adm_status_new": "Новая",
         "adm_status_contacted": "Связались",
@@ -399,7 +399,7 @@ TRANSLATIONS = {
         "adm_payments_section": "Payment details",
         "adm_change_password": "Change password",
         "adm_new_password": "New password",
-        "adm_repeat_password": "Repeat new password"
+        "adm_repeat_password": "Repeat new password",
         "adm_applications_count": "applications. Click a row for details.",
         "adm_status_new": "New",
         "adm_status_contacted": "Contacted",
@@ -419,7 +419,6 @@ DEFAULT_LANGUAGE = "uz"
 
 
 def get_translator(lang_code):
-    """Возвращает функцию t(key) для конкретного языка с фоллбэком на uz."""
     lang_code = lang_code if lang_code in TRANSLATIONS else DEFAULT_LANGUAGE
     table = TRANSLATIONS[lang_code]
     fallback = TRANSLATIONS[DEFAULT_LANGUAGE]
