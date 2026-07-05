@@ -144,6 +144,7 @@ TRANSLATIONS = {
         "adm_status_closed": "Yopilgan",
         "adm_change_status": "Holatini o'zgartirish:",
         "adm_no_volunteers": "Hozircha arizalar yo'q.",
+        "adm_invalid_file": "Faylni yuklab bo'lmadi. PNG, JPG yoki WEBP formatini tanlang.",
     },
 
     "ru": {
@@ -275,6 +276,7 @@ TRANSLATIONS = {
         "adm_status_closed": "Закрыта",
         "adm_change_status": "Изменить статус:",
         "adm_no_volunteers": "Заявок пока нет.",
+        "adm_invalid_file": "Не удалось загрузить файл. Пожалуйста, выберите формат PNG, JPG или WEBP.",
     },
 
     "en": {
@@ -406,6 +408,7 @@ TRANSLATIONS = {
         "adm_status_closed": "Closed",
         "adm_change_status": "Change status:",
         "adm_no_volunteers": "No applications yet.",
+        "adm_invalid_file": "File could not be uploaded. Please select PNG, JPG or WEBP format.",
     },
 }
 

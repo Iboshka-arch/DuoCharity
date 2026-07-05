@@ -33,10 +33,6 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db.init_app(app)
 
-@app.route("/init-db")
-def init_db_route():
-    return "Пока просто тест. Если видишь этот текст - init-db работает."
-
 @app.route("/debug-db")
 def debug_db():
     import os
@@ -44,18 +40,21 @@ def debug_db():
     return f"DATABASE_URL starts with: {db_url[:30] if db_url != 'NOT SET' else 'NOT SET'}"
         
 def allowed_file(filename):
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+    if not filename or "." not in filename:
+        return False
+    ext = filename.rsplit(".", 1)[1].lower()
+    return ext in ALLOWED_EXTENSIONS
 
 
 def save_uploaded_file(file_storage):
     if not file_storage or file_storage.filename == "":
         return None
     if not allowed_file(file_storage.filename):
+        print(f"❌ Недопустимый формат файла: {file_storage.filename}")
         return None
 
     try:
         from imagekitio import ImageKit
-        from imagekitio.models.UploadFileRequestOptions import UploadFileRequestOptions
         import time
 
         imagekit = ImageKit(
@@ -72,6 +71,7 @@ def save_uploaded_file(file_storage):
             file=file_data,
             file_name=unique_name,
         )
+        print(f"✅ Успешно загружено: {result.url}")
         return result.url
 
     except Exception as e:
@@ -111,14 +111,10 @@ def set_language(lang_code):
     if lang_code not in LANGUAGES:
         lang_code = DEFAULT_LANGUAGE
 
-    # Возвращаемся туда, откуда пришёл запрос (или на главную, если неизвестно)
     redirect_target = request.referrer or url_for("home")
     response = make_response(redirect(redirect_target))
     response.set_cookie("lang", lang_code, max_age=60 * 60 * 24 * 365)
     return response
-
-
-# ---------- ПУБЛИЧНЫЕ СТРАНИЦЫ ----------
 
 @app.route("/")
 def home():
@@ -162,8 +158,6 @@ def volunteer_submit():
         flash("Ism va telefon raqamingizni kiriting.", "error")
         return redirect(url_for("volunteer_form"))
 
-    # Защита от спама: один и тот же номер телефона не может отправлять
-    # заявки чаще, чем раз в 24 часа.
     cooldown_cutoff = datetime.utcnow() - timedelta(hours=24)
     recent_application = VolunteerApplication.query.filter(
         VolunteerApplication.phone == phone,
@@ -193,9 +187,6 @@ def volunteer_submit():
 def volunteer_thanks():
     return render_template("volunteer_thanks.html")
 
-
-# ---------- АДМИНКА: ЛОГИН / ЛОГАУТ ----------
-
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
@@ -217,9 +208,6 @@ def admin_logout():
     session.pop("admin_id", None)
     return redirect(url_for("admin_login"))
 
-
-# ---------- АДМИНКА: ГЛАВНАЯ ----------
-
 @app.route("/admin")
 @login_required
 def admin_dashboard():
@@ -234,8 +222,6 @@ def admin_dashboard():
         new_applications_count=new_applications_count,
     )
 
-
-# ---------- АДМИНКА: НОВОСТИ ----------
 
 @app.route("/admin/posts")
 @login_required
@@ -303,8 +289,6 @@ def admin_post_delete(post_id):
     return redirect(url_for("admin_posts"))
 
 
-# ---------- АДМИНКА: ГАЛЕРЕЯ ----------
-
 @app.route("/admin/gallery")
 @login_required
 def admin_gallery():
@@ -340,8 +324,6 @@ def admin_gallery_delete(image_id):
     return redirect(url_for("admin_gallery"))
 
 
-# ---------- АДМИНКА: HERO КАРУСЕЛЬ ----------
-
 @app.route("/admin/hero")
 @login_required
 def admin_hero():
@@ -356,7 +338,7 @@ def admin_hero_upload():
     filename = save_uploaded_file(request.files.get("image"))
 
     if not filename:
-        flash("Faylni yuklab bo'lmadi. PNG, JPG yoki WEBP formatini tanlang.", "error")
+        flash(get_translator(get_current_language())('adm_invalid_file'), "error")
         return redirect(url_for("admin_hero"))
 
     max_order = db.session.query(db.func.max(HeroImage.order)).scalar() or 0
@@ -437,10 +419,9 @@ def admin_settings():
             admin = db.session.get(Admin, session["admin_id"])
             admin.set_password(new_password)
             db.session.commit()
-            flash("Parol muvaffaqiyatli o'zgartirildi.", "success")
+            flash("Пароль успешно изменен.", "success")
             return redirect(url_for("admin_settings"))
 
-        # Обновление обычных настроек
         for key in request.form:
             if key in ("new_password", "new_password_repeat"):
                 continue
@@ -450,7 +431,7 @@ def admin_settings():
             else:
                 db.session.add(SiteSetting(key=key, value=request.form.get(key, "").strip()))
         db.session.commit()
-        flash("Sozlamalar saqlandi.", "success")
+        flash("Настройки сохранены.", "success")
         return redirect(url_for("admin_settings"))
 
     settings = get_settings()
