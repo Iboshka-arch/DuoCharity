@@ -1206,3 +1206,20 @@ h2 {
     background-color: #ffffff !important;
     color: #061730 !important; 
 }
+
+.footer-copy {
+    display: inline-block !important;
+}
+
+.author-link {
+    color: #ffffff !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.4) !important;
+    transition: all 0.2s ease !important;
+}
+
+.author-link:hover {
+    color: #4da6ff !important;
+    border-bottom-color: #4da6ff !important;
+}

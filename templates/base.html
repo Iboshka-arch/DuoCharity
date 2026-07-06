@@ -87,8 +87,8 @@
                 <img src="{{ url_for('static', filename='images/duo-logo.png') }}" alt="DUO Charity logo">
                 <p class="footer-tagline">{{ t('footer_tagline') }}</p>
                 <div class="social-links">
-                    <a href="#" aria-label="Instagram">Instagram</a>
-                    <a href="#" aria-label="Telegram">Telegram</a>
+                    <a href="https://www.instagram.com/duo_charity/" target="_blank" aria-label="Instagram">Instagram</a>
+                    <a href="https://t.me/duo_charity" target="_blank" aria-label="Telegram">Telegram</
                 </div>
             </div>
 
@@ -110,10 +110,9 @@
         </div>
 
         <div class="footer-bottom container">
-            <p>&copy; 2026 DUO Charity. {{ t('footer_rights') }}</p>
-            <p>{{ t('hero_eyebrow') }} 🤲</p>
-        </div>
-    </footer>
+    <p>&copy; 2026 DUO Charity. {{ t('footer_rights') }} | Created by <a href="https://t.me" target="_blank" class="author-link">Ib1shka</a></p>
+    <p>{{ t('hero_eyebrow') }} 🤲</p>
+</div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
