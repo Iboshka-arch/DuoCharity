@@ -77,11 +77,11 @@ def save_uploaded_file(file_storage):
         import time
 
         imagekit = ImageKit(
-            private_key=os.environ.get("IMAGEKIT_PRIVATE_KEY"),
-            public_key=os.environ.get("IMAGEKIT_PUBLIC_KEY"),
-            url_endpoint=os.environ.get("IMAGEKIT_URL_ENDPOINT"),
+            privateKey=os.environ.get("IMAGEKIT_PRIVATE_KEY"),
+            publicKey=os.environ.get("IMAGEKIT_PUBLIC_KEY"),
+            urlEndpoint=os.environ.get("IMAGEKIT_URL_ENDPOINT"),
         )
-
+        
         filename = secure_filename(file_storage.filename)
         unique_name = f"{int(time.time())}_{filename}"
         file_data = file_storage.read()
