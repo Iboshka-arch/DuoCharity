@@ -67,12 +67,13 @@ def save_uploaded_file(file_storage):
         unique_name = f"{int(time.time())}_{filename}"
         file_data = file_storage.read()
 
-        result = imagekit.upload(
+        result = imagekit.upload_file(
             file=file_data,
             file_name=unique_name,
         )
-        print(f"✅ Успешно загружено: {result.url}")
-        return result.url
+        url = result.response_metadata.raw["url"]
+        print(f"✅ Успешно загружено: {url}")
+        return url
 
     except Exception as e:
         print(f"ImageKit upload error: {e}")

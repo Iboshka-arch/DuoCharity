@@ -1223,3 +1223,43 @@ h2 {
     color: #4da6ff !important;
     border-bottom-color: #4da6ff !important;
 }
+
+.social-links {
+    margin-top: -0.1px !important;
+    margin-bottom: 10px !important;
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+    }
+}
+
+.stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 20px !important;
+    width: 100% !important;
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+}
+
+.stat-item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    min-width: 0 !important;
+}
+
+.stat-number {
+    display: block !important;
+    height: 4.5rem !important;
+    line-height: 4.5rem !important;
+    font-size: 3rem !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    white-space: nowrap !important;
+}
+

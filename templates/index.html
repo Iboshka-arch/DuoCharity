@@ -42,23 +42,23 @@
         </div>
     </section>
 
-    <!-- STATS -->
+      <!-- STATS -->
     <section class="stats">
         <div class="container stats-grid">
             <div class="stat-item">
-                <span class="stat-number">{{ stats.families }}</span>
+                <span class="stat-number count-number" data-target="{{ stats.families }}">0</span>
                 <span class="stat-label">{{ t('stat_families') }}</span>
             </div>
             <div class="stat-item">
-                <span class="stat-number">{{ stats.kids_elderly }}</span>
+                <span class="stat-number count-number" data-target="{{ stats.kids_elderly }}">0</span>
                 <span class="stat-label">{{ t('stat_kids') }}</span>
             </div>
             <div class="stat-item">
-                <span class="stat-number">{{ stats.volunteers }}</span>
+                <span class="stat-number count-number" data-target="{{ stats.volunteers }}">0</span>
                 <span class="stat-label">{{ t('stat_volunteers') }}</span>
             </div>
             <div class="stat-item">
-                <span class="stat-number">{{ stats.events }}</span>
+                <span class="stat-number count-number" data-target="{{ stats.events }}">0</span>
                 <span class="stat-label">{{ t('stat_events') }}</span>
             </div>
         </div>
@@ -180,5 +180,36 @@
             <a href="{{ url_for('volunteer_form') }}" class="btn btn-primary btn-large">{{ t('hero_btn_volunteer') }}</a>
         </div>
     </section>
+
+                <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const counters = document.querySelectorAll('.count-number');
+            const duration = 1800;
+
+            counters.forEach((counter, index) => {
+                const rawTarget = counter.getAttribute('data-target');
+                const target = parseInt(rawTarget.replace(/[^0-9]/g, ''), 10) || 0;
+                const startTime = performance.now();
+                const plusSign = index < 3 ? '+' : '';
+
+                const updateCounter = (currentTime) => {
+                    const elapsedTime = currentTime - startTime;
+                    const progress = Math.min(elapsedTime / duration, 1);
+                    const easeOutProgress = 1 - Math.pow(1 - progress, 3);
+                    const currentValue = Math.floor(easeOutProgress * target);
+                    
+                    counter.innerText = currentValue.toLocaleString() + plusSign;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.innerText = target.toLocaleString() + plusSign;
+                    }
+                };
+
+                requestAnimationFrame(updateCounter);
+            });
+        });
+        </script>
 
 {% endblock %}
