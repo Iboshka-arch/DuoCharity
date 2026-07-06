@@ -1178,22 +1178,28 @@ h2 {
 }
 
 .social-links {
-    display: flex !important; 
-    gap: 15px;
-    margin-top: 15px;
+    display: flex !important;
+    gap: 20px !important;    
+    margin-top: 20px !important;
 }
+
 
 .social-links a {
-    display: inline-block;
-    padding: 8px 16px;
-    color: #ffffff;
-    text-decoration: none;
-    border: 2px solid #ffffff;
-    border-radius: 6px;
-    transition: background 0.2s;
+    position: static !important; 
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px !important; 
+    color: #ffffff !important;
+    text-decoration: none !important;
+    border: 2px solid #ffffff !important;
+    border-radius: 8px !important;
+    width: auto !important;    
+    height: auto !important;  
 }
 
+/* Эффект при наведении */
 .social-links a:hover {
-    background-color: #ffffff;
-    color: #102a43; 
+    background-color: #ffffff !important;
+    color: #061730 !important;   
 }
