@@ -1,10 +1,3 @@
-"""
-Словарь переводов для публичного сайта и админки.
-Языки: uz (узбекский, по умолчанию), ru (русский), en (английский).
-
-Использование в шаблонах: {{ t('nav_home') }}
-"""
-
 TRANSLATIONS = {
     "uz": {
         # Навигация
@@ -21,7 +14,7 @@ TRANSLATIONS = {
         "hero_title_1": "Birga",
         "hero_title_accent": "yaxshilik",
         "hero_title_2": "qilamiz.",
-        "hero_lead": "DUO Charity — O'zbekistondagi muhtoj oilalar, bolalar va keksalarga ko'maklashuvchi xayriya jamg'armasi. Har bir yaxshilik — kimningdir umidi.",
+        "hero_lead": "DUO Charity — O'zbekistondagi muhtoj oilalar, bolalar va keksalarga ko'maklashuvchi xayriya jamg'armasi. Har bir yaxshilik bu kimningdir umidi.",
         "hero_btn_donate": "Yordam berish",
         "hero_btn_volunteer": "Volontyor bo'lish",
 
@@ -53,7 +46,7 @@ TRANSLATIONS = {
 
         # Donate
         "donate_eyebrow": "Yordam berish",
-        "donate_title": "Kichik yordam — katta o'zgarish.",
+        "donate_title": "Kichik yordam katta o'zgarishga aylanadi!",
         "donate_lead": "Quyidagi to'lov usullari orqali jamg'armani qo'llab-quvvatlashingiz mumkin. Har bir so'm muhtojlarga yetkaziladi.",
         "donate_card": "Bank karta",
 
@@ -145,6 +138,11 @@ TRANSLATIONS = {
         "adm_change_status": "Holatini o'zgartirish:",
         "adm_no_volunteers": "Hozircha arizalar yo'q.",
         "adm_invalid_file": "Faylni yuklab bo'lmadi. PNG, JPG yoki WEBP formatini tanlang.",
+        "adm_login_title": "Admin panel",
+        "adm_login_subtitle": "DUO Charity boshqaruv paneliga kirish",
+        "adm_login_username": "Login",
+        "adm_login_password": "Parol",
+        "adm_login_btn": "Kirish",
     },
 
     "ru": {
@@ -160,7 +158,7 @@ TRANSLATIONS = {
         "hero_title_1": "Вместе мы",
         "hero_title_accent": "творим",
         "hero_title_2": "добро.",
-        "hero_lead": "DUO Charity — благотворительный фонд в Узбекистане, помогающий нуждающимся семьям, детям и пожилым людям. Каждое доброе дело — это чья-то надежда.",
+        "hero_lead": "DUO Charity — благотворительный фонд в Узбекистане, помогающий нуждающимся семьям, детям и пожилым людям. Каждое доброе дело это чья-то надежда.",
         "hero_btn_donate": "Помочь",
         "hero_btn_volunteer": "Стать волонтёром",
 
@@ -172,7 +170,7 @@ TRANSLATIONS = {
         "about_eyebrow": "О нас",
         "about_title": "Помощь семьям, детям и нуждающимся.",
         "about_text_1": "DUO Charity — небольшая, но искренняя команда. Мы поддерживаем нуждающиеся семьи в разных регионах Узбекистана: продуктовая помощь, зимняя одежда, медицинская помощь и образовательные возможности для детей.",
-        "about_text_2": "Каждый ваш вклад — это светлый день в чьей-то жизни. Благодаря вашему доверию мы можем помочь ещё большему числу людей.",
+        "about_text_2": "Каждый ваш вклад это светлый день в чьей-то жизни. Благодаря вашему доверию мы можем помочь ещё большему числу людей.",
         "about_check_1": "Прозрачные отчёты и открытая деятельность",
         "about_check_2": "Прямая работа с местными сообществами",
         "about_check_3": "Каждая сумма доходит до адресата",
@@ -187,7 +185,7 @@ TRANSLATIONS = {
         "news_empty": "Новостей пока нет. Скоро добавим!",
 
         "donate_eyebrow": "Помочь",
-        "donate_title": "Маленькая помощь — большие перемены.",
+        "donate_title": "Небольшая помощь может привести к большим переменам!",
         "donate_lead": "Вы можете поддержать фонд через следующие способы оплаты. Каждая сумма доходит до нуждающихся.",
         "donate_card": "Банковская карта",
 
@@ -277,6 +275,11 @@ TRANSLATIONS = {
         "adm_change_status": "Изменить статус:",
         "adm_no_volunteers": "Заявок пока нет.",
         "adm_invalid_file": "Не удалось загрузить файл. Пожалуйста, выберите формат PNG, JPG или WEBP.",
+        "adm_login_title": "Административный панель управления",
+        "adm_login_subtitle": "Вход в панель управления DUO Charity",
+        "adm_login_username": "Логин",
+        "adm_login_password": "Пароль",
+        "adm_login_btn": "Войти",
     },
 
     "en": {
@@ -319,7 +322,7 @@ TRANSLATIONS = {
         "news_empty": "No news yet. Coming soon!",
 
         "donate_eyebrow": "Donate",
-        "donate_title": "Small help — big change.",
+        "donate_title": "Small help becomes a big change!",
         "donate_lead": "You can support the foundation through the payment methods below. Every dollar reaches those in need.",
         "donate_card": "Bank card",
 
@@ -409,6 +412,11 @@ TRANSLATIONS = {
         "adm_change_status": "Change status:",
         "adm_no_volunteers": "No applications yet.",
         "adm_invalid_file": "File could not be uploaded. Please select PNG, JPG or WEBP format.",
+        "adm_login_title": "Admin panel",
+        "adm_login_subtitle": "Login to DUO Charity admin panel",
+        "adm_login_username": "Login",
+        "adm_login_password": "Password",
+        "adm_login_btn": "Login",
     },
 }
 

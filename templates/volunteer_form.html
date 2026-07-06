@@ -32,15 +32,17 @@
                     <div class="vf-field vf-phone-field">
                         <label>{{ t('vf_phone') }} *</label>
                         <div class="phone-input-wrap">
-                            <span class="phone-prefix">🇺🇿 +998</span>
+                            <img src="https://flagcdn.com/uz.svg" alt="UZ" class="phone-flag">
+                            <span class="phone-prefix">+998</span>
                             <input type="tel" name="phone" class="phone-suffix" placeholder="90 000 00 00" inputmode="numeric" pattern="\d{9}" maxlength="9" minlength="9" required>
                         </div>
                     </div>
 
                     <style>
                     .vf-phone-field .phone-input-wrap{position:relative;display:inline-block;width:100%}
-                    .phone-prefix{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:14px;color:#333}
-                    .phone-suffix{padding-left:86px;width:100%;box-sizing:border-box}
+                    .phone-flag{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none;width:24px;height:auto}
+                    .phone-prefix{position:absolute;left:44px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:14px;color:#333}
+                    .phone-suffix{padding-left:96px;width:100%;box-sizing:border-box}
                     </style>
 
                     <script>
