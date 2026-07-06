@@ -49,19 +49,26 @@ def allowed_file(filename):
 def test_imagekit_upload():
     try:
         from imagekitio import ImageKit
-        imagekit = ImageKit(
+
+        client = ImageKit(
             private_key=os.environ.get("IMAGEKIT_PRIVATE_KEY"),
-            public_key=os.environ.get("IMAGEKIT_PUBLIC_KEY"),
-            url_endpoint=os.environ.get("IMAGEKIT_URL_ENDPOINT"),
         )
-        result = imagekit.upload_file(
+
+        result = client.files.upload(
             file=b"test",
             file_name="test.txt",
         )
-        return f"OK: {result.response_metadata.raw}"
+
+        return f"""
+OK!
+
+URL: {result.url}
+ID: {result.file_id}
+"""
+
     except Exception as e:
         import traceback
-        return f"ERROR: {e}\n\n{traceback.format_exc()}"
+        return f"ERROR:\n{traceback.format_exc()}"
 
 def save_uploaded_file(file_storage):
     if not file_storage or file_storage.filename == "":
@@ -74,25 +81,20 @@ def save_uploaded_file(file_storage):
 
     try:
         from imagekitio import ImageKit
-        import time
 
-        imagekit = ImageKit(
-            privateKey=os.environ.get("IMAGEKIT_PRIVATE_KEY"),
-            publicKey=os.environ.get("IMAGEKIT_PUBLIC_KEY"),
-            urlEndpoint=os.environ.get("IMAGEKIT_URL_ENDPOINT"),
+        client = ImageKit(
+            private_key=os.environ.get("IMAGEKIT_PRIVATE_KEY"),
         )
-        
+
         filename = secure_filename(file_storage.filename)
-        unique_name = f"{int(time.time())}_{filename}"
         file_data = file_storage.read()
 
-        result = imagekit.upload_file(
+        result = client.files.upload(
             file=file_data,
-            file_name=unique_name,
+            file_name=filename,
         )
-        url = result.response_metadata.raw["url"]
-        print(f"✅ Успешно загружено: {url}")
-        return url
+
+        return result.url
 
     except Exception as e:
         print(f"ImageKit upload error: {e}")
