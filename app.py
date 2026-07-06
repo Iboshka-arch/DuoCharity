@@ -48,6 +48,8 @@ def allowed_file(filename):
 
 def save_uploaded_file(file_storage):
     if not file_storage or file_storage.filename == "":
+        print(f"DEBUG filename: {file_storage.filename if file_storage else 'None'}")
+        print(f"DEBUG allowed: {allowed_file(file_storage.filename) if file_storage else 'None'}")
         return None
     if not allowed_file(file_storage.filename):
         print(f"❌ Недопустимый формат файла: {file_storage.filename}")
