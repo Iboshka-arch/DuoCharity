@@ -1176,3 +1176,24 @@ h2 {
 .vf-field textarea::placeholder {
     color: #b0b8c9;
 }
+
+.social-links {
+    display: flex !important; 
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.social-links a {
+    display: inline-block;
+    padding: 8px 16px;
+    color: #ffffff;
+    text-decoration: none;
+    border: 2px solid #ffffff;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.social-links a:hover {
+    background-color: #ffffff;
+    color: #102a43; 
+}
