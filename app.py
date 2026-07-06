@@ -45,6 +45,23 @@ def allowed_file(filename):
     ext = filename.rsplit(".", 1)[1].lower()
     return ext in ALLOWED_EXTENSIONS
 
+@app.route("/test-imagekit-upload")
+def test_imagekit_upload():
+    try:
+        from imagekitio import ImageKit
+        imagekit = ImageKit(
+            private_key=os.environ.get("IMAGEKIT_PRIVATE_KEY"),
+            public_key=os.environ.get("IMAGEKIT_PUBLIC_KEY"),
+            url_endpoint=os.environ.get("IMAGEKIT_URL_ENDPOINT"),
+        )
+        result = imagekit.upload_file(
+            file=b"test",
+            file_name="test.txt",
+        )
+        return f"OK: {result.response_metadata.raw}"
+    except Exception as e:
+        import traceback
+        return f"ERROR: {e}\n\n{traceback.format_exc()}"
 
 def save_uploaded_file(file_storage):
     if not file_storage or file_storage.filename == "":
