@@ -1,4 +1,3 @@
-/* ===== SCROLL FADE-IN ANIMATION ===== */
 .fade-in-hidden {
     opacity: 0;
     transform: translateY(24px);
@@ -10,7 +9,6 @@
     transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
-/* ===== FLASH MESSAGES ===== */
 .flash-container {
     max-width: 1180px;
     margin: 16px auto 0;
@@ -46,14 +44,14 @@
     grid-column: 1 / -1;
 }
 
-/* ===== REAL PHOTOS (replacing placeholder boxes) ===== */
+
 .gallery-photo, .news-photo, .hero-photo, .about-photo {
     width: 100%;
     object-fit: cover;
     border-radius: var(--radius);
 }
 
-/* ===== NEWS DETAIL PAGE ===== */
+
 .news-detail-page {
     padding: 48px 0 80px;
 }
@@ -81,7 +79,6 @@
     white-space: pre-wrap;
 }
 
-/* ===== VOLUNTEER FULL PAGE ===== */
 .volunteer-page {
     padding: 48px 0 80px;
     min-height: 70vh;
@@ -172,7 +169,7 @@
     align-self: flex-start;
 }
 
-/* ===== THANKS PAGE ===== */
+
 .thanks-page {
     min-height: 70vh;
     display: flex;
@@ -198,7 +195,7 @@
     margin-top: 16px;
 }
 
-/* ===== LANGUAGE SWITCHER ===== */
+
 .lang-switcher {
     position: relative;
 }
@@ -277,7 +274,7 @@
     color: var(--coral);
 }
 
-/* ===== HERO CAROUSEL ===== */
+
 .hero-carousel {
     position: relative;
     width: 100%;
@@ -369,7 +366,6 @@
     }
 }
 
-/* ===== VARIABLES ===== */
 :root {
     --navy: #1e3a8a;
     --navy-dark: #0f1f4d;
@@ -391,7 +387,6 @@
     --shadow-lg: 0 24px 60px rgba(15, 31, 77, 0.16);
 }
 
-/* ===== RESET ===== */
 * {
     margin: 0;
     padding: 0;
@@ -469,7 +464,6 @@ h2 {
     color: var(--coral);
 }
 
-/* ===== BUTTONS ===== */
 .btn {
     display: inline-block;
     padding: 14px 30px;
@@ -503,7 +497,6 @@ h2 {
     box-shadow: var(--shadow-sm);
 }
 
-/* ===== PLACEHOLDER BOXES ===== */
 .placeholder-box {
     background: linear-gradient(135deg, var(--bg-soft) 0%, #eef1f8 100%);
     border: 1.5px dashed var(--border);
@@ -516,7 +509,6 @@ h2 {
     text-align: center;
 }
 
-/* ===== HEADER ===== */
 .site-header {
     position: sticky;
     top: 0;
@@ -641,7 +633,7 @@ h2 {
     }
 }
 
-/* ===== HERO ===== */
+
 .hero {
     padding: 64px 0 80px;
     background: radial-gradient(ellipse 80% 60% at 20% 0%, var(--bg-tint) 0%, transparent 60%),
@@ -688,7 +680,7 @@ h2 {
     }
 }
 
-/* ===== STATS ===== */
+
 .stats {
     background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
     padding: 52px 0;
@@ -740,7 +732,7 @@ h2 {
     }
 }
 
-/* ===== ABOUT ===== */
+
 .about {
     padding: 88px 0;
 }
@@ -799,7 +791,7 @@ h2 {
     }
 }
 
-/* ===== SECTION HEAD (shared) ===== */
+
 .section-head {
     display: flex;
     flex-wrap: wrap;
@@ -819,7 +811,7 @@ h2 {
     color: var(--coral);
 }
 
-/* ===== GALLERY ===== */
+
 .gallery {
     padding: 88px 0;
     background: var(--bg-soft);
@@ -848,7 +840,7 @@ h2 {
     }
 }
 
-/* ===== NEWS ===== */
+
 .news {
     padding: 88px 0;
 }
@@ -903,7 +895,7 @@ h2 {
     }
 }
 
-/* ===== DONATE ===== */
+
 .donate {
     padding: 88px 0;
     background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
@@ -988,7 +980,6 @@ h2 {
     }
 }
 
-/* ===== VOLUNTEER ===== */
 .volunteer {
     padding: 72px 0;
     text-align: center;
@@ -1045,7 +1036,6 @@ h2 {
     }
 }
 
-/* ===== FOOTER ===== */
 .site-footer {
     background: linear-gradient(180deg, var(--navy-dark) 0%, #0a1638 100%);
     color: rgba(255, 255, 255, 0.85);
