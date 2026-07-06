@@ -33,9 +33,16 @@
     </form>
 
     {% if settings.get('about_photo') %}
-    <div class="current-image-preview">
+    <div class="current-image-preview" style="display: flex; flex-direction: column; align-items: flex-start; gap: 15px; margin-top: 15px;">
         <span>{{ t('adm_current_image') }}</span>
-        <img src="{{ settings.get('about_photo') }}">
+        <img src="{{ settings.get('about_photo') }}" style="max-width: 150px; height: auto; border-radius: 8px;">
+        
+        <form method="post" action="{{ url_for('admin_about_photo_delete') }}"
+              onsubmit="return confirm('{{ t('adm_confirm_delete') }}');">
+            <button type="submit" class="btn-small btn-small-danger" style="background-color: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                {{ t('adm_delete') }}
+            </button>
+        </form>
     </div>
     {% endif %}
 {% endblock %}

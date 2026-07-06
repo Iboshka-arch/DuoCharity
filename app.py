@@ -381,6 +381,16 @@ def admin_hero_delete(image_id):
     flash("Rasm o'chirildi.", "success")
     return redirect(url_for("admin_hero"))
 
+@app.route('/admin/about-photo/delete', methods=['POST'])
+def admin_about_photo_delete():
+    # Находим настройку в базе данных и очищаем путь к фото
+    setting = SiteSetting.query.filter_by(key='about_photo').first() # или как у вас устроена модель settings
+    if setting:
+        setting.value = '' # Удаляем путь к файлу из настроек
+        db.session.commit()
+        flash('Фото успешно удалено', 'success')
+    return redirect(url_for('admin_hero')) # Перенаправление обратно на страницу
+
 
 @app.route("/admin/hero/about-photo", methods=["POST"])
 @login_required
