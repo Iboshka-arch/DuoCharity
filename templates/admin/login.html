@@ -1,35 +1,44 @@
-{% extends "admin/base.html" %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — DUO Charity Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body login-body">
 
-{% block title %}{{ t('adm_login_title') }}{% endblock %}
+    <div class="login-card">
+        <img src="{{ url_for('static', filename='images/duo-logo.png') }}" alt="DUO Charity" class="login-logo">
+        <h1>Admin panel</h1>
+        <p class="login-subtitle">DUO Charity boshqaruv paneliga kirish</p>
 
-{% block content %}
-<div class="login-card">
-    <img src="{{ url_for('static', filename='images/duo-logo.png') }}" alt="DUO Charity" class="login-logo">
-    <h1>{{ t('adm_login_title') }}</h1>
-    <p class="login-subtitle">{{ t('adm_login_subtitle') }}</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="flash-container">
-            {% for category, message in messages %}
-            <div class="flash-message flash-{{ category }}">{{ message }}</div>
+        <form method="post" class="login-form">
+            <input type="text" name="username" placeholder="Login" required autofocus>
+            <input type="password" name="password" placeholder="Parol" required>
+            <button type="submit" class="btn btn-primary">Kirish</button>
+        </form>
+
+        <div class="login-lang-switcher">
+            {% for code, lang in languages.items() %}
+            <a href="{{ url_for('set_language', lang_code=code) }}" class="{{ 'active' if code == current_lang }}">
+                {{ lang.flag }}
+            </a>
             {% endfor %}
         </div>
-        {% endif %}
-    {% endwith %}
-
-    <form method="post" class="login-form">
-        <input type="text" name="username" placeholder="{{ t('adm_login_username') }}" required autofocus>
-        <input type="password" name="password" placeholder="{{ t('adm_login_password') }}" required>
-        <button type="submit" class="btn btn-primary">{{ t('adm_login_btn') }}</button>
-    </form>
-
-    <div class="login-lang-switcher">
-        {% for code, lang in languages.items() %}
-        <a href="{{ url_for('set_language', lang_code=code) }}" class="{{ 'active' if code == current_lang }}">
-            {{ lang.flag }} {{ lang.label }}
-        </a>
-        {% endfor %}
     </div>
-</div>
-{% endblock %}
+
+</body>
+</html>

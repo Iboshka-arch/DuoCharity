@@ -33,13 +33,6 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db.init_app(app)
 
-@app.route("/debug-imagekit")
-def debug_imagekit():
-    pub = os.environ.get("IMAGEKIT_PUBLIC_KEY", "NOT SET")
-    priv = os.environ.get("IMAGEKIT_PRIVATE_KEY", "NOT SET")
-    url = os.environ.get("IMAGEKIT_URL_ENDPOINT", "NOT SET")
-    return f"PUB: {pub[:10] if pub != 'NOT SET' else 'NOT SET'} | PRIV: {priv[:10] if priv != 'NOT SET' else 'NOT SET'} | URL: {url[:30] if url != 'NOT SET' else 'NOT SET'}"
-
 @app.route("/debug-db")
 def debug_db():
     import os
