@@ -44,10 +44,14 @@
             </div>
 
             <div class="mobile-header-right">
-                <button class="burger" id="burgerBtn" aria-label="Menu">
-                    <span></span><span></span><span></span>
-                </button>
-            </div>
+            <!-- Бургер для смены языка -->
+            <button class="lang-burger" id="langBurgerBtn" aria-label="Change language">
+                <span></span><span></span><span></span>
+            </button>
+
+            <button class="burger" id="burgerBtn" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
         </div>
 
         <nav class="mobile-nav" id="mobileNav">
@@ -65,6 +69,15 @@
                 </a>
                 {% endfor %}
             </div>
+
+        <div class="mobile-lang-dropdown" id="mobileLangDropdown">
+            {% for code, lang in languages.items() %}
+            <a href="{{ url_for('set_language', lang_code=code) }}" 
+            class="{{ 'active' if code == current_lang }}">
+                {{ lang.flag }} {{ lang.label }}
+            </a>
+            {% endfor %}
+        </div>
 
             <a href="{{ url_for('home') }}#donate" class="btn btn-primary">{{ t('nav_donate') }}</a>
         </nav>

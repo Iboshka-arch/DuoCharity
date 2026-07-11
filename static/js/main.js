@@ -128,3 +128,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 });
+
+const langBurgerBtn = document.getElementById('langBurgerBtn');
+const mobileLangDropdown = document.getElementById('mobileLangDropdown');
+
+if (langBurgerBtn && mobileLangDropdown) {
+    langBurgerBtn.addEventListener('click', function(e) {
+        e.stopImmediatePropagation();
+        mobileLangDropdown.classList.toggle('show');
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!mobileLangDropdown.contains(e.target) && !langBurgerBtn.contains(e.target)) {
+            mobileLangDropdown.classList.remove('show');
+        }
+    });
+}
