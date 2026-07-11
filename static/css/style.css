@@ -1295,3 +1295,40 @@ h2 {
     margin: 3px 0;
     transition: 0.3s;
 }
+
+.mobile-header-right {
+    position: relative;
+}
+
+.mobile-lang-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(30, 58, 138, 0.12);
+    overflow: hidden;
+    min-width: 160px;
+    z-index: 200;
+}
+
+.mobile-lang-dropdown.show {
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-lang-dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.mobile-lang-dropdown a.active {
+    color: var(--coral);
+    font-weight: 700;
+}
