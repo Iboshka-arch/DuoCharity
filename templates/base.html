@@ -43,15 +43,16 @@
                     <a href="{{ url_for('home') }}#donate" class="btn btn-primary">{{ t('nav_donate') }}</a>
                 </div>
 
-            <div class="mobile-header-right">
-            <button class="lang-toggle-mobile" id="langBurgerBtn">
-                {{ languages[current_lang].flag }} {{ current_lang|upper }}
-            </button>
+                <div class="mobile-header-right">
+                    <button class="lang-toggle-mobile" id="langBurgerBtn">
+                        {{ languages[current_lang].flag }} {{ current_lang|upper }}
+                    </button>
 
-            <button class="burger" id="burgerBtn" aria-label="Menu">
-                <span></span><span></span><span></span>
-            </button>
-        </div>
+                    <button class="burger" id="burgerBtn" aria-label="Menu">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </div>
 
             <nav class="mobile-nav" id="mobileNav">
                 <a href="{{ url_for('home') }}#home">{{ t('nav_home') }}</a>
