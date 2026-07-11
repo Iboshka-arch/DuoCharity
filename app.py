@@ -383,13 +383,12 @@ def admin_hero_delete(image_id):
 
 @app.route('/admin/about-photo/delete', methods=['POST'])
 def admin_about_photo_delete():
-    # Находим настройку в базе данных и очищаем путь к фото
-    setting = SiteSetting.query.filter_by(key='about_photo').first() # или как у вас устроена модель settings
+    setting = SiteSetting.query.filter_by(key='about_photo').first()
     if setting:
-        setting.value = '' # Удаляем путь к файлу из настроек
+        setting.value = ''
         db.session.commit()
         flash('Фото успешно удалено', 'success')
-    return redirect(url_for('admin_hero')) # Перенаправление обратно на страницу
+    return redirect(url_for('admin_hero'))
 
 
 @app.route("/admin/hero/about-photo", methods=["POST"])
@@ -411,9 +410,6 @@ def admin_about_photo_upload():
     flash("'Biz haqimizda' rasmi yangilandi.", "success")
     return redirect(url_for("admin_hero"))
 
-
-# ---------- АДМИНКА: ЗАЯВКИ ВОЛОНТЁРОВ ----------
-
 @app.route("/admin/volunteers")
 @login_required
 def admin_volunteers():
@@ -429,14 +425,19 @@ def admin_volunteer_status(app_id):
     db.session.commit()
     return redirect(url_for("admin_volunteers"))
 
-
-# ---------- АДМИНКА: НАСТРОЙКИ САЙТА ----------
+@app.route("/admin/volunteers/<int:app_id>/delete", methods=["POST"])
+@login_required
+def admin_volunteer_delete(app_id):
+    application = VolunteerApplication.query.get_or_404(app_id)
+    db.session.delete(application)
+    db.session.commit()
+    flash("Ariza o'chirildi.", "success")
+    return redirect(url_for("admin_volunteers"))
 
 @app.route("/admin/settings", methods=["GET", "POST"])
 @login_required
 def admin_settings():
     if request.method == "POST":
-        # Смена пароля (если поля заполнены)
         new_password = request.form.get("new_password", "").strip()
         new_password_repeat = request.form.get("new_password_repeat", "").strip()
 

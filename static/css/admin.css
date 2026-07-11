@@ -826,3 +826,21 @@ a {
         flex-direction: column;
     }
 }
+
+.btn-delete-volunteer {
+    margin-top: 10px;
+    padding: 9px 18px;
+    border: 1.5px solid #e74c3c;
+    color: #e74c3c;
+    background: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btn-delete-volunteer:hover {
+    background: #e74c3c;
+    color: #fff;
+}

@@ -61,6 +61,20 @@
                     </select>
                 </form>
             </div>
+            <form method="post" action="{{ url_for('admin_volunteer_status', app_id=app.id) }}" class="detail-status-form">
+                    <label>{{ t('adm_change_status') }}</label>
+                    <select name="status" onchange="this.form.submit()" class="status-select status-{{ app.status }}">
+                        <option value="new" {{ 'selected' if app.status == 'new' }}>{{ t('adm_status_new') }}</option>
+                        <option value="contacted" {{ 'selected' if app.status == 'contacted' }}>{{ t('adm_status_contacted') }}</option>
+                        <option value="closed" {{ 'selected' if app.status == 'closed' }}>{{ t('adm_status_closed') }}</option>
+                    </select>
+                </form>
+
+                <form method="post" action="{{ url_for('admin_volunteer_delete', app_id=app.id) }}"
+                      class="detail-delete-form"
+                      onsubmit="return confirm('{{ t('adm_confirm_delete_volunteer') }}');">
+                    <button type="submit" class="btn-delete-volunteer">{{ t('adm_delete') }}</button>
+                </form>
         </div>
         {% endfor %}
     </div>

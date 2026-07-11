@@ -140,6 +140,8 @@ TRANSLATIONS = {
         "adm_login_username": "Login",
         "adm_login_password": "Parol",
         "adm_login_btn": "Kirish",
+        "adm_delete": "O'chirish",
+        "adm_confirm_delete_volunteer": "Arizani o'chirmoqchimisiz? Bu amalni ortga qaytarib bo'lmaydi.",
     },
 
     "ru": {
@@ -270,6 +272,8 @@ TRANSLATIONS = {
         "adm_login_username": "Логин",
         "adm_login_password": "Пароль",
         "adm_login_btn": "Войти",
+        "adm_delete": "Удалить",
+        "adm_confirm_delete_volunteer": "Удалить заявку? Это действие необратимо.",
     },
 
     "en": {
@@ -407,6 +411,8 @@ TRANSLATIONS = {
         "adm_login_username": "Login",
         "adm_login_password": "Password",
         "adm_login_btn": "Login",
+        "adm_delete": "Delete",
+        "adm_confirm_delete_volunteer": "Delete this application? This action cannot be undone.",
     },
 }
 
