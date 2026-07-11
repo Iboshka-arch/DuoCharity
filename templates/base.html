@@ -43,6 +43,12 @@
                 <a href="{{ url_for('home') }}#donate" class="btn btn-primary">{{ t('nav_donate') }}</a>
             </div>
 
+           <div class="mobile-header-right">
+                <div class="mobile-lang-inline">
+                {% for code, lang in languages.items() %}
+                <a href="{{ url_for('set_language', lang_code=code) }}" class="{{ 'active' if code == current_lang }}">{{ lang.flag }}</a>
+                {% endfor %}
+            </div>
             <button class="burger" id="burgerBtn" aria-label="Menu">
                 <span></span><span></span><span></span>
             </button>
