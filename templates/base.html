@@ -11,77 +11,68 @@
 </head>
 <body>
 
-    <header class="site-header">
-        <div class="container header-inner">
-            <a href="{{ url_for('home') }}" class="logo">
-                <img src="{{ url_for('static', filename='images/duo-logo.png') }}" alt="DUO Charity logo">
-                <span class="logo-text"><strong>DUO</strong>Charity</span>
-            </a>
+        <header class="site-header">
+            <div class="container header-inner">
+                <a href="{{ url_for('home') }}" class="logo">
+                    <img src="{{ url_for('static', filename='images/duo-logo.png') }}" alt="DUO Charity logo">
+                    <span class="logo-text"><strong>DUO</strong>Charity</span>
+                </a>
 
-            <nav class="main-nav">
+                <nav class="main-nav">
+                    <a href="{{ url_for('home') }}#home">{{ t('nav_home') }}</a>
+                    <a href="{{ url_for('home') }}#about">{{ t('nav_about') }}</a>
+                    <a href="{{ url_for('home') }}#gallery">{{ t('nav_gallery') }}</a>
+                    <a href="{{ url_for('home') }}#news">{{ t('nav_news') }}</a>
+                    <a href="{{ url_for('volunteer_form') }}">{{ t('nav_volunteer') }}</a>
+                    <a href="{{ url_for('home') }}#contact">{{ t('nav_contact') }}</a>
+                </nav>
+
+                <div class="header-actions">
+                    <div class="lang-switcher">
+                        <button class="lang-current" id="langToggle">
+                            {{ languages[current_lang].flag }} {{ current_lang|upper }}
+                        </button>
+                        <div class="lang-dropdown" id="langDropdown">
+                            {% for code, lang in languages.items() %}
+                            <a href="{{ url_for('set_language', lang_code=code) }}" class="{{ 'active' if code == current_lang }}">
+                                {{ lang.flag }} {{ lang.label }}
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <a href="{{ url_for('home') }}#donate" class="btn btn-primary">{{ t('nav_donate') }}</a>
+                </div>
+
+                <div class="mobile-header-right">
+                    <button class="lang-burger" id="langBurgerBtn" aria-label="Change language">
+                        <span></span><span></span><span></span>
+                    </button>
+
+                    <button class="burger" id="burgerBtn" aria-label="Menu">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </div>
+
+            <nav class="mobile-nav" id="mobileNav">
                 <a href="{{ url_for('home') }}#home">{{ t('nav_home') }}</a>
                 <a href="{{ url_for('home') }}#about">{{ t('nav_about') }}</a>
                 <a href="{{ url_for('home') }}#gallery">{{ t('nav_gallery') }}</a>
                 <a href="{{ url_for('home') }}#news">{{ t('nav_news') }}</a>
                 <a href="{{ url_for('volunteer_form') }}">{{ t('nav_volunteer') }}</a>
                 <a href="{{ url_for('home') }}#contact">{{ t('nav_contact') }}</a>
+
+                <a href="{{ url_for('home') }}#donate" class="btn btn-primary">{{ t('nav_donate') }}</a>
             </nav>
 
-            <div class="header-actions">
-                <div class="lang-switcher">
-                    <button class="lang-current" id="langToggle">
-                        {{ languages[current_lang].flag }} {{ current_lang|upper }}
-                    </button>
-                    <div class="lang-dropdown" id="langDropdown">
-                        {% for code, lang in languages.items() %}
-                        <a href="{{ url_for('set_language', lang_code=code) }}" class="{{ 'active' if code == current_lang }}">
-                            {{ lang.flag }} {{ lang.label }}
-                        </a>
-                        {% endfor %}
-                    </div>
-                </div>
-                <a href="{{ url_for('home') }}#donate" class="btn btn-primary">{{ t('nav_donate') }}</a>
-            </div>
-
-            <div class="mobile-header-right">
-            <!-- Бургер для смены языка -->
-            <button class="lang-burger" id="langBurgerBtn" aria-label="Change language">
-                <span></span><span></span><span></span>
-            </button>
-
-            <button class="burger" id="burgerBtn" aria-label="Menu">
-                <span></span><span></span><span></span>
-            </button>
-        </div>
-
-        <nav class="mobile-nav" id="mobileNav">
-            <a href="{{ url_for('home') }}#home">{{ t('nav_home') }}</a>
-            <a href="{{ url_for('home') }}#about">{{ t('nav_about') }}</a>
-            <a href="{{ url_for('home') }}#gallery">{{ t('nav_gallery') }}</a>
-            <a href="{{ url_for('home') }}#news">{{ t('nav_news') }}</a>
-            <a href="{{ url_for('volunteer_form') }}">{{ t('nav_volunteer') }}</a>
-            <a href="{{ url_for('home') }}#contact">{{ t('nav_contact') }}</a>
-
-            <div class="mobile-lang-switcher">
+            <div class="mobile-lang-dropdown" id="mobileLangDropdown">
                 {% for code, lang in languages.items() %}
-                <a href="{{ url_for('set_language', lang_code=code) }}" class="lang-btn {{ 'active' if code == current_lang }}">
+                <a href="{{ url_for('set_language', lang_code=code) }}" class="{{ 'active' if code == current_lang }}">
                     {{ lang.flag }} {{ lang.label }}
                 </a>
                 {% endfor %}
             </div>
-
-        <div class="mobile-lang-dropdown" id="mobileLangDropdown">
-            {% for code, lang in languages.items() %}
-            <a href="{{ url_for('set_language', lang_code=code) }}" 
-            class="{{ 'active' if code == current_lang }}">
-                {{ lang.flag }} {{ lang.label }}
-            </a>
-            {% endfor %}
-        </div>
-
-            <a href="{{ url_for('home') }}#donate" class="btn btn-primary">{{ t('nav_donate') }}</a>
-        </nav>
-    </header>
+        </header>
 
     <main>
         {% with messages = get_flashed_messages(with_categories=true) %}

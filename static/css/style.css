@@ -1241,56 +1241,12 @@ h2 {
     z-index: 10;
 }
 
-.mobile-lang-section {
-    margin: 16px 0 8px;
-    padding-top: 12px;
-    border-top: 1px solid #eee;
-}
-
-.mobile-lang-title {
-    font-size: 13px;
-    color: #888;
-    margin-bottom: 8px;
-    padding-left: 4px;
-}
-
-.mobile-lang-switcher {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.mobile-lang-switcher .lang-btn {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-radius: 12px;
-    text-decoration: none;
-    color: #222;
-    font-size: 15.5px;
-    border: 1px solid #eee;
-    transition: all 0.2s ease;
-}
-
-.mobile-lang-switcher .lang-btn.active {
-    background-color: #fff4ef;
-    border-color: #ff6b35;
-    color: #ff6b35;
-    font-weight: 600;
-}
-
-.mobile-lang-switcher .lang-btn:hover {
-    background-color: #f9f9f9;
-}
-
 .mobile-header-right {
     display: flex;
     align-items: center;
     gap: 6px;
 }
 
-/* Стили для второго бургера (языки) */
 .lang-burger {
     display: flex;
     flex-direction: column;
@@ -1310,7 +1266,6 @@ h2 {
     height: 2px;
     background: #333;
     margin: 2px 0;
-    transition: 0.3s;
 }
 
 .mobile-lang-dropdown {
@@ -1324,7 +1279,7 @@ h2 {
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     padding: 8px 0;
     z-index: 1000;
-    min-width: 160px;
+    min-width: 170px;
 }
 
 .mobile-lang-dropdown.show {
@@ -1335,7 +1290,7 @@ h2 {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 16px;
+    padding: 11px 16px;
     text-decoration: none;
     color: #222;
     font-size: 15px;

@@ -129,16 +129,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+const burgerBtn = document.getElementById('burgerBtn');
+const mobileNav = document.getElementById('mobileNav');
 const langBurgerBtn = document.getElementById('langBurgerBtn');
 const mobileLangDropdown = document.getElementById('mobileLangDropdown');
 
+if (burgerBtn && mobileNav) {
+    burgerBtn.addEventListener('click', () => {
+        mobileNav.classList.toggle('active');
+    });
+}
+
 if (langBurgerBtn && mobileLangDropdown) {
-    langBurgerBtn.addEventListener('click', function(e) {
+    langBurgerBtn.addEventListener('click', (e) => {
         e.stopImmediatePropagation();
         mobileLangDropdown.classList.toggle('show');
     });
 
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', (e) => {
         if (!mobileLangDropdown.contains(e.target) && !langBurgerBtn.contains(e.target)) {
             mobileLangDropdown.classList.remove('show');
         }
