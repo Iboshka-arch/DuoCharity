@@ -50,7 +50,6 @@ TRANSLATIONS = {
         "donate_lead": "Quyidagi to'lov usullari orqali jamg'armani qo'llab-quvvatlashingiz mumkin. Har bir so'm muhtojlarga yetkaziladi.",
         "donate_card": "Bank karta",
 
-        # Volunteer
         "volunteer_eyebrow": "Volontyorlik",
         "volunteer_title": "Jamoamizga qo'shiling",
         "volunteer_lead": "Vaqtingiz, mahoratingiz yoki yuragingizdagi mehribonlik bilan yordam bera olasiz. Anketani to'ldiring — biz siz bilan bog'lanamiz.",
@@ -59,7 +58,6 @@ TRANSLATIONS = {
         "volunteer_message": "Qisqacha o'zingiz haqingizda yozing...",
         "volunteer_submit": "Yuborish",
 
-        # Расширенная форма волонтёра
         "vf_personal_info": "Shaxsiy ma'lumotlar",
         "vf_phone": "Telefon raqam",
         "vf_telegram": "Telegram username (@...)",
@@ -67,7 +65,7 @@ TRANSLATIONS = {
         "vf_gender": "Jinsingiz",
         "vf_male": "Erkak",
         "vf_female": "Ayol",
-        "vf_occupation": "O'qiysiz yoki ishlaysizmi? (masalan: talaba, dasturchi)",
+        "vf_occupation": "O'qiysiz yoki ishlaysizmi?",
         "vf_directions": "Qaysi yo'nalishda yordam bera olasiz?",
         "vf_ready_all": "Barcha tadbirlarga tayyorman",
         "vf_dir_food": "Oziq-ovqat yordami",
@@ -86,7 +84,6 @@ TRANSLATIONS = {
         "footer_nav": "Navigatsiya",
         "footer_rights": "Barcha huquqlar himoyalangan.",
 
-        # Админка (интерфейс)
         "adm_dashboard": "Bosh sahifa",
         "adm_news": "Yangiliklar",
         "adm_gallery": "Galereya",
@@ -205,14 +202,7 @@ TRANSLATIONS = {
         "vf_gender": "Ваш пол",
         "vf_male": "Мужчина",
         "vf_female": "Женщина",
-        "vf_occupation": "Учитесь или работаете? (например: студент, программист)",
-        "vf_directions": "В каком направлении можете помочь?",
-        "vf_ready_all": "Готов(а) на все мероприятия",
-        "vf_dir_food": "Продуктовая помощь",
-        "vf_dir_medical": "Медицинская помощь",
-        "vf_dir_education": "Образование и работа с детьми",
-        "vf_dir_events": "Организация мероприятий",
-        "vf_dir_smm": "Соцсети (SMM)",
+        "vf_occupation": "Учитесь или работаете?",
         "vf_message_title": "Дополнительное сообщение (необязательно)",
         "vf_thanks_title": "Спасибо!",
         "vf_thanks_text": "Ваша заявка успешно принята. Скоро наша команда свяжется с вами.",
@@ -342,7 +332,7 @@ TRANSLATIONS = {
         "vf_gender": "Your gender",
         "vf_male": "Male",
         "vf_female": "Female",
-        "vf_occupation": "Studying or working? (e.g. student, developer)",
+        "vf_occupation": "Studying or working?",
         "vf_directions": "Which area can you help with?",
         "vf_ready_all": "Ready for any event",
         "vf_dir_food": "Food assistance",

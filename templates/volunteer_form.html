@@ -32,7 +32,6 @@
                     <input type="text" name="full_name" placeholder="Ibrohim Yoqubov" required>
                 </div>
 
-                <!-- УЛУЧШЕННОЕ ТЕЛЕФОННОЕ ПОЛЕ -->
                 <div class="vf-field vf-phone-field">
                     <label>{{ t('vf_phone') }} *</label>
                     <div class="phone-input-wrap">
@@ -67,11 +66,11 @@
                     <div class="radio-row">
                         <label class="radio-pill">
                             <input type="radio" name="occupation" value="talaba">
-                            <span>{{ t('vf_dir_education') or 'Учусь' }}</span>
+                            <span>{{ 'Учусь' }}</span>
                         </label>
                         <label class="radio-pill">
                             <input type="radio" name="occupation" value="ishlayman">
-                            <span>{{ t('vf_occupation') or 'Работаю' }}</span>
+                            <span>{{ 'Работаю' }}</span>
                         </label>
                     </div>
                 </div>
@@ -92,7 +91,6 @@
                 </div>
             </div>
 
-            <!-- СООБЩЕНИЕ -->
             <div class="form-section">
                 <h3>{{ t('vf_message_title') }}</h3>
                 <div class="vf-field">
@@ -106,7 +104,7 @@
 </section>
 
 <style>
-/* Улучшенное телефонное поле */
+
 .vf-phone-field .phone-input-wrap {
     position: relative;
     display: flex;

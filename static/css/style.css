@@ -1235,3 +1235,14 @@ h2 {
         padding-right: 20px !important;
     }
 }
+
+.site-footer .social-links a,
+.site-footer .footer-col a {
+    position: relative;
+    z-index: 10;
+}
+
+.footer-bottom {
+    position: relative;
+    z-index: 5;
+}
