@@ -1,5 +1,36 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+// ---------- Промо-попап при первом заходе ----------
+    const promoOverlay = document.getElementById("promoOverlay");
+    const promoClose = document.getElementById("promoClose");
+
+    if (promoOverlay) {
+        const alreadyShown = localStorage.getItem("duoPromoShown");
+
+        if (!alreadyShown) {
+            setTimeout(function () {
+                promoOverlay.classList.add("show");
+            }, 2500); // 
+        }
+
+        function closePromo() {
+            promoOverlay.classList.remove("show");
+            localStorage.setItem("duoPromoShown", "1");
+        }
+
+        if (promoClose) {
+            promoClose.addEventListener("click", closePromo);
+        }
+
+        promoOverlay.addEventListener("click", function (e) {
+            if (e.target === promoOverlay) closePromo();
+        });
+
+        promoOverlay.querySelectorAll("a").forEach(function (link) {
+            link.addEventListener("click", closePromo);
+        });
+    }
+
     // ---------- Анимация появления секций при скролле ----------
     const animatedSections = document.querySelectorAll(
         ".about-grid, .gallery-grid, .news-grid, .donate-options, .stats-grid"

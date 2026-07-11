@@ -58,6 +58,10 @@ TRANSLATIONS = {
         "volunteer_message": "Qisqacha o'zingiz haqingizda yozing...",
         "volunteer_submit": "Yuborish",
 
+        "promo_title":  "Yaxshilik qilishga tayyormisiz?",
+        "promo_text": "DUO Charity bilan birga muhtoj oilalar, bolalar va keksalarga yordam bering.",
+
+
         "vf_personal_info": "Shaxsiy ma'lumotlar",
         "vf_phone": "Telefon raqam",
         "vf_telegram": "Telegram username (@...)",
@@ -142,6 +146,7 @@ TRANSLATIONS = {
         "adm_login_btn": "Kirish",
         "adm_delete": "O'chirish",
         "adm_confirm_delete_volunteer": "Arizani o'chirmoqchimisiz? Bu amalni ortga qaytarib bo'lmaydi.",
+        "adm_volunteer_deleted": "Ariza o'chirildi.",
     },
 
     "ru": {
@@ -196,7 +201,9 @@ TRANSLATIONS = {
         "volunteer_message": "Расскажите немного о себе...",
         "volunteer_submit": "Отправить",
 
-        # Расширенная форма волонтёра
+        "promo_title":  "Готовы творить добро?", 
+        "promo_text": "Присоединяйтесь к DUO Charity и помогите нуждающимся семьям, детям и пожилым людям.",
+
         "vf_personal_info": "Личные данные",
         "vf_phone": "Номер телефона",
         "vf_telegram": "Telegram username (@...)",
@@ -274,6 +281,7 @@ TRANSLATIONS = {
         "adm_login_btn": "Войти",
         "adm_delete": "Удалить",
         "adm_confirm_delete_volunteer": "Удалить заявку? Это действие необратимо.",
+        "adm_volunteer_deleted": "Заявка удалена.",
     },
 
     "en": {
@@ -328,7 +336,9 @@ TRANSLATIONS = {
         "volunteer_message": "Tell us a bit about yourself...",
         "volunteer_submit": "Submit",
 
-        # Расширенная форма волонтёра
+        "promo_title": "Ready to make a difference?",
+        "promo_text": "Join DUO Charity and help families, children, and elderly people in need.",
+
         "vf_personal_info": "Personal Information",
         "vf_phone": "Phone number",
         "vf_telegram": "Telegram username (@...)",
@@ -413,6 +423,7 @@ TRANSLATIONS = {
         "adm_login_btn": "Login",
         "adm_delete": "Delete",
         "adm_confirm_delete_volunteer": "Delete this application? This action cannot be undone.",
+        "adm_volunteer_deleted": "Application deleted.",
     },
 }
 
