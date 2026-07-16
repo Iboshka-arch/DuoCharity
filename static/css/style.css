@@ -1410,3 +1410,10 @@ h2 {
         justify-content: center;
     }
 }
+
+:root {
+    --coral: #e5383b;
+    --coral-dark: #ba181b;
+    --coral-light: #ffe1e0;
+    ...
+}
