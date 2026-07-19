@@ -93,8 +93,18 @@
                 <img src="{{ url_for('static', filename='images/duo-logo.png') }}" alt="DUO Charity logo">
                 <p class="footer-tagline">{{ t('footer_tagline') }}</p>
                 <div class="social-links">
-                    <a href="https://www.instagram.com/duo_charity/" target="_blank" aria-label="Instagram">Instagram</a>
-                    <a href="https://t.me/duo_charity" target="_blank" aria-label="Telegram">Telegram</a>
+                    <a href="https://www.instagram.com/duo_charity/" target="_blank" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5.5"/>
+                            <circle cx="12" cy="12" r="4.2"/>
+                            <circle cx="17.4" cy="6.6" r="0.9" fill="currentColor" stroke="none"/>
+                        </svg>
+                    </a>
+                    <a href="https://t.me/duo_charity" target="_blank" aria-label="Telegram">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M21.6 3.3 2.5 10.7c-.9.4-.9.9-.2 1.1l4.9 1.5 1.9 5.8c.2.6.5.8 1 .8.4 0 .6-.2.9-.5l2.2-2.1 4.6 3.4c.8.5 1.5.2 1.7-.8l3.1-14.4c.3-1.2-.4-1.7-1-1.2Zm-3.2 3.4L9.6 13.4c-.3.2-.3.5-.3.7l.3 3.2-1.6-4.9L18.4 6.7Z"/>
+                        </svg>
+                    </a>
                 </div>
             </div>
 
@@ -116,23 +126,25 @@
         </div>
 
         <div class="footer-bottom container">
-            <p>&copy; 2026 DUO Charity. {{ t('footer_rights') }} | Created by <a href="https://t.me/Ib1shka" target="_blank" class="author-link">Ibrohim Yoqubov | Special ID - CA1</a></p>
+            <p>&copy; 2026 DUO Charity. {{ t('footer_rights') }} | <a href="{{ url_for('privacy_policy') }}">{{ t('footer_privacy_link') }}</a> | Created by <a href="https://t.me/Ib1shka" target="_blank" class="author-link">Ibrohim Yoqubov | Special ID - CA1</a></p>
             <p>{{ t('hero_eyebrow') }} 🤲</p>
         </div>
     </footer>
 
     <div class="promo-overlay" id="promoOverlay">
-    <div class="promo-modal">
-        <button class="promo-close" id="promoClose" aria-label="Close">&times;</button>
-        <div class="promo-icon">🤲</div>
-        <h3>{{ t('promo_title') }}</h3>
-        <p>{{ t('promo_text') }}</p>
-        <div class="promo-actions">
-            <a href="{{ url_for('home') }}#donate" class="btn btn-primary">{{ t('nav_donate') }}</a>
-            <a href="{{ url_for('volunteer_form') }}" class="btn btn-outline">{{ t('nav_volunteer') }}</a>
+        <div class="promo-modal">
+            <button class="promo-close" id="promoClose" aria-label="Close">&times;</button>
+            <img src="{{ url_for('static', filename='images/promo-illustration.png') }}" alt="DUO Charity" class="promo-image">
+            <div class="promo-body">
+                <h3>{{ t('promo_title') }}</h3>
+                <p>{{ t('promo_text') }}</p>
+                <div class="promo-actions">
+                    <a href="{{ url_for('home') }}#donate" class="btn btn-primary">{{ t('nav_donate') }}</a>
+                    <a href="{{ url_for('volunteer_form') }}" class="btn btn-outline">{{ t('nav_volunteer') }}</a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

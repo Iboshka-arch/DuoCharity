@@ -61,6 +61,7 @@ TRANSLATIONS = {
         "promo_title":  "Yaxshilik qilishga tayyormisiz?",
         "promo_text": "DUO Charity bilan birga muhtoj oilalar, bolalar va keksalarga yordam bering.",
 
+        "footer_privacy_link": "Политика конфиденциальности",
 
         "vf_personal_info": "Shaxsiy ma'lumotlar",
         "vf_phone": "Telefon raqam",
@@ -203,6 +204,8 @@ TRANSLATIONS = {
 
         "promo_title":  "Готовы творить добро?", 
         "promo_text": "Присоединяйтесь к DUO Charity и помогите нуждающимся семьям, детям и пожилым людям.",
+        
+        "footer_privacy_link": "Политика конфиденциальности",
 
         "vf_personal_info": "Личные данные",
         "vf_phone": "Номер телефона",
@@ -338,6 +341,8 @@ TRANSLATIONS = {
 
         "promo_title": "Ready to make a difference?",
         "promo_text": "Join DUO Charity and help families, children, and elderly people in need.",
+
+        "footer_privacy_link": "Privacy Policy",
 
         "vf_personal_info": "Personal Information",
         "vf_phone": "Phone number",

@@ -165,6 +165,9 @@ def home():
 def volunteer_form():
     return render_template("volunteer_form.html")
 
+@app.route("/privacy-policy")
+def privacy_policy():
+    return render_template("privacy_policy.html")
 
 @app.route("/volunteer", methods=["POST"])
 def volunteer_submit():
