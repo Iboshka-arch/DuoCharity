@@ -370,9 +370,9 @@
     --navy: #1e3a8a;
     --navy-dark: #0f1f4d;
     --navy-light: #3252a8;
-    --coral: #ff6b52;
-    --coral-dark: #e8472e;
-    --coral-light: #ffe4dd;
+    --coral: #e5383b;
+    --coral-dark: #ba181b;
+    --coral-light: #ffe1e0;
     --gold: #f5b942;
     --bg: #ffffff;
     --bg-soft: #f8f9fc;
@@ -477,12 +477,12 @@ h2 {
 .btn-primary {
     background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%);
     color: #fff;
-    box-shadow: 0 10px 24px rgba(255, 107, 82, 0.32);
+    box-shadow: 0 10px 24px rgba(229, 56, 59, 0.32);
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 14px 30px rgba(255, 107, 82, 0.4);
+    box-shadow: 0 14px 30px rgba(229, 56, 59, 0.4);
 }
 
 .btn-outline {
@@ -624,6 +624,16 @@ h2 {
     overflow: hidden;
 }
 
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(30, 58, 138, 0.06) 1.5px, transparent 1.5px);
+    background-size: 28px 28px;
+    z-index: 0;
+    pointer-events: none;
+}
+
 .hero-inner {
     display: flex;
     flex-direction: column;
@@ -667,6 +677,16 @@ h2 {
     background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
     padding: 52px 0;
     position: relative;
+    overflow: hidden;
+}
+
+.stats::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1.5px, transparent 1.5px);
+    background-size: 26px 26px;
+    pointer-events: none;
 }
 
 .stats-grid {
@@ -674,6 +694,8 @@ h2 {
     grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     text-align: center;
+    position: relative;
+    z-index: 1;
 }
 
 .stat-item {
@@ -894,8 +916,17 @@ h2 {
     right: -10%;
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(255, 107, 82, 0.18) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(229, 56, 59, 0.18) 0%, transparent 70%);
     border-radius: 50%;
+}
+
+.donate::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1.5px, transparent 1.5px);
+    background-size: 26px 26px;
+    pointer-events: none;
 }
 
 .donate h2 {
@@ -920,6 +951,7 @@ h2 {
     gap: 18px;
     margin-top: 40px;
     position: relative;
+    z-index: 1;
 }
 
 .donate-card {
@@ -1089,6 +1121,14 @@ h2 {
     color: rgba(255, 255, 255, 0.5);
 }
 
+.footer-bottom a {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.footer-bottom a:hover {
+    color: var(--coral);
+}
+
 @media (min-width: 720px) {
     .footer-grid {
         grid-template-columns: 1.4fr 1fr 1fr;
@@ -1151,7 +1191,7 @@ h2 {
     outline: none;
     border-color: var(--coral);
     background: #fff;
-    box-shadow: 0 0 0 3px rgba(255, 107, 82, 0.12);
+    box-shadow: 0 0 0 3px rgba(229, 56, 59, 0.12);
 }
 
 .vf-field input::placeholder,
@@ -1356,9 +1396,22 @@ h2 {
     box-shadow: var(--shadow-lg);
     max-width: 420px;
     width: 100%;
-    padding: 40px 32px 32px;
+    padding: 44px 32px 32px;
     text-align: center;
-    animation: promoPop 0.3s ease;
+    animation: promoPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+}
+
+.promo-modal::before {
+    content: "";
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    height: 220px;
+    background: radial-gradient(circle, rgba(229, 56, 59, 0.16) 0%, transparent 70%);
+    pointer-events: none;
 }
 
 @keyframes promoPop {
@@ -1367,19 +1420,31 @@ h2 {
 }
 
 .promo-icon {
-    font-size: 2.6rem;
-    margin-bottom: 12px;
+    position: relative;
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    background: linear-gradient(135deg, var(--coral) 0%, var(--coral-dark) 100%);
+    border-radius: 50%;
+    box-shadow: 0 10px 24px rgba(229, 56, 59, 0.35);
 }
 
 .promo-modal h3 {
-    font-size: 1.3rem;
+    position: relative;
+    font-size: 1.4rem;
     margin-bottom: 10px;
 }
 
 .promo-modal p {
+    position: relative;
     color: var(--text-muted);
     font-size: 0.95rem;
-    margin-bottom: 24px;
+    line-height: 1.6;
+    margin-bottom: 26px;
 }
 
 .promo-actions {
@@ -1409,11 +1474,4 @@ h2 {
         flex-direction: row;
         justify-content: center;
     }
-}
-
-:root {
-    --coral: #e5383b;
-    --coral-dark: #ba181b;
-    --coral-light: #ffe1e0;
-    ...
 }

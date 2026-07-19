@@ -1,21 +1,15 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-// ---------- Промо-попап при первом заходе ----------
-    const promoOverlay = document.getElementById("promoOverlay");
+const promoOverlay = document.getElementById("promoOverlay");
     const promoClose = document.getElementById("promoClose");
 
     if (promoOverlay) {
-        const alreadyShown = localStorage.getItem("duoPromoShown");
-
-        if (!alreadyShown) {
-            setTimeout(function () {
-                promoOverlay.classList.add("show");
-            }, 2500); // 
-        }
+        setTimeout(function () {
+            promoOverlay.classList.add("show");
+        }, 1800);
 
         function closePromo() {
             promoOverlay.classList.remove("show");
-            localStorage.setItem("duoPromoShown", "1");
         }
 
         if (promoClose) {
@@ -30,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
             link.addEventListener("click", closePromo);
         });
     }
-
+    
     // ---------- Анимация появления секций при скролле ----------
     const animatedSections = document.querySelectorAll(
         ".about-grid, .gallery-grid, .news-grid, .donate-options, .stats-grid"
@@ -133,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         function startAutoplay() {
             stopAutoplay();
-            autoplayTimer = setInterval(nextSlide, 5000);
+            autoplayTimer = setInterval(nextSlide, 3000);
         }
 
         function stopAutoplay() {
