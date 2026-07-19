@@ -101,6 +101,30 @@
             <button type="submit" class="btn btn-primary btn-large">{{ t('volunteer_submit') }}</button>
         </form>
     </div>
+
+            <div class="form-section">
+            <h3>{{ t('vf_message_title') }}</h3>
+            <div class="vf-field">
+                <textarea name="message" placeholder="{{ t('volunteer_message') }}" rows="4"></textarea>
+            </div>
+        </div>
+
+        <div class="vf-field consent-field">
+            <label class="consent-checkbox">
+                <input type="checkbox" name="privacy_consent" required>
+                <span>
+                    Я согласен(а) с
+                    <a href="{{ url_for('privacy_policy') }}" target="_blank">
+                        Политикой обработки персональных данных
+                    </a>
+                </span>
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-large">{{ t('volunteer_submit') }}</button>
+
+    </div>
+    
 </section>
 
 <style>

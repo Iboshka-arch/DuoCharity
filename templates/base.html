@@ -131,6 +131,7 @@
         </div>
     </footer>
 
+    {% if request.endpoint == 'home' %}
     <div class="promo-overlay" id="promoOverlay">
         <div class="promo-modal">
             <button class="promo-close" id="promoClose" aria-label="Close">&times;</button>
@@ -145,6 +146,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>

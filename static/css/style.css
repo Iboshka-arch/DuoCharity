@@ -1414,3 +1414,33 @@ h2 {
         justify-content: center;
     }
 }
+
+.consent-field {
+    margin-top: 10px;
+}
+
+.consent-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.consent-checkbox input[type="checkbox"] {
+    margin-top: 3px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.consent-checkbox a {
+    color: #ff6b35;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.consent-checkbox a:hover {
+    text-decoration: underline;
+}
