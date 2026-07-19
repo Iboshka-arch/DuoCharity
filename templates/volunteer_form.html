@@ -23,7 +23,6 @@
 
         <form class="volunteer-full-form" method="post" action="{{ url_for('volunteer_submit') }}">
 
-            <!-- ЛИЧНЫЕ ДАННЫЕ -->
             <div class="form-section">
                 <h3>{{ t('vf_personal_info') }}</h3>
 
@@ -39,14 +38,14 @@
                             <img src="https://flagcdn.com/w40/uz.png" alt="UZ" class="phone-flag">
                             <span>+998</span>
                         </div>
-                        <input type="tel" 
-                               name="phone" 
-                               class="phone-input" 
-                               placeholder="90 000 00 00" 
-                               inputmode="numeric" 
-                               pattern="[0-9]{9}" 
-                               maxlength="9" 
-                               minlength="9" 
+                        <input type="tel"
+                               name="phone"
+                               class="phone-input"
+                               placeholder="90 000 00 00"
+                               inputmode="numeric"
+                               pattern="[0-9]{9}"
+                               maxlength="9"
+                               minlength="9"
                                required>
                     </div>
                 </div>
@@ -66,17 +65,16 @@
                     <div class="radio-row">
                         <label class="radio-pill">
                             <input type="radio" name="occupation" value="talaba">
-                            <span>{{ 'Учусь' }}</span>
+                            <span>Учусь</span>
                         </label>
                         <label class="radio-pill">
                             <input type="radio" name="occupation" value="ishlayman">
-                            <span>{{ 'Работаю' }}</span>
+                            <span>Работаю</span>
                         </label>
                     </div>
                 </div>
             </div>
 
-            <!-- ПОЛ -->
             <div class="form-section">
                 <h3>{{ t('vf_gender') }}</h3>
                 <div class="radio-row">
@@ -98,33 +96,24 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-large">{{ t('volunteer_submit') }}</button>
+            <div class="vf-field consent-field">
+                <label class="consent-checkbox">
+                    <input type="checkbox" name="privacy_consent" required>
+                    <span>
+                        Я согласен(а) с
+                        <a href="{{ url_for('privacy_policy') }}" target="_blank">
+                            Политикой обработки персональных данных
+                        </a>
+                    </span>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-large">
+                {{ t('volunteer_submit') }}
+            </button>
+
         </form>
     </div>
-
-            <div class="form-section">
-            <h3>{{ t('vf_message_title') }}</h3>
-            <div class="vf-field">
-                <textarea name="message" placeholder="{{ t('volunteer_message') }}" rows="4"></textarea>
-            </div>
-        </div>
-
-        <div class="vf-field consent-field">
-            <label class="consent-checkbox">
-                <input type="checkbox" name="privacy_consent" required>
-                <span>
-                    Я согласен(а) с
-                    <a href="{{ url_for('privacy_policy') }}" target="_blank">
-                        Политикой обработки персональных данных
-                    </a>
-                </span>
-            </label>
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-large">{{ t('volunteer_submit') }}</button>
-
-    </div>
-    
 </section>
 
 <style>
