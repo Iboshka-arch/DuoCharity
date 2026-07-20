@@ -450,6 +450,52 @@ def admin_volunteer_delete(app_id):
     flash(get_translator(get_current_language())('adm_volunteer_deleted'), "success")
     return redirect(url_for("admin_volunteers"))
 
+@app.route("/admin/volunteers/<int:app_id>/accept", methods=["POST"])
+@login_required
+def admin_volunteer_accept(app_id):
+    application = VolunteerApplication.query.get_or_404(app_id)
+ 
+    existing = Volunteer.query.filter_by(phone=application.phone).first()
+    if existing:
+        flash("Этот номер телефона уже есть в списке волонтёров.", "error")
+        return redirect(url_for("admin_volunteers"))
+ 
+    volunteer = Volunteer(
+        full_name=application.full_name,
+        phone=application.phone,
+        telegram=application.telegram,
+        gender=application.gender,
+        age=application.age,
+        occupation=application.occupation,
+    )
+    db.session.add(volunteer)
+ 
+    application.status = "closed"
+    db.session.commit()
+ 
+    flash(
+        f"{volunteer.full_name} добавлен(а) в список волонтёров. Попросите его/её написать /start боту DUO Charity в Telegram.",
+        "success",
+    )
+    return redirect(url_for("admin_volunteers"))
+
+    @app.route("/admin/active-volunteers")
+@login_required
+def admin_active_volunteers():
+    volunteers = Volunteer.query.order_by(Volunteer.created_at.desc()).all()
+    return render_template("admin/active_volunteers.html", volunteers=volunteers)
+ 
+ 
+@app.route("/admin/active-volunteers/<int:volunteer_id>/delete", methods=["POST"])
+@login_required
+def admin_active_volunteer_delete(volunteer_id):
+    volunteer = Volunteer.query.get_or_404(volunteer_id)
+    db.session.delete(volunteer)
+    db.session.commit()
+    flash("Волонтёр удалён из списка.", "success")
+    return redirect(url_for("admin_active_volunteers"))
+ 
+
 @app.route("/admin/settings", methods=["GET", "POST"])
 @login_required
 def admin_settings():

@@ -736,6 +736,23 @@ a {
     color: var(--text-muted);
 }
 
+.btn-accept-volunteer {
+    padding: 9px 18px;
+    border: 1.5px solid #1c7a3e;
+    color: #1c7a3e;
+    background: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.btn-accept-volunteer:hover {
+    background: #1c7a3e;
+    color: #fff;
+}
+
 .btn-delete-volunteer {
     padding: 9px 18px;
     border: 1.5px solid #e74c3c;
