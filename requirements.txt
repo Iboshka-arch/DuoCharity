@@ -5,3 +5,4 @@ psycopg2-binary==2.9.9
 imagekitio==5.7.0
 pyTelegramBotAPI
 openpyxl
+python-dotenv
