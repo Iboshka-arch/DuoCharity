@@ -480,6 +480,7 @@ def admin_volunteer_accept(app_id):
     return redirect(url_for("admin_volunteers"))
 
     @app.route("/admin/active-volunteers")
+    
 @login_required
 def admin_active_volunteers():
     volunteers = Volunteer.query.order_by(Volunteer.created_at.desc()).all()
