@@ -5,7 +5,7 @@ from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response, send_from_directory
 from werkzeug.utils import secure_filename
 
-from models import db, Admin, Post, GalleryImage, HeroImage, VolunteerApplication, SiteSetting
+from models import db, Admin, Post, GalleryImage, HeroImage, VolunteerApplication, Volunteer, SiteSetting
 from translations import get_translator, LANGUAGES, DEFAULT_LANGUAGE
 
 from io import BytesIO
@@ -51,13 +51,6 @@ def allowed_file(filename):
         return False
     ext = filename.rsplit(".", 1)[1].lower()
     return ext in ALLOWED_EXTENSIONS
-
-@app.route("/admin/init-db")
-@login_required
-def admin_init_db():
-    db.create_all()
-    flash("База данных обновлена.", "success")
-    return redirect(url_for("admin_dashboard"))
 
 @app.route("/test-imagekit-upload")
 def test_imagekit_upload():
@@ -127,7 +120,6 @@ def login_required(view_func):
         return view_func(*args, **kwargs)
     return wrapped
 
-
 def get_current_language():
     return request.cookies.get("lang", DEFAULT_LANGUAGE)
 
@@ -174,6 +166,12 @@ def home():
         settings=settings,
     )
 
+@app.route("/admin/init-db")
+@login_required
+def admin_init_db():
+    db.create_all()
+    flash("База данных обновлена.", "success")
+    return redirect(url_for("admin_dashboard"))
 
 @app.route("/volunteer-form")
 def volunteer_form():
