@@ -52,6 +52,13 @@ def allowed_file(filename):
     ext = filename.rsplit(".", 1)[1].lower()
     return ext in ALLOWED_EXTENSIONS
 
+@app.route("/admin/init-db")
+@login_required
+def admin_init_db():
+    db.create_all()
+    flash("База данных обновлена.", "success")
+    return redirect(url_for("admin_dashboard"))
+
 @app.route("/test-imagekit-upload")
 def test_imagekit_upload():
     try:
