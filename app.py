@@ -8,6 +8,12 @@ from werkzeug.utils import secure_filename
 from models import db, Admin, Post, GalleryImage, HeroImage, VolunteerApplication, SiteSetting
 from translations import get_translator, LANGUAGES, DEFAULT_LANGUAGE
 
+from io import BytesIO
+import openpyxl
+from flask import send_file
+ 
+from dotenv import load_dotenv
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
@@ -18,6 +24,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
 
+load_dotenv() 
 
 database_url = os.environ.get("DATABASE_URL")
 if not database_url:
@@ -473,6 +480,47 @@ def admin_settings():
 
     settings = get_settings()
     return render_template("admin/settings.html", settings=settings)
+
+@app.route("/admin/volunteers/export")
+@login_required
+def admin_volunteers_export():
+    volunteers = Volunteer.query.order_by(Volunteer.created_at.desc()).all()
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Волонтёры"
+
+    headers = ["ФИО", "Телефон", "Telegram", "Пол", "Возраст", "Занятость", "Есть авто", "Номер авто", "Дата регистрации"]
+    ws.append(headers)
+
+    for v in volunteers:
+        gender_label = "Мужской" if v.gender == "male" else "Женский" if v.gender == "female" else ""
+        ws.append([
+            v.full_name,
+            v.phone,
+            v.telegram or "",
+            gender_label,
+            v.age or "",
+            v.occupation or "",
+            "Да" if v.has_car else "Нет",
+            v.car_plate or "",
+            v.formatted_date(),
+        ])
+
+    for column_cells in ws.columns:
+        length = max(len(str(cell.value)) if cell.value else 0 for cell in column_cells)
+        ws.column_dimensions[column_cells[0].column_letter].width = max(12, length + 2)
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="duo_volunteers.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
 
 
 if __name__ == "__main__":

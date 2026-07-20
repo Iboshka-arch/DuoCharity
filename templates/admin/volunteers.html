@@ -68,6 +68,9 @@
                         <button type="submit" class="btn-delete-volunteer">{{ t('adm_delete') }}</button>
                     </form>
                 </div>
+
+                <a href="{{ url_for('admin_volunteers_export') }}" class="btn btn-outline">Скачать Excel</a>
+
             </div>
         </div>
         {% endfor %}
