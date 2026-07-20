@@ -34,6 +34,7 @@
                         <span class="detail-label">{{ t('vf_phone') }}</span>
                         <a href="tel:{{ app.phone }}" class="detail-value detail-link">{{ app.phone }}</a>
                     </div>
+
                     <div>
                         <span class="detail-label">Telegram</span>
                         {% if app.telegram_url() %}
@@ -42,6 +43,7 @@
                         <span class="detail-value">—</span>
                         {% endif %}
                     </div>
+
                     <div>
                         <span class="detail-label">{{ t('vf_gender') }} / {{ t('vf_age') }}</span>
                         <span class="detail-value">
@@ -51,6 +53,7 @@
                             {% if app.age %} / {{ app.age }}{% endif %}
                         </span>
                     </div>
+
                     <div class="detail-full">
                         <span class="detail-label">{{ t('vf_message_title') }}</span>
                         <span class="detail-value">{{ app.message or '—' }}</span>
@@ -58,7 +61,16 @@
                 </div>
 
                 <div class="detail-actions-row">
-                    <form method="post" action="{{ url_for('admin_volunteer_status', app_id=app.id) }}" class="detail-status-form">
+                    <form method="post"
+                          action="{{ url_for('admin_volunteer_accept', app_id=app.id) }}">
+                        <button type="submit" class="btn btn-primary">
+                            Принять волонтёра
+                        </button>
+                    </form>
+
+                    <form method="post"
+                          action="{{ url_for('admin_volunteer_status', app_id=app.id) }}"
+                          class="detail-status-form">
                         <label>{{ t('adm_change_status') }}</label>
                         <select name="status" onchange="this.form.submit()" class="status-select status-{{ app.status }}">
                             <option value="new" {{ 'selected' if app.status == 'new' }}>{{ t('adm_status_new') }}</option>
@@ -67,10 +79,13 @@
                         </select>
                     </form>
 
-                    <form method="post" action="{{ url_for('admin_volunteer_delete', app_id=app.id) }}"
+                    <form method="post"
+                          action="{{ url_for('admin_volunteer_delete', app_id=app.id) }}"
                           class="detail-delete-form"
                           onsubmit="return confirm('{{ t('adm_confirm_delete_volunteer') }}');">
-                        <button type="submit" class="btn-delete-volunteer">{{ t('adm_delete') }}</button>
+                        <button type="submit" class="btn-delete-volunteer">
+                            {{ t('adm_delete') }}
+                        </button>
                     </form>
                 </div>
             </div>
@@ -83,10 +98,12 @@
             const details = document.getElementById('details-' + appId);
             const row = details.closest('.volunteer-row');
             const isOpen = details.classList.contains('open');
+
             document.querySelectorAll('.volunteer-row-details.open').forEach(function (el) {
                 el.classList.remove('open');
                 el.closest('.volunteer-row').classList.remove('expanded');
             });
+
             if (!isOpen) {
                 details.classList.add('open');
                 row.classList.add('expanded');

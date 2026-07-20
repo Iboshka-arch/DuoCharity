@@ -23,7 +23,6 @@
                 <a href="{{ url_for('admin_hero') }}" class="{{ 'active' if request.endpoint and 'admin_hero' in request.endpoint }}">{{ t('adm_hero') }}</a>
                 <a href="{{ url_for('admin_volunteers') }}" class="{{ 'active' if request.endpoint and 'admin_volunteer' in request.endpoint }}">{{ t('adm_volunteers') }}</a>
                 <a href="{{ url_for('admin_settings') }}" class="{{ 'active' if request.endpoint == 'admin_settings' }}">{{ t('adm_settings') }}</a>
-                <a href="{{ url_for('admin_volunteers') }}" class="{{ 'active' if request.endpoint and 'admin_volunteer' in request.endpoint }}">{{ t('adm_volunteers') }}</a>
                 <a href="{{ url_for('admin_active_volunteers') }}" class="{{ 'active' if request.endpoint and 'active_volunteer' in request.endpoint }}">Действующие волонтёры</a>
             </nav>
             <div class="admin-sidebar-footer">
