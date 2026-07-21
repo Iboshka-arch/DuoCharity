@@ -8,6 +8,10 @@ from werkzeug.utils import secure_filename
 from models import db, Admin, Post, GalleryImage, HeroImage, VolunteerApplication, Volunteer, SiteSetting
 from translations import get_translator, LANGUAGES, DEFAULT_LANGUAGE
 
+import telebot
+from bot.handlers import bot as telegram_bot
+from bot.notifications import notify_new_application
+
 from io import BytesIO
 import openpyxl
 from flask import send_file
@@ -133,6 +137,12 @@ def inject_translator():
         "languages": LANGUAGES,
     }
 
+@app.route("/bot/webhook", methods=["POST"])
+def bot_webhook():
+    json_data = request.get_json()
+    update = telebot.types.Update.de_json(json_data)
+    telegram_bot.process_new_updates([update])
+    return "", 200
 
 @app.route("/set-language/<lang_code>")
 def set_language(lang_code):
@@ -216,6 +226,7 @@ def volunteer_submit():
     )
     db.session.add(application)
     db.session.commit()
+    notify_new_application(application)
 
     return redirect(url_for("volunteer_thanks"))
 
