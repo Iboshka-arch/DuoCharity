@@ -1,10 +1,10 @@
 import telebot
 from telebot import types
 
-from bot.config import BOT_TOKEN
+from bot.config import BOT_TOKEN, VOLUNTEER_GROUP_CHAT_ID
 from bot.keyboards import phone_request_keyboard, car_question_keyboard, language_keyboard
 from bot.translations import bt
-from models import db, Volunteer, VolunteerApplication
+from models import db, Volunteer, VolunteerApplication 
 
 bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
 
@@ -57,10 +57,10 @@ def handle_contact(message):
     if application:
         application.telegram_user_id = message.from_user.id
         application.telegram_chat_id = message.chat.id
-        application.pending_action = "awaiting_language"
         db.session.commit()
 
-        bot.send_message(message.chat.id, bt("pending_review"), reply_markup=language_keyboard())
+        from bot.actions import accept_application
+        accept_application(application)
         return
 
     bot.send_message(
@@ -84,22 +84,21 @@ def handle_language_choice(call):
         bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
         bot.send_message(call.message.chat.id, bt("matched", lang, name=volunteer.full_name))
 
+        try:
+            invite = bot.create_chat_invite_link(
+                int(VOLUNTEER_GROUP_CHAT_ID),
+                creates_join_request=True,
+                name=f"volunteer-{volunteer.id}",
+            )
+            bot.send_message(call.message.chat.id, bt("group_invite", lang, link=invite.invite_link))
+        except Exception as e:
+            print(f"Не удалось создать инвайт-ссылку: {e}")
+
         if volunteer.has_car is None:
             bot.send_message(call.message.chat.id, bt("ask_car", lang), reply_markup=car_question_keyboard(lang))
         return
 
-    application = VolunteerApplication.query.filter_by(telegram_chat_id=call.message.chat.id, pending_action="awaiting_language").first()
-    if application:
-        application.language = lang
-        application.pending_action = None
-        db.session.commit()
-
-        bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
-        bot.send_message(call.message.chat.id, bt("pending_confirmed", lang))
-        return
-
     bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
-
 
 @bot.callback_query_handler(func=lambda call: call.data in ("car_yes", "car_no"))
 def handle_car_answer(call):
@@ -148,3 +147,18 @@ def handle_text(message):
         return
 
     bot.send_message(message.chat.id, bt("fallback", lang))
+
+@bot.chat_join_request_handler()
+def handle_join_request(request):
+    if request.chat.id != int(VOLUNTEER_GROUP_CHAT_ID):
+        return
+
+    volunteer = Volunteer.query.filter_by(telegram_user_id=request.from_user.id).first()
+
+    try:
+        if volunteer:
+            bot.approve_chat_join_request(request.chat.id, request.from_user.id)
+        else:
+            bot.decline_chat_join_request(request.chat.id, request.from_user.id)
+    except Exception as e:
+        print(f"Не удалось обработать заявку на вступление: {e}")

@@ -20,18 +20,20 @@ def accept_application(application):
         occupation=application.occupation,
         telegram_user_id=application.telegram_user_id,
         telegram_chat_id=application.telegram_chat_id,
-        language=application.language,
     )
     db.session.add(volunteer)
     application.status = "closed"
     db.session.commit()
 
     if volunteer.telegram_chat_id:
-        lang = volunteer.language or "ru"
+        volunteer.pending_action = "awaiting_language"
+        db.session.commit()
         try:
-            bot.send_message(volunteer.telegram_chat_id, bt("application_accepted", lang, name=volunteer.full_name))
-            if volunteer.has_car is None:
-                bot.send_message(volunteer.telegram_chat_id, bt("ask_car", lang), reply_markup=car_question_keyboard(lang))
+            bot.send_message(
+                volunteer.telegram_chat_id,
+                bt("auto_accepted_choose_language"),
+                reply_markup=language_keyboard(),
+            )
         except Exception as e:
             print(f"Не удалось уведомить волонтёра: {e}")
 
