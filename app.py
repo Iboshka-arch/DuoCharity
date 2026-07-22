@@ -201,13 +201,13 @@ def volunteer_submit():
     occupation = request.form.get("occupation", "").strip()
     message = request.form.get("message", "").strip()
 
-if not full_name or not phone:
-    flash(get_translator(get_current_language())('vf_error_name_phone'), "error")
-    return redirect(url_for("volunteer_form"))
+    if not full_name or not phone:
+        flash(get_translator(get_current_language())('vf_error_name_phone'), "error")
+        return redirect(url_for("volunteer_form"))
 
-if not gender or not age.isdigit():
-    flash(get_translator(get_current_language())('vf_error_required'), "error")
-    return redirect(url_for("volunteer_form"))
+    if not gender or not age.isdigit():
+        flash(get_translator(get_current_language())('vf_error_required'), "error")
+        return redirect(url_for("volunteer_form"))
 
     cooldown_cutoff = datetime.utcnow() - timedelta(hours=24)
     recent_application = VolunteerApplication.query.filter(
@@ -215,9 +215,9 @@ if not gender or not age.isdigit():
         VolunteerApplication.created_at > cooldown_cutoff,
     ).first()
 
-if recent_application:
-    flash(get_translator(get_current_language())('vf_error_cooldown'), "error")
-    return redirect(url_for("volunteer_form"))
+    if recent_application:
+        flash(get_translator(get_current_language())('vf_error_cooldown'), "error")
+        return redirect(url_for("volunteer_form"))
 
     application = VolunteerApplication(
         full_name=full_name,
@@ -233,8 +233,7 @@ if recent_application:
     notify_new_application(application)
 
     return redirect(url_for("volunteer_thanks"))
-
-
+    
 @app.route("/volunteer-thanks")
 def volunteer_thanks():
     return render_template("volunteer_thanks.html")
