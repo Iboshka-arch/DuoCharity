@@ -58,6 +58,11 @@ class VolunteerApplication(db.Model):
     message = db.Column(db.Text, nullable=True)
     status = db.Column(db.String(20), default="new")  # new / contacted / closed
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    telegram_user_id = db.Column(db.BigInteger, nullable=True)
+    telegram_chat_id = db.Column(db.BigInteger, nullable=True)
+    language = db.Column(db.String(2), nullable=True)
+    pending_action = db.Column(db.String(50), nullable=True)
+
 
     def telegram_url(self):
         if not self.telegram:

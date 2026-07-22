@@ -13,6 +13,9 @@ BOT_TEXTS = {
         "car_declined": "Tushunarli, rahmat!",
         "fallback": "Men hozircha faqat volontyorlarni ro'yxatga olaman. Yordam: @Duo_charity_admin",
         "own_contact_only": "Iltimos, o'zingizning raqamingizni ulashing.",
+        "pending_review": "Rahmat! Arizangiz ko'rib chiqilmoqda, iltimos kuting. ⏳\nСпасибо! Ваша заявка на рассмотрении, пожалуйста, подождите. ⏳\n\nIltimos, tilni tanlang / Пожалуйста, выберите язык:",
+        "pending_confirmed": "Yaxshi! Arizangiz ko'rib chiqilishi bilan sizga darhol yozamiz.",
+        "application_accepted": "Tabriklaymiz, {name}! Arizangiz tasdiqlandi, endi siz DUO Charity rasmiy volontyorisiz. 🎉", 
     },
     "ru": {
         "start_greeting": "Здравствуйте! 👋 Добро пожаловать в бота DUO Charity. Чтобы присылать уведомления, поделитесь номером телефона.",
@@ -28,7 +31,10 @@ BOT_TEXTS = {
         "car_declined": "Понял, спасибо!",
         "fallback": "Я пока умею только регистрировать волонтёров. Помощь: @Duo_charity_admin",
         "own_contact_only": "Пожалуйста, поделитесь своим собственным номером.",
-    },
+        "pending_review": "Rahmat! Arizangiz ko'rib chiqilmoqda, iltimos kuting. ⏳\nСпасибо! Ваша заявка на рассмотрении, пожалуйста, подождите. ⏳\n\nIltimos, tilni tanlang / Пожалуйста, выберите язык:",
+        "pending_confirmed": "Хорошо! Как только заявку рассмотрят, мы сразу напишем вам.",
+        "application_accepted": "Поздравляем, {name}! Заявку одобрили, теперь вы официальный волонтёр DUO Charity. 🎉",
+    },  
 }
 
 

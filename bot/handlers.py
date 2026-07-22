@@ -4,7 +4,7 @@ from telebot import types
 from bot.config import BOT_TOKEN
 from bot.keyboards import phone_request_keyboard, car_question_keyboard, language_keyboard
 from bot.translations import bt
-from models import db, Volunteer
+from models import db, Volunteer, VolunteerApplication
 
 bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
 
@@ -30,48 +30,75 @@ def handle_contact(message):
         return
 
     phone = normalize_phone(contact.phone_number)
+
     volunteer = Volunteer.query.filter_by(phone=phone).first()
+    if volunteer:
+        if volunteer.telegram_chat_id and volunteer.pending_action != "awaiting_language":
+            lang = volunteer.language or "ru"
+            bot.send_message(message.chat.id, bt("matched", lang, name=volunteer.full_name), reply_markup=types.ReplyKeyboardRemove())
+            return
 
-    if not volunteer:
-        text = bt("not_matched", "ru", form_link=VOLUNTEER_FORM_URL)
-        bot.send_message(message.chat.id, text, reply_markup=types.ReplyKeyboardRemove())
+        volunteer.telegram_user_id = message.from_user.id
+        volunteer.telegram_chat_id = message.chat.id
+        volunteer.pending_action = "awaiting_language"
+        db.session.commit()
+
+        bot.send_message(message.chat.id, bt("choose_language"), reply_markup=language_keyboard())
         return
 
-    if volunteer.telegram_chat_id and volunteer.pending_action != "awaiting_language":
-        lang = volunteer.language or "ru"
-        bot.send_message(message.chat.id, bt("matched", lang, name=volunteer.full_name), reply_markup=types.ReplyKeyboardRemove())
+    application = (
+        VolunteerApplication.query
+        .filter_by(phone=phone)
+        .filter(VolunteerApplication.status != "closed")
+        .order_by(VolunteerApplication.created_at.desc())
+        .first()
+    )
+
+    if application:
+        application.telegram_user_id = message.from_user.id
+        application.telegram_chat_id = message.chat.id
+        application.pending_action = "awaiting_language"
+        db.session.commit()
+
+        bot.send_message(message.chat.id, bt("pending_review"), reply_markup=language_keyboard())
         return
 
-    volunteer.telegram_user_id = message.from_user.id
-    volunteer.telegram_chat_id = message.chat.id
-    volunteer.pending_action = "awaiting_language"
-    db.session.commit()
-
-    bot.send_message(message.chat.id, bt("choose_language"), reply_markup=language_keyboard())
+    bot.send_message(
+        message.chat.id,
+        bt("not_matched", "ru", form_link=VOLUNTEER_FORM_URL),
+        reply_markup=types.ReplyKeyboardRemove(),
+    )
 
 
 @bot.callback_query_handler(func=lambda call: call.data in ("lang_uz", "lang_ru"))
 def handle_language_choice(call):
-    volunteer = Volunteer.query.filter_by(telegram_chat_id=call.message.chat.id).first()
     bot.answer_callback_query(call.id)
-
-    if not volunteer:
-        return
-
-    if volunteer.pending_action != "awaiting_language":
-        bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
-        return
-
     lang = "uz" if call.data == "lang_uz" else "ru"
-    volunteer.language = lang
-    volunteer.pending_action = None
-    db.session.commit()
+
+    volunteer = Volunteer.query.filter_by(telegram_chat_id=call.message.chat.id, pending_action="awaiting_language").first()
+    if volunteer:
+        volunteer.language = lang
+        volunteer.pending_action = None
+        db.session.commit()
+
+        bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+        bot.send_message(call.message.chat.id, bt("matched", lang, name=volunteer.full_name))
+
+        if volunteer.has_car is None:
+            bot.send_message(call.message.chat.id, bt("ask_car", lang), reply_markup=car_question_keyboard(lang))
+        return
+
+    application = VolunteerApplication.query.filter_by(telegram_chat_id=call.message.chat.id, pending_action="awaiting_language").first()
+    if application:
+        application.language = lang
+        application.pending_action = None
+        db.session.commit()
+
+        bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+        bot.send_message(call.message.chat.id, bt("pending_confirmed", lang))
+        return
 
     bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
-    bot.send_message(call.message.chat.id, bt("matched", lang, name=volunteer.full_name))
-
-    if volunteer.has_car is None:
-        bot.send_message(call.message.chat.id, bt("ask_car", lang), reply_markup=car_question_keyboard(lang))
 
 
 @bot.callback_query_handler(func=lambda call: call.data in ("car_yes", "car_no"))

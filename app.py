@@ -11,6 +11,7 @@ from translations import get_translator, LANGUAGES, DEFAULT_LANGUAGE
 import telebot
 from bot.handlers import bot as telegram_bot
 from bot.notifications import notify_new_application
+from bot.actions import accept_application
 
 from io import BytesIO
 import openpyxl
@@ -233,7 +234,7 @@ def volunteer_submit():
     notify_new_application(application)
 
     return redirect(url_for("volunteer_thanks"))
-    
+
 @app.route("/volunteer-thanks")
 def volunteer_thanks():
     return render_template("volunteer_thanks.html")
@@ -493,6 +494,24 @@ def admin_volunteer_accept(app_id):
     )
     return redirect(url_for("admin_volunteers"))
 
+@app.route("/admin/volunteers/<int:app_id>/accept", methods=["POST"])
+@login_required
+def admin_volunteer_accept(app_id):
+    application = VolunteerApplication.query.get_or_404(app_id)
+
+    if application.status == "closed":
+        flash("Эта заявка уже обработана.", "error")
+        return redirect(url_for("admin_volunteers"))
+
+    volunteer, created = accept_application(application)
+
+    if created:
+        flash(f"{volunteer.full_name} добавлен(а) в список волонтёров.", "success")
+    else:
+        flash("Этот номер телефона уже есть в списке волонтёров.", "error")
+
+    return redirect(url_for("admin_volunteers"))
+
 @app.route("/admin/active-volunteers")
 @login_required
 def admin_active_volunteers():
@@ -586,7 +605,6 @@ def admin_volunteers_export():
         download_name="duo_volunteers.xlsx",
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
-
 
 if __name__ == "__main__":
     app.run(debug=True)
