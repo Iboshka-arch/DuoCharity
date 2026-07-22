@@ -3,14 +3,24 @@ from telebot import types
 
 def phone_request_keyboard():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    markup.add(types.KeyboardButton("Поделиться номером телефона", request_contact=True))
+    markup.add(types.KeyboardButton("📱 Поделиться номером / Raqamni ulashish", request_contact=True))
     return markup
 
 
-def car_question_keyboard():
+def language_keyboard():
     markup = types.InlineKeyboardMarkup()
     markup.add(
-        types.InlineKeyboardButton("Да", callback_data="car_yes"),
-        types.InlineKeyboardButton("Нет", callback_data="car_no"),
+        types.InlineKeyboardButton("🇺🇿 O'zbekcha", callback_data="lang_uz"),
+        types.InlineKeyboardButton("🇷🇺 Русский", callback_data="lang_ru"),
+    )
+    return markup
+
+
+def car_question_keyboard(lang="ru"):
+    from bot.translations import bt
+    markup = types.InlineKeyboardMarkup()
+    markup.add(
+        types.InlineKeyboardButton(bt("car_yes", lang), callback_data="car_yes"),
+        types.InlineKeyboardButton(bt("car_no", lang), callback_data="car_no"),
     )
     return markup

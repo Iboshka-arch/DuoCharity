@@ -82,6 +82,7 @@ TRANSLATIONS = {
         "vf_thanks_title": "Rahmat!",
         "vf_thanks_text": "Arizangiz muvaffaqiyatli qabul qilindi. Tez orada jamoamiz siz bilan bog'lanadi.",
         "vf_thanks_button": "Bosh sahifaga qaytish",
+        "vf_thanks_bot_note": "Agar arizangiz tasdiqlansa, Telegram orqali yozamiz — botimizda Start tugmasini bosing va xabarni kuting.",
 
         # Footer
         "footer_tagline": "Ezgu niyat bilan yaxshilik qil. DUO Charity — muhtojlarga yordam beruvchi xayriya jamg'armasi.",
@@ -219,6 +220,7 @@ TRANSLATIONS = {
         "vf_thanks_title": "Спасибо!",
         "vf_thanks_text": "Ваша заявка успешно принята. Скоро наша команда свяжется с вами.",
         "vf_thanks_button": "Вернуться на главную",
+        "vf_thanks_bot_note": "Если заявку одобрят, мы напишем в Telegram — нажмите Start у нашего бота и дождитесь сообщения.",
 
         "footer_tagline": "Делай добро с благими намерениями. DUO Charity — благотворительный фонд помощи нуждающимся.",
         "footer_contact": "Контакты",
@@ -363,6 +365,8 @@ TRANSLATIONS = {
         "vf_thanks_title": "Thank you!",
         "vf_thanks_text": "Your application has been successfully received. Our team will contact you soon.",
         "vf_thanks_button": "Back to home",
+        "vf_thanks_bot_note": "If approved, we'll message you on Telegram — press Start on our bot and wait for a message.",
+
 
         "footer_tagline": "Do good with good intentions. DUO Charity — a charitable foundation helping those in need.",
         "footer_contact": "Contact",
@@ -431,6 +435,8 @@ TRANSLATIONS = {
         "adm_volunteer_deleted": "Application deleted.",
     },
 }
+
+
 
 LANGUAGES = {
     "uz": {"label": "O'zbekcha", "flag": "🇺🇿"},

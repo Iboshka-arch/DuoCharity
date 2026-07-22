@@ -84,7 +84,9 @@ class Volunteer(db.Model):
 
     has_car = db.Column(db.Boolean, nullable=True)
     car_plate = db.Column(db.String(20), nullable=True)
-    pending_action = db.Column(db.String(50), nullable=True)  # напр. "awaiting_car_plate"
+    car_brand = db.Column(db.String(60), nullable=True)
+    language = db.Column(db.String(2), nullable=True, default="ru")
+    pending_action = db.Column(db.String(50), nullable=True)
 
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
