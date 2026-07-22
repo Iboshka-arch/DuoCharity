@@ -1,7 +1,7 @@
 from bot.handlers import bot
 from bot.config import ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID
 
-ADMIN_PANEL_URL = "https://duocharity.uz/admin/volunteers"
+ADMIN_PANEL_URL = "https://duo-charity.vercel.app/admin/volunteers"
 
 
 def notify_new_application(application):
