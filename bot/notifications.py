@@ -2,6 +2,8 @@ from telebot import types
 
 from bot.handlers import bot
 from bot.config import ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID
+from bot.actions import accept_application, decline_application
+from models import VolunteerApplication
 
 ADMIN_PANEL_URL = "https://duocharity.uz/admin"
 
