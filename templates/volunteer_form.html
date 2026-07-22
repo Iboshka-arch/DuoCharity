@@ -41,7 +41,7 @@
                         <input type="tel"
                                name="phone"
                                class="phone-input"
-                               placeholder="90 000 00 00"
+                               placeholder="99 000 00 00"
                                inputmode="numeric"
                                pattern="[0-9]{9}"
                                maxlength="9"
@@ -52,12 +52,12 @@
 
                 <div class="vf-field">
                     <label>{{ t('vf_telegram') }}</label>
-                    <input type="text" name="telegram" placeholder="@username">
+                    <input type="text" name="telegram" placeholder="@username" required>
                 </div>
 
                 <div class="vf-field">
                     <label>{{ t('vf_age') }}</label>
-                    <input type="number" name="age" placeholder="20" min="14" max="100">
+                    <input type="number" name="age" placeholder="20" min="14" max="50" required>
                 </div>
 
                 <div class="vf-field">
@@ -68,7 +68,7 @@
                             <span>Учусь</span>
                         </label>
                         <label class="radio-pill">
-                            <input type="radio" name="occupation" value="ishlayman">
+                            <input type="radio" name="occupation" value="ishlayman" >
                             <span>Работаю</span>
                         </label>
                     </div>
@@ -79,11 +79,11 @@
                 <h3>{{ t('vf_gender') }}</h3>
                 <div class="radio-row">
                     <label class="radio-pill">
-                        <input type="radio" name="gender" value="male">
+                        <input type="radio" name="gender" value="male" required>
                         <span>{{ t('vf_male') }}</span>
                     </label>
                     <label class="radio-pill">
-                        <input type="radio" name="gender" value="female">
+                        <input type="radio" name="gender" value="female" required>
                         <span>{{ t('vf_female') }}</span>
                     </label>
                 </div>

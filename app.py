@@ -202,8 +202,12 @@ def volunteer_submit():
     message = request.form.get("message", "").strip()
 
     if not full_name or not phone:
-        flash("Ism va telefon raqamingizni kiriting.", "error")
-        return redirect(url_for("volunteer_form"))
+    flash(get_translator(get_current_language())('vf_error_name_phone'), "error")
+    return redirect(url_for("volunteer_form"))
+
+if not gender or not age.isdigit():
+    flash(get_translator(get_current_language())('vf_error_required'), "error")
+    return redirect(url_for("volunteer_form"))
 
     cooldown_cutoff = datetime.utcnow() - timedelta(hours=24)
     recent_application = VolunteerApplication.query.filter(
@@ -212,9 +216,9 @@ def volunteer_submit():
     ).first()
 
     if recent_application:
-        flash("Siz oxirgi 24 soat ichida ariza yubordingiz. Iltimos, keyinroq qayta urinib ko'ring.", "error")
-        return redirect(url_for("volunteer_form"))
-
+    flash(get_translator(get_current_language())('vf_error_cooldown'), "error")
+    return redirect(url_for("volunteer_form"))
+    
     application = VolunteerApplication(
         full_name=full_name,
         phone=phone,
