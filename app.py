@@ -469,35 +469,6 @@ def admin_volunteer_delete(app_id):
 @login_required
 def admin_volunteer_accept(app_id):
     application = VolunteerApplication.query.get_or_404(app_id)
- 
-    existing = Volunteer.query.filter_by(phone=application.phone).first()
-    if existing:
-        flash("Этот номер телефона уже есть в списке волонтёров.", "error")
-        return redirect(url_for("admin_volunteers"))
- 
-    volunteer = Volunteer(
-        full_name=application.full_name,
-        phone=application.phone,
-        telegram=application.telegram,
-        gender=application.gender,
-        age=application.age,
-        occupation=application.occupation,
-    )
-    db.session.add(volunteer)
- 
-    application.status = "closed"
-    db.session.commit()
- 
-    flash(
-        f"{volunteer.full_name} добавлен(а) в список волонтёров. Попросите его/её написать /start боту DUO Charity в Telegram.",
-        "success",
-    )
-    return redirect(url_for("admin_volunteers"))
-
-@app.route("/admin/volunteers/<int:app_id>/accept", methods=["POST"])
-@login_required
-def admin_volunteer_accept(app_id):
-    application = VolunteerApplication.query.get_or_404(app_id)
 
     if application.status == "closed":
         flash("Эта заявка уже обработана.", "error")
@@ -511,7 +482,7 @@ def admin_volunteer_accept(app_id):
         flash("Этот номер телефона уже есть в списке волонтёров.", "error")
 
     return redirect(url_for("admin_volunteers"))
-
+    
 @app.route("/admin/active-volunteers")
 @login_required
 def admin_active_volunteers():
