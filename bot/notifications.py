@@ -33,34 +33,45 @@ def notify_new_application(application):
 
 ADMIN_CHAT_IDS = {str(ADMIN_GROUP_CHAT_ID), str(OWNER_CHAT_ID)}
 
+def safe_answer(call, text=None):
+    try:
+        bot.answer_callback_query(call.id, text) if text else bot.answer_callback_query(call.id)
+    except Exception as e:
+        print(f"Не удалось ответить на callback (вероятно, устарел): {e}")
+
+
 @bot.callback_query_handler(func=lambda call: call.data.startswith("app_accept_") or call.data.startswith("app_decline_"))
 def handle_admin_decision(call):
     if str(call.message.chat.id) not in ADMIN_CHAT_IDS:
-        bot.answer_callback_query(call.id, "Недостаточно прав.")
+        safe_answer(call, "Недостаточно прав.")
         return
-
-    from bot.actions import accept_application, decline_application
 
     app_id = int(call.data.rsplit("_", 1)[1])
     application = VolunteerApplication.query.get(app_id)
 
     if not application or application.status == "closed":
-        bot.answer_callback_query(call.id, "Заявка уже обработана.")
-        bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+        safe_answer(call, "Заявка уже обработана.")
+        try:
+            bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+        except Exception as e:
+            print(f"Не удалось убрать кнопки: {e}")
         return
 
     if call.data.startswith("app_accept_"):
         volunteer, created = accept_application(application)
-        bot.answer_callback_query(call.id, "Принято ✅")
+        safe_answer(call, "Принято ✅")
         note = "\n\n✅ Принят(а) в волонтёры" if created else "\n\n⚠️ Уже был(а) в списке волонтёров"
     else:
         decline_application(application)
-        bot.answer_callback_query(call.id, "Отклонено")
+        safe_answer(call, "Отклонено")
         note = "\n\n❌ Заявка отклонена"
 
-    bot.edit_message_text(
-        call.message.text + note,
-        call.message.chat.id,
-        call.message.message_id,
-        reply_markup=None,
-    )            
+    try:
+        bot.edit_message_text(
+            call.message.text + note,
+            call.message.chat.id,
+            call.message.message_id,
+            reply_markup=None,
+        )
+    except Exception as e:
+        print(f"Не удалось отредактировать сообщение: {e}")
