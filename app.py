@@ -201,7 +201,7 @@ def volunteer_submit():
     occupation = request.form.get("occupation", "").strip()
     message = request.form.get("message", "").strip()
 
-    if not full_name or not phone:
+if not full_name or not phone:
     flash(get_translator(get_current_language())('vf_error_name_phone'), "error")
     return redirect(url_for("volunteer_form"))
 
@@ -215,10 +215,10 @@ if not gender or not age.isdigit():
         VolunteerApplication.created_at > cooldown_cutoff,
     ).first()
 
-    if recent_application:
+if recent_application:
     flash(get_translator(get_current_language())('vf_error_cooldown'), "error")
     return redirect(url_for("volunteer_form"))
-    
+
     application = VolunteerApplication(
         full_name=full_name,
         phone=phone,
