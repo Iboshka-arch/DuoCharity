@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 from bot.handlers import bot
 from models import db, BotSpamTracker
 
-WINDOW_SECONDS = 5
-MAX_MESSAGES = 10
+WINDOW_SECONDS = 3
+MAX_MESSAGES = 3
 WARN_COOLDOWN_SECONDS = 15
 
 
@@ -25,7 +25,7 @@ def check_and_handle_spam(chat_id, message_id):
     tracker.message_count += 1
     ids = tracker.recent_message_ids.split(",") if tracker.recent_message_ids else []
     ids.append(str(message_id))
-    ids = ids[-10:]
+    ids = ids[-3:]
     tracker.recent_message_ids = ",".join(ids)
 
     is_spam = tracker.message_count > MAX_MESSAGES
