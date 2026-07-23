@@ -174,6 +174,7 @@ def handle_join_request(request):
         print(f"Не удалось обработать заявку на вступление: {e}")
 
         @bot.chat_join_request_handler()
+        
 def handle_join_request(request):
     if request.chat.id != int(VOLUNTEER_GROUP_CHAT_ID):
         return
