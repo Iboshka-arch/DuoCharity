@@ -168,28 +168,11 @@ def handle_join_request(request):
     try:
         if volunteer:
             bot.approve_chat_join_request(request.chat.id, request.from_user.id)
-        else:
-            bot.decline_chat_join_request(request.chat.id, request.from_user.id)
-    except Exception as e:
-        print(f"Не удалось обработать заявку на вступление: {e}")
 
-        @bot.chat_join_request_handler()
-        
-def handle_join_request(request):
-    if request.chat.id != int(VOLUNTEER_GROUP_CHAT_ID):
-        return
-
-    volunteer = Volunteer.query.filter_by(telegram_user_id=request.from_user.id).first()
-
-    try:
-        if volunteer:
-            bot.approve_chat_join_request(request.chat.id, request.from_user.id)
-
-            lang = volunteer.language or "ru"
             mention = f'<a href="tg://user?id={request.from_user.id}">{volunteer.full_name}</a>'
             bot.send_message(
                 request.chat.id,
-                bt("welcome_message", lang, mention=mention),
+                bt("welcome_message", "ru", mention=mention),
                 parse_mode="HTML",
             )
         else:
