@@ -104,3 +104,10 @@ class Volunteer(db.Model):
 
     def formatted_date(self):
         return self.created_at.strftime("%d.%m.%Y")
+
+class BotSpamTracker(db.Model):
+    telegram_chat_id = db.Column(db.BigInteger, primary_key=True)
+    window_start = db.Column(db.DateTime, default=datetime.utcnow)
+    message_count = db.Column(db.Integer, default=0)
+    recent_message_ids = db.Column(db.String(200), nullable=True)
+    warned_at = db.Column(db.DateTime, nullable=True)

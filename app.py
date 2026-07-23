@@ -12,6 +12,7 @@ import telebot
 from bot.handlers import bot as telegram_bot
 from bot.notifications import notify_new_application
 from bot.actions import accept_application
+from bot.spam_guard import check_and_handle_spam
 
 from io import BytesIO
 import openpyxl
@@ -56,31 +57,6 @@ def allowed_file(filename):
         return False
     ext = filename.rsplit(".", 1)[1].lower()
     return ext in ALLOWED_EXTENSIONS
-
-@app.route("/test-imagekit-upload")
-def test_imagekit_upload():
-    try:
-        from imagekitio import ImageKit
-
-        client = ImageKit(
-            private_key=os.environ.get("IMAGEKIT_PRIVATE_KEY"),
-        )
-
-        result = client.files.upload(
-            file=b"test",
-            file_name="test.txt",
-        )
-
-        return f"""
-OK!
-
-URL: {result.url}
-ID: {result.file_id}
-"""
-
-    except Exception as e:
-        import traceback
-        return f"ERROR:\n{traceback.format_exc()}"
 
 def save_uploaded_file(file_storage):
     if not file_storage or file_storage.filename == "":
@@ -140,9 +116,18 @@ def inject_translator():
 
 @app.route("/bot/webhook", methods=["POST"])
 def bot_webhook():
+    if request.headers.get("X-Telegram-Bot-Api-Secret-Token") != BOT_WEBHOOK_SECRET:
+        return "", 403
+
     try:
         json_data = request.get_json()
         update = telebot.types.Update.de_json(json_data)
+
+        message = update.message
+        if message and message.chat.type == "private":
+            if check_and_handle_spam(message.chat.id, message.message_id):
+                return "", 200
+
         telegram_bot.process_new_updates([update])
     except Exception as e:
         print(f"Ошибка обработки апдейта бота: {e}")
