@@ -29,7 +29,7 @@ def accept_application(application):
     if volunteer.telegram_chat_id:
         lang = volunteer.language or "ru"
         try:
-            bot.send_message(volunteer.telegram_chat_id, bt("application_accepted", lang, name=volunteer.full_name))
+            bot.safe_send_message(volunteer.telegram_chat_id, bt("application_accepted", lang, name=volunteer.full_name))
 
             from bot.config import VOLUNTEER_GROUP_CHAT_ID
             invite = bot.create_chat_invite_link(
@@ -37,11 +37,11 @@ def accept_application(application):
                 creates_join_request=True,
                 name=f"volunteer-{volunteer.id}",
             )
-            bot.send_message(volunteer.telegram_chat_id, bt("group_invite", lang, link=invite.invite_link))
+            bot.safe_send_message(volunteer.telegram_chat_id, bt("group_invite", lang, link=invite.invite_link))
 
             if volunteer.has_car is None:
                 from bot.keyboards import car_question_keyboard
-                bot.send_message(volunteer.telegram_chat_id, bt("ask_car", lang), reply_markup=car_question_keyboard(lang))
+                bot.safe_send_message(volunteer.telegram_chat_id, bt("ask_car", lang), reply_markup=car_question_keyboard(lang))
         except Exception as e:
             print(f"Не удалось уведомить волонтёра: {e}")
 

@@ -16,9 +16,16 @@ def normalize_phone(raw):
     return digits[-9:] if len(digits) >= 9 else digits
 
 
+def safe_send_message(chat_id, *args, **kwargs):
+    try:
+        return bot.send_message(chat_id, *args, **kwargs)
+    except Exception as e:
+        print(f"Не удалось отправить сообщение: {e}")
+
+
 @bot.message_handler(commands=["start"])
 def handle_start(message):
-    bot.send_message(message.chat.id, bt("start_greeting", "ru"), reply_markup=phone_request_keyboard())
+    safe_send_message(message.chat.id, bt("start_greeting", "ru"), reply_markup=phone_request_keyboard())
 
 
 @bot.message_handler(content_types=["contact"])
@@ -179,3 +186,9 @@ def handle_join_request(request):
             bot.decline_chat_join_request(request.chat.id, request.from_user.id)
     except Exception as e:
         print(f"Не удалось обработать заявку на вступление: {e}")
+
+@bot.message_handler(content_types=["sticker", "photo", "voice", "video", "document", "audio"])
+def handle_other_content(message):
+    volunteer = Volunteer.query.filter_by(telegram_chat_id=message.chat.id).first()
+    lang = volunteer.language if volunteer and volunteer.language else "ru"
+    safe_send_message(message.chat.id, bt("fallback", lang))

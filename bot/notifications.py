@@ -27,7 +27,7 @@ def notify_new_application(application):
         if not chat_id:
             continue
         try:
-            bot.send_message(chat_id, text, reply_markup=keyboard)
+            safe_send_message(chat_id, text, reply_markup=keyboard)
         except Exception as e:
             print(f"Не удалось отправить уведомление в {chat_id}: {e}")
 
