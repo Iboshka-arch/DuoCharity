@@ -149,18 +149,18 @@ def handle_text(message):
     volunteer = Volunteer.query.filter_by(telegram_chat_id=message.chat.id).first()
     lang = volunteer.language if volunteer and volunteer.language else "ru"
 
-if volunteer and volunteer.pending_action == "awaiting_car_brand":
-    volunteer.car_brand = message.text.strip()[:60]
-    volunteer.pending_action = "awaiting_car_plate"
-    db.session.commit()
-    bot.send_message(message.chat.id, bt("ask_car_plate", lang))
-    return
+    if volunteer and volunteer.pending_action == "awaiting_car_brand":
+        volunteer.car_brand = message.text.strip()[:60]
+        volunteer.pending_action = "awaiting_car_plate"
+        db.session.commit()
+        bot.send_message(message.chat.id, bt("ask_car_plate", lang))
+        return
 
-if volunteer and volunteer.pending_action == "awaiting_car_plate":
+    if volunteer and volunteer.pending_action == "awaiting_car_plate":
         volunteer.car_plate = message.text.strip()[:20]
         volunteer.pending_action = None
         db.session.commit()
-        bot.send_message(message.chat.id, bt("car_saved", lang))
+        bot.send_message(message.chat.id, bt("car_saved", lang))            
         return
 
     bot.send_message(message.chat.id, bt("fallback", lang))
