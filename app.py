@@ -140,9 +140,6 @@ def inject_translator():
 
 @app.route("/bot/webhook", methods=["POST"])
 def bot_webhook():
-    if request.headers.get("X-Telegram-Bot-Api-Secret-Token") != BOT_WEBHOOK_SECRET:
-        return "", 403
-
     try:
         json_data = request.get_json()
         update = telebot.types.Update.de_json(json_data)
@@ -150,7 +147,7 @@ def bot_webhook():
     except Exception as e:
         print(f"Ошибка обработки апдейта бота: {e}")
     return "", 200
-
+    
 @app.route("/set-language/<lang_code>")
 def set_language(lang_code):
     if lang_code not in LANGUAGES:
