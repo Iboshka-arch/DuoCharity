@@ -1,14 +1,14 @@
-from telebot import types
-
 from bot.handlers import bot
 from bot.translations import bt
-from bot.keyboards import car_question_keyboard
 from models import db, Volunteer
 
 
 def accept_application(application):
     existing = Volunteer.query.filter_by(phone=application.phone).first()
+
     if existing:
+        db.session.delete(application)
+        db.session.commit()
         return existing, False
 
     volunteer = Volunteer(
@@ -20,20 +20,28 @@ def accept_application(application):
         occupation=application.occupation,
         telegram_user_id=application.telegram_user_id,
         telegram_chat_id=application.telegram_chat_id,
+        language=application.language,
     )
     db.session.add(volunteer)
-    application.status = "closed"
+    db.session.delete(application)
     db.session.commit()
 
     if volunteer.telegram_chat_id:
-        volunteer.pending_action = "awaiting_language"
-        db.session.commit()
+        lang = volunteer.language or "ru"
         try:
-            bot.send_message(
-                volunteer.telegram_chat_id,
-                bt("auto_accepted_choose_language"),
-                reply_markup=language_keyboard(),
+            bot.send_message(volunteer.telegram_chat_id, bt("application_accepted", lang, name=volunteer.full_name))
+
+            from bot.config import VOLUNTEER_GROUP_CHAT_ID
+            invite = bot.create_chat_invite_link(
+                int(VOLUNTEER_GROUP_CHAT_ID),
+                creates_join_request=True,
+                name=f"volunteer-{volunteer.id}",
             )
+            bot.send_message(volunteer.telegram_chat_id, bt("group_invite", lang, link=invite.invite_link))
+
+            if volunteer.has_car is None:
+                from bot.keyboards import car_question_keyboard
+                bot.send_message(volunteer.telegram_chat_id, bt("ask_car", lang), reply_markup=car_question_keyboard(lang))
         except Exception as e:
             print(f"Не удалось уведомить волонтёра: {e}")
 
@@ -41,5 +49,5 @@ def accept_application(application):
 
 
 def decline_application(application):
-    application.status = "closed"
+    db.session.delete(application)
     db.session.commit()

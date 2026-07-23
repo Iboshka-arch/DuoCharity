@@ -49,7 +49,7 @@ def handle_admin_decision(call):
     app_id = int(call.data.rsplit("_", 1)[1])
     application = VolunteerApplication.query.get(app_id)
 
-    if not application or application.status == "closed":
+    if not application:
         safe_answer(call, "Заявка уже обработана.")
         try:
             bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)

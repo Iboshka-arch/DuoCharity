@@ -16,7 +16,8 @@ BOT_TEXTS = {
         "pending_review": "Rahmat! Arizangiz ko'rib chiqilmoqda, iltimos kuting. ⏳\nСпасибо! Ваша заявка на рассмотрении, пожалуйста, подождите. ⏳\n\nIltimos, tilni tanlang / Пожалуйста, выберите язык:",
         "pending_confirmed": "Yaxshi! Arizangiz ko'rib chiqilishi bilan sizga darhol yozamiz.",
         "application_accepted": "Tabriklaymiz, {name}! Arizangiz tasdiqlandi, endi siz DUO Charity rasmiy volontyorisiz. 🎉",
-        "group_invite": "Volontyorlar guruhimizga qo'shiling: {link}\n(havola faqat siz uchun tekshiriladi — boshqa odamga uzatib bo'lmaydi)", 
+        "group_invite": "Volontyorlar guruhimizga qo'shiling: {link}\n(havola faqat siz uchun tekshiriladi — boshqa odamga uzatib bo'lmaydi)",
+        "welcome_message": "Tanishtiramiz! {mention} endi jamoamiz a'zosi! Iltimos, yaxshi kutib oling 🤝\nQadalgan xabarni albatta o'qing, u yerda tadbirlarga qanday yozilish haqida ko'rsatma bor.", 
     },
     "ru": {
         "start_greeting": "Здравствуйте! 👋 Добро пожаловать в бота DUO Charity. Чтобы присылать уведомления, поделитесь номером телефона.",
@@ -36,6 +37,7 @@ BOT_TEXTS = {
         "pending_confirmed": "Хорошо! Как только заявку рассмотрят, мы сразу напишем вам.",
         "application_accepted": "Поздравляем, {name}! Заявку одобрили, теперь вы официальный волонтёр DUO Charity. 🎉",
         "group_invite": "Присоединяйтесь к нашей группе волонтёров: {link}\n(ссылка проверяется — переслать её другому не получится, доступ дадим только вам)",
+        "welcome_message": "Встречайте! {mention} теперь часть нашей команды! Просим полюбить и жаловать 🤝\nОбязательно прочитайте закреплённое сообщение, там инструкция, как регистрироваться на мероприятия.",
     },  
 }
 

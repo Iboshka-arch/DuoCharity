@@ -57,10 +57,10 @@ def handle_contact(message):
     if application:
         application.telegram_user_id = message.from_user.id
         application.telegram_chat_id = message.chat.id
+        application.pending_action = "awaiting_language"
         db.session.commit()
 
-        from bot.actions import accept_application
-        accept_application(application)
+        bot.send_message(message.chat.id, bt("pending_review"), reply_markup=language_keyboard())
         return
 
     bot.send_message(
@@ -96,6 +96,16 @@ def handle_language_choice(call):
 
         if volunteer.has_car is None:
             bot.send_message(call.message.chat.id, bt("ask_car", lang), reply_markup=car_question_keyboard(lang))
+        return
+
+    application = VolunteerApplication.query.filter_by(telegram_chat_id=call.message.chat.id, pending_action="awaiting_language").first()
+    if application:
+        application.language = lang
+        application.pending_action = None
+        db.session.commit()
+
+        bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
+        bot.send_message(call.message.chat.id, bt("pending_confirmed", lang))
         return
 
     bot.edit_message_reply_markup(call.message.chat.id, call.message.message_id, reply_markup=None)
@@ -158,6 +168,29 @@ def handle_join_request(request):
     try:
         if volunteer:
             bot.approve_chat_join_request(request.chat.id, request.from_user.id)
+        else:
+            bot.decline_chat_join_request(request.chat.id, request.from_user.id)
+    except Exception as e:
+        print(f"Не удалось обработать заявку на вступление: {e}")
+
+        @bot.chat_join_request_handler()
+def handle_join_request(request):
+    if request.chat.id != int(VOLUNTEER_GROUP_CHAT_ID):
+        return
+
+    volunteer = Volunteer.query.filter_by(telegram_user_id=request.from_user.id).first()
+
+    try:
+        if volunteer:
+            bot.approve_chat_join_request(request.chat.id, request.from_user.id)
+
+            lang = volunteer.language or "ru"
+            mention = f'<a href="tg://user?id={request.from_user.id}">{volunteer.full_name}</a>'
+            bot.send_message(
+                request.chat.id,
+                bt("welcome_message", lang, mention=mention),
+                parse_mode="HTML",
+            )
         else:
             bot.decline_chat_join_request(request.chat.id, request.from_user.id)
     except Exception as e:
