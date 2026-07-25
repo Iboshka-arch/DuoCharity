@@ -385,6 +385,8 @@
     --shadow-sm: 0 4px 12px rgba(15, 31, 77, 0.06);
     --shadow: 0 12px 32px rgba(15, 31, 77, 0.10);
     --shadow-lg: 0 24px 60px rgba(15, 31, 77, 0.16);
+    --pattern-gold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cg fill='none' stroke='%23F5B942' stroke-width='1.5' opacity='0.4'%3E%3Crect x='30' y='30' width='80' height='80'/%3E%3Crect x='30' y='30' width='80' height='80' transform='rotate(45 70 70)'/%3E%3Ccircle cx='0' cy='0' r='20'/%3E%3Ccircle cx='140' cy='0' r='20'/%3E%3Ccircle cx='0' cy='140' r='20'/%3E%3Ccircle cx='140' cy='140' r='20'/%3E%3C/g%3E%3C/svg%3E");
+    --pattern-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cg fill='none' stroke='%23FFFFFF' stroke-width='1.5' opacity='0.12'%3E%3Crect x='30' y='30' width='80' height='80'/%3E%3Crect x='30' y='30' width='80' height='80' transform='rotate(45 70 70)'/%3E%3Ccircle cx='0' cy='0' r='20'/%3E%3Ccircle cx='140' cy='0' r='20'/%3E%3Ccircle cx='0' cy='140' r='20'/%3E%3Ccircle cx='140' cy='140' r='20'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 * {
@@ -400,7 +402,10 @@ html {
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     color: var(--text);
-    background: var(--bg);
+    background-color: var(--bg);
+    background-image: var(--pattern-gold);
+    background-size: 140px 140px;
+    background-attachment: fixed;
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -618,8 +623,11 @@ h2 {
 
 .hero {
     padding: 64px 0 80px;
-    background: radial-gradient(ellipse 80% 60% at 20% 0%, var(--bg-tint) 0%, transparent 60%),
+    background-image: var(--pattern-gold),
+                radial-gradient(ellipse 80% 60% at 20% 0%, var(--bg-tint) 0%, transparent 60%),
                 linear-gradient(180deg, var(--bg-soft) 0%, #fff 100%);
+    background-size: 140px 140px, auto, auto;
+    background-repeat: repeat, no-repeat, no-repeat;
     position: relative;
     overflow: hidden;
 }
@@ -664,7 +672,10 @@ h2 {
 
 
 .stats {
-    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+    background-image: var(--pattern-light),
+                linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+    background-size: 140px 140px, auto;
+    background-repeat: repeat, no-repeat;
     padding: 52px 0;
     position: relative;
     overflow: hidden;
@@ -883,7 +894,10 @@ h2 {
 
 .donate {
     padding: 88px 0;
-    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+    background-image: var(--pattern-light),
+                linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+    background-size: 140px 140px, auto;
+    background-repeat: repeat, no-repeat;
     color: #fff;
     text-align: center;
     position: relative;
@@ -1023,7 +1037,10 @@ h2 {
 }
 
 .site-footer {
-    background: linear-gradient(180deg, var(--navy-dark) 0%, #0a1638 100%);
+    background-image: var(--pattern-light),
+                linear-gradient(180deg, var(--navy-dark) 0%, #0a1638 100%);
+    background-size: 140px 140px, auto;
+    background-repeat: repeat, no-repeat;
     color: rgba(255, 255, 255, 0.85);
     padding: 64px 0 28px;
 }
