@@ -1,9 +1,0 @@
-venv/
-__pycache__/
-*.pyc
-duocharity.db
-static/uploads/*
-!static/uploads/.gitkeep
-.DS_Store
-Thumbs.db
-.env
