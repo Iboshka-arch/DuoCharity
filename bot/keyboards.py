@@ -24,3 +24,13 @@ def car_question_keyboard(lang="ru"):
         types.InlineKeyboardButton(bt("car_no", lang), callback_data="car_no"),
     )
     return markup
+
+
+def car_confirm_keyboard(lang="ru"):
+    from bot.translations import bt
+    markup = types.InlineKeyboardMarkup()
+    markup.add(
+        types.InlineKeyboardButton(bt("car_yes", lang), callback_data="car_confirm_yes"),
+        types.InlineKeyboardButton(bt("car_no", lang), callback_data="car_confirm_no"),
+    )
+    return markup

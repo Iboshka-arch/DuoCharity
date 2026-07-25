@@ -115,3 +115,4 @@ class BotSpamTracker(db.Model):
 class BotStartCooldown(db.Model):
     telegram_chat_id = db.Column(db.BigInteger, primary_key=True)
     last_start_at = db.Column(db.DateTime, default=datetime.utcnow)
+    language = db.Column(db.String(2), nullable=True)

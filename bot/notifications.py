@@ -1,3 +1,5 @@
+import html
+
 from telebot import types
 
 from bot.handlers import bot
@@ -17,18 +19,18 @@ def notify_new_application(application):
     )
 
     text = (
-        "📥 Новая заявка на волонтёрство\n\n"
-        f"Имя: {application.full_name}\n"
-        f"Телефон: {application.phone}\n"
-        f"Telegram: {application.telegram or '—'}\n\n"
-        f"Панель: {ADMIN_PANEL_URL}"
+        "📥 <b>Новая заявка на волонтёрство</b>\n\n"
+        f"👤 <b>Имя:</b> {html.escape(application.full_name)}\n"
+        f"📞 <b>Телефон:</b> {html.escape(application.phone)}\n"
+        f"✈️ <b>Telegram:</b> {html.escape(application.telegram) if application.telegram else '—'}\n\n"
+        f"🔗 {ADMIN_PANEL_URL}"
     )
 
     for chat_id in (ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID):
         if not chat_id:
             continue
         try:
-            safe_send_message(chat_id, text, reply_markup=keyboard)
+            safe_send_message(chat_id, text, reply_markup=keyboard, parse_mode="HTML")
         except Exception as e:
             print(f"Не удалось отправить уведомление в {chat_id}: {e}")
 
@@ -69,10 +71,11 @@ def handle_admin_decision(call):
 
     try:
         bot.edit_message_text(
-            call.message.text + note,
+            call.message.html_text + note,
             call.message.chat.id,
             call.message.message_id,
             reply_markup=None,
+            parse_mode="HTML",
         )
     except Exception as e:
         print(f"Не удалось отредактировать сообщение: {e}")
