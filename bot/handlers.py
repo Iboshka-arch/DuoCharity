@@ -1,14 +1,18 @@
+import html
+from datetime import datetime, timedelta
+
 import telebot
 from telebot import types
 
 from bot.config import BOT_TOKEN, VOLUNTEER_GROUP_CHAT_ID
 from bot.keyboards import phone_request_keyboard, car_question_keyboard, language_keyboard
 from bot.translations import bt
-from models import db, Volunteer, VolunteerApplication 
+from models import db, Volunteer, VolunteerApplication, BotStartCooldown
 
 bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
 
 VOLUNTEER_FORM_URL = "https://duo-charity.vercel.app/volunteer-form"
+START_COOLDOWN_SECONDS = 5
 
 
 def normalize_phone(raw):
@@ -25,7 +29,19 @@ def safe_send_message(chat_id, *args, **kwargs):
 
 @bot.message_handler(commands=["start"])
 def handle_start(message):
-    safe_send_message(message.chat.id, bt("start_greeting", "ru"), reply_markup=phone_request_keyboard())
+    now = datetime.utcnow()
+    cooldown = BotStartCooldown.query.get(message.chat.id)
+
+    if cooldown and (now - cooldown.last_start_at) < timedelta(seconds=START_COOLDOWN_SECONDS):
+        return
+
+    if cooldown:
+        cooldown.last_start_at = now
+    else:
+        db.session.add(BotStartCooldown(telegram_chat_id=message.chat.id, last_start_at=now))
+    db.session.commit()
+
+    safe_send_message(message.chat.id, bt("start_greeting", "ru"), reply_markup=phone_request_keyboard(), parse_mode="HTML")
 
 
 @bot.message_handler(content_types=["contact"])
@@ -97,7 +113,7 @@ def handle_language_choice(call):
                 creates_join_request=True,
                 name=f"volunteer-{volunteer.id}",
             )
-            bot.send_message(call.message.chat.id, bt("group_invite", lang, link=invite.invite_link))
+            bot.send_message(call.message.chat.id, bt("group_invite", lang, link=invite.invite_link), parse_mode="HTML")
         except Exception as e:
             print(f"Не удалось создать инвайт-ссылку: {e}")
 
@@ -176,7 +192,7 @@ def handle_join_request(request):
         if volunteer:
             bot.approve_chat_join_request(request.chat.id, request.from_user.id)
 
-            mention = f'<a href="tg://user?id={request.from_user.id}">{volunteer.full_name}</a>'
+            mention = f'<a href="tg://user?id={request.from_user.id}">{html.escape(volunteer.full_name)}</a>'
             bot.send_message(
                 request.chat.id,
                 bt("welcome_message", "ru", mention=mention),

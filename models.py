@@ -111,3 +111,7 @@ class BotSpamTracker(db.Model):
     message_count = db.Column(db.Integer, default=0)
     recent_message_ids = db.Column(db.String(200), nullable=True)
     warned_at = db.Column(db.DateTime, nullable=True)
+
+class BotStartCooldown(db.Model):
+    telegram_chat_id = db.Column(db.BigInteger, primary_key=True)
+    last_start_at = db.Column(db.DateTime, default=datetime.utcnow)
