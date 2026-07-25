@@ -1,13 +1,13 @@
 {% extends "admin/base.html" %}
-{% block title %}Действующие волонтёры — DUO Charity Admin{% endblock %}
+{% block title %}{{ t('adm_active_volunteers') }} — DUO Charity Admin{% endblock %}
 
 {% block content %}
     <div class="page-head">
         <div>
-            <h1 class="page-title">Действующие волонтёры</h1>
-            <p class="page-subtitle">{{ volunteers|length }} волонтёров в базе</p>
+            <h1 class="page-title">{{ t('adm_active_volunteers') }}</h1>
+            <p class="page-subtitle">{{ volunteers|length }} {{ t('adm_active_volunteers_count') }}</p>
         </div>
-        <a href="{{ url_for('admin_volunteers_export') }}" class="btn btn-outline">Скачать Excel</a>
+        <a href="{{ url_for('admin_active_volunteers_export') }}" class="btn btn-outline">{{ t('adm_download_excel') }}</a>
     </div>
 
     {% if volunteers %}
@@ -15,43 +15,43 @@
         <table class="admin-table admin-table-responsive">
             <thead>
                 <tr>
-                    <th>Имя</th>
-                    <th>Телефон</th>
-                    <th>Авто</th>
-                    <th>Бот</th>
+                    <th>{{ t('adm_col_name') }}</th>
+                    <th>{{ t('adm_col_phone') }}</th>
+                    <th>{{ t('adm_col_car') }}</th>
+                    <th>{{ t('adm_col_bot') }}</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for v in volunteers %}
                 <tr>
-                    <td data-label="Имя">
+                    <td data-label="{{ t('adm_col_name') }}">
                         <strong>{{ v.full_name }}</strong>
                         {% if v.occupation %}<p class="table-excerpt">{{ v.occupation }}</p>{% endif %}
                     </td>
-                    <td data-label="Телефон">
+                    <td data-label="{{ t('adm_col_phone') }}">
                         <a href="tel:{{ v.phone }}">{{ v.phone }}</a>
                     </td>
-                    <td data-label="Авто">
+                    <td data-label="{{ t('adm_col_car') }}">
                         {% if v.has_car %}
-                            <span class="tag tag-primary">{{ v.car_plate or 'номер не указан' }}</span>
+                            <span class="tag tag-primary">{{ v.car_plate or t('adm_car_no_plate') }}</span>
                         {% elif v.has_car == false %}
-                            <span class="tag">нет</span>
+                            <span class="tag">{{ t('adm_car_no') }}</span>
                         {% else %}
                             <span class="tag">—</span>
                         {% endif %}
                     </td>
-                    <td data-label="Бот">
+                    <td data-label="{{ t('adm_col_bot') }}">
                         {% if v.telegram_chat_id %}
-                            <span class="status-badge status-badge-closed">подключён</span>
+                            <span class="status-badge status-badge-closed">{{ t('adm_bot_connected') }}</span>
                         {% else %}
-                            <span class="status-badge status-badge-new">не подключён</span>
+                            <span class="status-badge status-badge-new">{{ t('adm_bot_not_connected') }}</span>
                         {% endif %}
                     </td>
                     <td class="table-actions" data-label="">
                         <form method="post" action="{{ url_for('admin_active_volunteer_delete', volunteer_id=v.id) }}"
-                              onsubmit="return confirm('Удалить этого волонтёра?');">
-                            <button type="submit" class="btn-small btn-small-danger">Удалить</button>
+                              onsubmit="return confirm('{{ t('adm_confirm_delete_active_volunteer') }}');">
+                            <button type="submit" class="btn-small btn-small-danger">{{ t('adm_delete') }}</button>
                         </form>
                     </td>
                 </tr>
@@ -60,6 +60,6 @@
         </table>
     </div>
     {% else %}
-    <p class="empty-state-admin">Пока нет ни одного действующего волонтёра. Принимайте заявки на странице «Волонтёры».</p>
+    <p class="empty-state-admin">{{ t('adm_no_active_volunteers') }}</p>
     {% endif %}
 {% endblock %}

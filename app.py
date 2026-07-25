@@ -46,12 +46,6 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db.init_app(app)
 
-@app.route("/debug-db")
-def debug_db():
-    import os
-    db_url = os.environ.get("DATABASE_URL", "NOT SET")
-    return f"DATABASE_URL starts with: {db_url[:30] if db_url != 'NOT SET' else 'NOT SET'}"
-        
 def allowed_file(filename):
     if not filename or "." not in filename:
         return False
@@ -397,14 +391,14 @@ def admin_hero_delete(image_id):
     return redirect(url_for("admin_hero"))
 
 @app.route('/admin/about-photo/delete', methods=['POST'])
+@login_required
 def admin_about_photo_delete():
-    # Находим настройку в базе данных и очищаем путь к фото
-    setting = SiteSetting.query.filter_by(key='about_photo').first() # или как у вас устроена модель settings
+    setting = SiteSetting.query.filter_by(key='about_photo').first()
     if setting:
-        setting.value = '' # Удаляем путь к файлу из настроек
+        setting.value = ''
         db.session.commit()
         flash('Фото успешно удалено', 'success')
-    return redirect(url_for('admin_hero')) # Перенаправление обратно на страницу
+    return redirect(url_for('admin_hero'))
 
 
 @app.route("/admin/hero/about-photo", methods=["POST"])
@@ -524,6 +518,47 @@ def admin_settings():
 @app.route("/admin/volunteers/export")
 @login_required
 def admin_volunteers_export():
+    applications = VolunteerApplication.query.order_by(VolunteerApplication.created_at.desc()).all()
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Заявки"
+
+    headers = ["ФИО", "Телефон", "Telegram", "Пол", "Возраст", "Занятость", "Сообщение", "Статус", "Дата подачи"]
+    ws.append(headers)
+
+    for a in applications:
+        gender_label = "Мужской" if a.gender == "male" else "Женский" if a.gender == "female" else ""
+        ws.append([
+            a.full_name,
+            a.phone,
+            a.telegram or "",
+            gender_label,
+            a.age or "",
+            a.occupation or "",
+            a.message or "",
+            a.status or "",
+            a.created_at.strftime("%d.%m.%Y"),
+        ])
+
+    for column_cells in ws.columns:
+        length = max(len(str(cell.value)) if cell.value else 0 for cell in column_cells)
+        ws.column_dimensions[column_cells[0].column_letter].width = max(12, length + 2)
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="duo_applications.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+
+@app.route("/admin/active-volunteers/export")
+@login_required
+def admin_active_volunteers_export():
     volunteers = Volunteer.query.order_by(Volunteer.created_at.desc()).all()
 
     wb = openpyxl.Workbook()
@@ -535,6 +570,7 @@ def admin_volunteers_export():
 
     for v in volunteers:
         gender_label = "Мужской" if v.gender == "male" else "Женский" if v.gender == "female" else ""
+        car_label = "Да" if v.has_car else ("Нет" if v.has_car is False else "Не указано")
         ws.append([
             v.full_name,
             v.phone,
@@ -542,7 +578,7 @@ def admin_volunteers_export():
             gender_label,
             v.age or "",
             v.occupation or "",
-            "Да" if v.has_car else "Нет",
+            car_label,
             v.car_plate or "",
             v.formatted_date(),
         ])

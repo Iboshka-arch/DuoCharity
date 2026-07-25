@@ -7,7 +7,7 @@
             <h1 class="page-title">{{ t('adm_volunteers') }}</h1>
             <p class="page-subtitle">{{ applications|length }} {{ t('adm_applications_count') }}</p>
         </div>
-        <a href="{{ url_for('admin_volunteers_export') }}" class="btn btn-outline">Скачать Excel</a>
+        <a href="{{ url_for('admin_volunteers_export') }}" class="btn btn-outline">{{ t('adm_download_excel') }}</a>
     </div>
 
     {% if applications %}
@@ -64,7 +64,7 @@
                     <form method="post"
                           action="{{ url_for('admin_volunteer_accept', app_id=app.id) }}">
                         <button type="submit" class="btn btn-primary">
-                            Принять волонтёра
+                            {{ t('adm_accept_volunteer') }}
                         </button>
                     </form>
 

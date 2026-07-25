@@ -65,11 +65,11 @@
                     <div class="radio-row">
                         <label class="radio-pill">
                             <input type="radio" name="occupation" value="talaba">
-                            <span>Учусь</span>
+                            <span>{{ t('vf_occupation_study') }}</span>
                         </label>
                         <label class="radio-pill">
                             <input type="radio" name="occupation" value="ishlayman" >
-                            <span>Работаю</span>
+                            <span>{{ t('vf_occupation_work') }}</span>
                         </label>
                     </div>
                 </div>
@@ -100,9 +100,9 @@
                 <label class="consent-checkbox">
                     <input type="checkbox" name="privacy_consent" required>
                     <span>
-                        Я согласен(а) с
+                        {{ t('vf_consent_prefix') }}
                         <a href="{{ url_for('privacy_policy') }}" target="_blank">
-                            Политикой обработки персональных данных
+                            {{ t('vf_consent_link_text') }}
                         </a>
                     </span>
                 </label>
