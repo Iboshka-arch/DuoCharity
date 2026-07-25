@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import telebot
 from telebot import types
 
-from bot.config import BOT_TOKEN, VOLUNTEER_GROUP_CHAT_ID
+from bot.config import BOT_TOKEN, VOLUNTEER_GROUP_CHAT_ID, ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID
 from bot.keyboards import phone_request_keyboard, car_question_keyboard, car_confirm_keyboard, language_keyboard
 from bot.translations import bt
 from models import db, Volunteer, VolunteerApplication, BotStartCooldown
@@ -272,12 +272,25 @@ def handle_join_request(request):
             mention = f'<a href="tg://user?id={request.from_user.id}">{html.escape(volunteer.full_name)}</a>'
             text = bt("welcome_message", "ru", mention=mention)
 
-            if volunteer.has_car and (volunteer.car_brand or volunteer.car_plate):
+            car_line = "❓ Не указано"
+            if volunteer.has_car:
                 brand = html.escape(volunteer.car_brand) if volunteer.car_brand else "—"
                 plate = html.escape(volunteer.car_plate) if volunteer.car_plate else "—"
+                car_line = f"{brand} ({plate})"
                 text += bt("welcome_car_line", "ru", brand=brand, plate=plate)
+            elif volunteer.has_car is False:
+                car_line = "Без авто"
 
             bot.send_message(request.chat.id, text, parse_mode="HTML")
+
+            admin_text = (
+                f"✅ <b>{html.escape(volunteer.full_name)}</b> вступил(а) в группу волонтёров.\n"
+                f"🚗 Авто: {car_line}"
+            )
+            for chat_id in (ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID):
+                if not chat_id:
+                    continue
+                safe_send_message(chat_id, admin_text, parse_mode="HTML")
         else:
             bot.decline_chat_join_request(request.chat.id, request.from_user.id)
     except Exception as e:
