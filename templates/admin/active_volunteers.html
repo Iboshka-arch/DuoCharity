@@ -10,6 +10,14 @@
         <a href="{{ url_for('admin_active_volunteers_export') }}" class="btn btn-outline">{{ t('adm_download_excel') }}</a>
     </div>
 
+    <form method="get" class="admin-search-form">
+        <input type="text" name="q" placeholder="{{ t('adm_search_placeholder') }}" value="{{ search_query }}">
+        <button type="submit" class="btn btn-outline">{{ t('adm_search_btn') }}</button>
+        {% if search_query %}
+        <a href="{{ url_for('admin_active_volunteers') }}" class="btn-small">{{ t('adm_cancel') }}</a>
+        {% endif %}
+    </form>
+
     {% if volunteers %}
     <div class="admin-table-wrapper">
         <table class="admin-table admin-table-responsive">
@@ -59,6 +67,8 @@
             </tbody>
         </table>
     </div>
+    {% elif search_query %}
+    <p class="empty-state-admin">{{ t('adm_no_search_results') }}</p>
     {% else %}
     <p class="empty-state-admin">{{ t('adm_no_active_volunteers') }}</p>
     {% endif %}

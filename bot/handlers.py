@@ -109,6 +109,22 @@ def handle_language_change(call):
     bot.send_message(chat_id, bt("language_changed", lang))
 
 
+@bot.message_handler(commands=["base"])
+def handle_base_command(message):
+    if not OWNER_CHAT_ID or str(message.chat.id) != str(OWNER_CHAT_ID):
+        return
+
+    from excel_export import build_active_volunteers_workbook
+
+    volunteers = Volunteer.query.order_by(Volunteer.created_at.desc()).all()
+    output = build_active_volunteers_workbook(volunteers)
+
+    try:
+        bot.send_document(message.chat.id, output, visible_file_name="duo_volunteers.xlsx")
+    except Exception as e:
+        print(f"Не удалось отправить excel-базу владельцу: {e}")
+
+
 @bot.message_handler(content_types=["contact"])
 def handle_contact(message):
     contact = message.contact
@@ -225,9 +241,9 @@ def handle_car_answer(call):
 
     if call.data == "car_yes":
         volunteer.has_car = True
-        volunteer.pending_action = "awaiting_car_brand"
+        msg = bot.send_message(call.message.chat.id, bt("ask_car_brand", lang))
+        volunteer.pending_action = f"awaiting_car_brand:{msg.message_id}"
         db.session.commit()
-        bot.send_message(call.message.chat.id, bt("ask_car_brand", lang))
     else:
         volunteer.has_car = False
         volunteer.pending_action = None
@@ -240,15 +256,21 @@ def handle_car_answer(call):
 def handle_text(message):
     volunteer = Volunteer.query.filter_by(telegram_chat_id=message.chat.id).first()
     lang = volunteer.language if volunteer and volunteer.language else "ru"
+    pending = volunteer.pending_action if volunteer else None
 
-    if volunteer and volunteer.pending_action == "awaiting_car_brand":
+    if pending and pending.startswith("awaiting_car_brand"):
+        prev_id = pending.split(":", 1)[1] if ":" in pending else None
         volunteer.car_brand = message.text.strip()[:60]
-        volunteer.pending_action = "awaiting_car_plate"
+        msg = bot.send_message(message.chat.id, bt("ask_car_plate", lang))
+        volunteer.pending_action = f"awaiting_car_plate:{msg.message_id}"
         db.session.commit()
-        bot.send_message(message.chat.id, bt("ask_car_plate", lang))
+        if prev_id:
+            safe_delete_message(message.chat.id, int(prev_id))
+        safe_delete_message(message.chat.id, message.message_id)
         return
 
-    if volunteer and volunteer.pending_action == "awaiting_car_plate":
+    if pending and pending.startswith("awaiting_car_plate"):
+        prev_id = pending.split(":", 1)[1] if ":" in pending else None
         volunteer.car_plate = message.text.strip()[:20]
         volunteer.pending_action = "awaiting_car_confirm"
         db.session.commit()
@@ -258,6 +280,9 @@ def handle_text(message):
             reply_markup=car_confirm_keyboard(lang),
             parse_mode="HTML",
         )
+        if prev_id:
+            safe_delete_message(message.chat.id, int(prev_id))
+        safe_delete_message(message.chat.id, message.message_id)
         return
 
     bot.send_message(message.chat.id, bt("fallback", lang))
@@ -283,9 +308,9 @@ def handle_car_confirm(call):
     else:
         volunteer.car_brand = None
         volunteer.car_plate = None
-        volunteer.pending_action = "awaiting_car_brand"
+        msg = bot.send_message(call.message.chat.id, bt("ask_car_brand", lang))
+        volunteer.pending_action = f"awaiting_car_brand:{msg.message_id}"
         db.session.commit()
-        bot.send_message(call.message.chat.id, bt("ask_car_brand", lang))
 
 @bot.chat_join_request_handler()
 def handle_join_request(request):
@@ -299,18 +324,21 @@ def handle_join_request(request):
             bot.approve_chat_join_request(request.chat.id, request.from_user.id)
 
             mention = f'<a href="tg://user?id={request.from_user.id}">{html.escape(volunteer.full_name)}</a>'
-            text = bt("welcome_message", "ru", mention=mention)
+            text_uz = bt("welcome_message", "uz", mention=mention)
+            text_ru = bt("welcome_message", "ru", mention=mention)
 
             car_line = "❓ Не указано"
             if volunteer.has_car:
                 brand = html.escape(volunteer.car_brand) if volunteer.car_brand else "—"
                 plate = html.escape(volunteer.car_plate) if volunteer.car_plate else "—"
                 car_line = f"{brand} ({plate})"
-                text += bt("welcome_car_line", "ru", brand=brand, plate=plate)
+                text_uz += bt("welcome_car_line", "uz", brand=brand, plate=plate)
+                text_ru += bt("welcome_car_line", "ru", brand=brand, plate=plate)
             elif volunteer.has_car is False:
                 car_line = "Без авто"
 
-            bot.send_message(request.chat.id, text, parse_mode="HTML")
+            bot.send_message(request.chat.id, text_uz, parse_mode="HTML")
+            bot.send_message(request.chat.id, text_ru, parse_mode="HTML")
 
             admin_text = (
                 f"✅ <b>{html.escape(volunteer.full_name)}</b> вступил(а) в группу волонтёров.\n"

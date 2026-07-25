@@ -14,8 +14,7 @@ from bot.notifications import notify_new_application
 from bot.actions import accept_application
 from bot.spam_guard import check_and_handle_spam
 
-from io import BytesIO
-import openpyxl
+from excel_export import build_active_volunteers_workbook, build_applications_workbook
 from flask import send_file
  
 from dotenv import load_dotenv
@@ -470,8 +469,15 @@ def admin_volunteer_accept(app_id):
 @app.route("/admin/active-volunteers")
 @login_required
 def admin_active_volunteers():
-    volunteers = Volunteer.query.order_by(Volunteer.created_at.desc()).all()
-    return render_template("admin/active_volunteers.html", volunteers=volunteers)
+    search_query = request.args.get("q", "").strip()
+    volunteers_query = Volunteer.query
+    if search_query:
+        like = f"%{search_query}%"
+        volunteers_query = volunteers_query.filter(
+            db.or_(Volunteer.full_name.ilike(like), Volunteer.phone.ilike(like))
+        )
+    volunteers = volunteers_query.order_by(Volunteer.created_at.desc()).all()
+    return render_template("admin/active_volunteers.html", volunteers=volunteers, search_query=search_query)
  
  
 @app.route("/admin/active-volunteers/<int:volunteer_id>/delete", methods=["POST"])
@@ -524,35 +530,7 @@ def admin_settings():
 @login_required
 def admin_volunteers_export():
     applications = VolunteerApplication.query.order_by(VolunteerApplication.created_at.desc()).all()
-
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Заявки"
-
-    headers = ["ФИО", "Телефон", "Telegram", "Пол", "Возраст", "Занятость", "Сообщение", "Статус", "Дата подачи"]
-    ws.append(headers)
-
-    for a in applications:
-        gender_label = "Мужской" if a.gender == "male" else "Женский" if a.gender == "female" else ""
-        ws.append([
-            a.full_name,
-            a.phone,
-            a.telegram or "",
-            gender_label,
-            a.age or "",
-            a.occupation or "",
-            a.message or "",
-            a.status or "",
-            a.created_at.strftime("%d.%m.%Y"),
-        ])
-
-    for column_cells in ws.columns:
-        length = max(len(str(cell.value)) if cell.value else 0 for cell in column_cells)
-        ws.column_dimensions[column_cells[0].column_letter].width = max(12, length + 2)
-
-    output = BytesIO()
-    wb.save(output)
-    output.seek(0)
+    output = build_applications_workbook(applications)
 
     return send_file(
         output,
@@ -565,36 +543,7 @@ def admin_volunteers_export():
 @login_required
 def admin_active_volunteers_export():
     volunteers = Volunteer.query.order_by(Volunteer.created_at.desc()).all()
-
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Волонтёры"
-
-    headers = ["ФИО", "Телефон", "Telegram", "Пол", "Возраст", "Занятость", "Есть авто", "Номер авто", "Дата регистрации"]
-    ws.append(headers)
-
-    for v in volunteers:
-        gender_label = "Мужской" if v.gender == "male" else "Женский" if v.gender == "female" else ""
-        car_label = "Да" if v.has_car else ("Нет" if v.has_car is False else "Не указано")
-        ws.append([
-            v.full_name,
-            v.phone,
-            v.telegram or "",
-            gender_label,
-            v.age or "",
-            v.occupation or "",
-            car_label,
-            v.car_plate or "",
-            v.formatted_date(),
-        ])
-
-    for column_cells in ws.columns:
-        length = max(len(str(cell.value)) if cell.value else 0 for cell in column_cells)
-        ws.column_dimensions[column_cells[0].column_letter].width = max(12, length + 2)
-
-    output = BytesIO()
-    wb.save(output)
-    output.seek(0)
+    output = build_active_volunteers_workbook(volunteers)
 
     return send_file(
         output,
@@ -602,6 +551,7 @@ def admin_active_volunteers_export():
         download_name="duo_volunteers.xlsx",
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
+
 
 if __name__ == "__main__":
     app.run(debug=True)
