@@ -1,0 +1,38 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ t('adm_new_event') }} — DUO Charity Admin{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ t('adm_new_event') }}</h1>
+
+    <form method="post" class="admin-form">
+        <label>
+            {{ t('adm_event_title') }}
+            <input type="text" name="title" required>
+        </label>
+
+        <label>
+            {{ t('adm_event_date') }}
+            <input type="text" name="date_text" placeholder="28.07.2026, 10:00">
+        </label>
+
+        <label>
+            {{ t('adm_event_location') }}
+            <input type="text" name="location">
+        </label>
+
+        <label>
+            {{ t('adm_content') }}
+            <textarea name="description" rows="6"></textarea>
+        </label>
+
+        <label>
+            {{ t('adm_event_capacity') }}
+            <input type="number" name="capacity" min="1" placeholder="{{ t('adm_event_capacity_hint') }}">
+        </label>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{ t('adm_publish_event') }}</button>
+            <a href="{{ url_for('admin_events') }}" class="btn btn-outline">{{ t('adm_cancel') }}</a>
+        </div>
+    </form>
+{% endblock %}

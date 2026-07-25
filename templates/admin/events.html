@@ -1,0 +1,58 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ t('adm_events') }} — DUO Charity Admin{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1 class="page-title">{{ t('adm_events') }}</h1>
+            <p class="page-subtitle">{{ t('adm_events_sub') }}</p>
+        </div>
+        <a href="{{ url_for('admin_event_new') }}" class="btn btn-primary">{{ t('adm_new_event') }}</a>
+    </div>
+
+    {% if events %}
+    <div class="admin-table-wrapper">
+        <table class="admin-table admin-table-responsive">
+            <thead>
+                <tr>
+                    <th>{{ t('adm_col_title') }}</th>
+                    <th>{{ t('adm_col_date') }}</th>
+                    <th>{{ t('adm_col_registrations') }}</th>
+                    <th>{{ t('adm_col_status') }}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td data-label="{{ t('adm_col_title') }}">
+                        <strong>{{ event.title }}</strong>
+                        {% if event.location %}<p class="table-excerpt">{{ event.location }}</p>{% endif %}
+                    </td>
+                    <td data-label="{{ t('adm_col_date') }}">{{ event.date_text or '—' }}</td>
+                    <td data-label="{{ t('adm_col_registrations') }}">
+                        {{ counts.get(event.id, 0) }}{% if event.capacity %} / {{ event.capacity }}{% endif %}
+                    </td>
+                    <td data-label="{{ t('adm_col_status') }}">
+                        {% if event.is_closed %}
+                            <span class="status-badge status-badge-closed">{{ t('adm_event_closed') }}</span>
+                        {% else %}
+                            <span class="status-badge status-badge-new">{{ t('adm_event_open') }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="table-actions" data-label="">
+                        <a href="{{ url_for('admin_event_detail', event_id=event.id) }}" class="btn-small">{{ t('adm_edit') }}</a>
+                        <form method="post" action="{{ url_for('admin_event_delete', event_id=event.id) }}"
+                              onsubmit="return confirm('{{ t('adm_confirm_delete') }}');">
+                            <button type="submit" class="btn-small btn-small-danger">{{ t('adm_delete') }}</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state-admin">{{ t('adm_no_events') }}</p>
+    {% endif %}
+{% endblock %}

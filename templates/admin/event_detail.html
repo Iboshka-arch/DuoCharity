@@ -1,0 +1,112 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ event.title }} — DUO Charity Admin{% endblock %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1 class="page-title">{{ event.title }}</h1>
+            <p class="page-subtitle">
+                {{ event.date_text or '—' }}
+                {% if event.location %} · {{ event.location }}{% endif %}
+                ·
+                {% if event.is_closed %}
+                    <span class="status-badge status-badge-closed">{{ t('adm_event_closed') }}</span>
+                {% else %}
+                    <span class="status-badge status-badge-new">{{ t('adm_event_open') }}</span>
+                {% endif %}
+            </p>
+        </div>
+        <div class="table-actions">
+            {% if event.is_closed %}
+            <form method="post" action="{{ url_for('admin_event_open', event_id=event.id) }}">
+                <button type="submit" class="btn btn-outline">{{ t('adm_open_event') }}</button>
+            </form>
+            {% else %}
+            <form method="post" action="{{ url_for('admin_event_close', event_id=event.id) }}"
+                  onsubmit="return confirm('{{ t('adm_confirm_close_event') }}');">
+                <button type="submit" class="btn btn-primary">{{ t('adm_close_event') }}</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if event.description %}
+    <p>{{ event.description }}</p>
+    {% endif %}
+
+    <h3>{{ t('adm_col_registrations') }} ({{ rows|length }}{% if event.capacity %} / {{ event.capacity }}{% endif %})</h3>
+
+    {% if rows %}
+    <form method="post" action="{{ url_for('admin_event_attendance', event_id=event.id) }}">
+        <div class="admin-table-wrapper">
+            <table class="admin-table admin-table-responsive">
+                <thead>
+                    <tr>
+                        <th>{{ t('adm_col_name') }}</th>
+                        <th>{{ t('adm_col_phone') }}</th>
+                        <th>{{ t('adm_col_car') }}</th>
+                        <th>{{ t('adm_attendance_status') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r, v in rows %}
+                    <tr>
+                        <td data-label="{{ t('adm_col_name') }}"><strong>{{ v.full_name }}</strong></td>
+                        <td data-label="{{ t('adm_col_phone') }}"><a href="tel:{{ v.phone }}">{{ v.phone }}</a></td>
+                        <td data-label="{{ t('adm_col_car') }}">
+                            {% if v.has_car %}
+                                <span class="tag tag-primary">🚗 {{ v.car_brand or '' }} {{ v.car_plate or '' }}</span>
+                            {% else %}
+                                <span class="tag">—</span>
+                            {% endif %}
+                        </td>
+                        <td data-label="{{ t('adm_attendance_status') }}">
+                            <select name="status_{{ r.id }}" class="status-select">
+                                <option value="registered" {{ 'selected' if r.status == 'registered' }}>{{ t('adm_status_registered') }}</option>
+                                <option value="arrived" {{ 'selected' if r.status == 'arrived' }}>{{ t('adm_status_arrived') }}</option>
+                                <option value="late" {{ 'selected' if r.status == 'late' }}>{{ t('adm_status_late') }}</option>
+                                <option value="no_show" {{ 'selected' if r.status == 'no_show' }}>{{ t('adm_status_no_show') }}</option>
+                            </select>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{ t('adm_save_attendance') }}</button>
+        </div>
+    </form>
+    {% else %}
+    <p class="empty-state-admin">{{ t('adm_no_registrations') }}</p>
+    {% endif %}
+
+    {% if event.is_closed %}
+    <h3>{{ t('adm_feedback_section') }}</h3>
+    {% if avg_rating %}
+    <p class="page-subtitle">{{ t('adm_avg_rating') }}: {{ avg_rating }} / 5 ⭐ ({{ feedbacks|length }})</p>
+    {% endif %}
+    {% if feedbacks %}
+    <div class="admin-table-wrapper">
+        <table class="admin-table admin-table-responsive">
+            <thead>
+                <tr>
+                    <th>{{ t('adm_rating') }}</th>
+                    <th>{{ t('adm_comment') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in feedbacks %}
+                <tr>
+                    <td data-label="{{ t('adm_rating') }}">{{ '⭐' * f.rating }}</td>
+                    <td data-label="{{ t('adm_comment') }}">{{ f.comment or '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state-admin">{{ t('adm_no_feedback') }}</p>
+    {% endif %}
+    {% endif %}
+{% endblock %}

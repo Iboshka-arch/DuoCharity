@@ -5,7 +5,7 @@ from functools import wraps
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response, send_from_directory
 from werkzeug.utils import secure_filename
 
-from models import db, Admin, Post, GalleryImage, HeroImage, VolunteerApplication, Volunteer, SiteSetting
+from models import db, Admin, Post, GalleryImage, HeroImage, VolunteerApplication, Volunteer, SiteSetting, Event, EventRegistration, EventFeedback
 from translations import get_translator, LANGUAGES, DEFAULT_LANGUAGE
 
 import telebot
@@ -13,6 +13,7 @@ from bot.handlers import bot as telegram_bot
 from bot.notifications import notify_new_application
 from bot.actions import accept_application
 from bot.spam_guard import check_and_handle_spam
+from bot.events import publish_event, close_event_and_notify, reopen_event
 
 from excel_export import build_active_volunteers_workbook, build_applications_workbook
 from flask import send_file
@@ -489,6 +490,119 @@ def admin_active_volunteer_delete(volunteer_id):
     flash("Волонтёр удалён из списка.", "success")
     return redirect(url_for("admin_active_volunteers"))
  
+
+@app.route("/admin/events")
+@login_required
+def admin_events():
+    events = Event.query.order_by(Event.created_at.desc()).all()
+    counts = {e.id: EventRegistration.query.filter_by(event_id=e.id).count() for e in events}
+    return render_template("admin/events.html", events=events, counts=counts)
+
+
+@app.route("/admin/events/new", methods=["GET", "POST"])
+@login_required
+def admin_event_new():
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        date_text = request.form.get("date_text", "").strip()
+        description = request.form.get("description", "").strip()
+        location = request.form.get("location", "").strip()
+        capacity_raw = request.form.get("capacity", "").strip()
+
+        if not title:
+            flash("Название обязательно.", "error")
+            return render_template("admin/event_form.html", event=None)
+
+        capacity = int(capacity_raw) if capacity_raw.isdigit() and int(capacity_raw) > 0 else None
+
+        event = Event(
+            title=title,
+            date_text=date_text or None,
+            description=description or None,
+            location=location or None,
+            capacity=capacity,
+        )
+        db.session.add(event)
+        db.session.commit()
+
+        publish_event(event)
+
+        flash("Мероприятие создано и разослано волонтёрам.", "success")
+        return redirect(url_for("admin_event_detail", event_id=event.id))
+
+    return render_template("admin/event_form.html", event=None)
+
+
+@app.route("/admin/events/<int:event_id>")
+@login_required
+def admin_event_detail(event_id):
+    event = Event.query.get_or_404(event_id)
+    registrations = EventRegistration.query.filter_by(event_id=event.id).order_by(EventRegistration.created_at.asc()).all()
+
+    volunteer_ids = [r.volunteer_id for r in registrations]
+    volunteers_by_id = {}
+    if volunteer_ids:
+        volunteers_by_id = {v.id: v for v in Volunteer.query.filter(Volunteer.id.in_(volunteer_ids)).all()}
+
+    rows = [(r, volunteers_by_id[r.volunteer_id]) for r in registrations if r.volunteer_id in volunteers_by_id]
+
+    feedbacks = EventFeedback.query.filter_by(event_id=event.id).order_by(EventFeedback.created_at.desc()).all()
+    avg_rating = round(sum(f.rating for f in feedbacks) / len(feedbacks), 1) if feedbacks else None
+
+    return render_template(
+        "admin/event_detail.html",
+        event=event,
+        rows=rows,
+        feedbacks=feedbacks,
+        avg_rating=avg_rating,
+    )
+
+
+@app.route("/admin/events/<int:event_id>/attendance", methods=["POST"])
+@login_required
+def admin_event_attendance(event_id):
+    event = Event.query.get_or_404(event_id)
+    registrations = EventRegistration.query.filter_by(event_id=event.id).all()
+
+    for r in registrations:
+        status = request.form.get(f"status_{r.id}")
+        if status in ("registered", "arrived", "late", "no_show"):
+            r.status = status
+
+    db.session.commit()
+    flash("Явка сохранена.", "success")
+    return redirect(url_for("admin_event_detail", event_id=event.id))
+
+
+@app.route("/admin/events/<int:event_id>/close", methods=["POST"])
+@login_required
+def admin_event_close(event_id):
+    event = Event.query.get_or_404(event_id)
+    close_event_and_notify(event)
+    flash("Регистрация закрыта, участникам разослан запрос на отзыв.", "success")
+    return redirect(url_for("admin_event_detail", event_id=event.id))
+
+
+@app.route("/admin/events/<int:event_id>/open", methods=["POST"])
+@login_required
+def admin_event_open(event_id):
+    event = Event.query.get_or_404(event_id)
+    reopen_event(event)
+    flash("Регистрация снова открыта.", "success")
+    return redirect(url_for("admin_event_detail", event_id=event.id))
+
+
+@app.route("/admin/events/<int:event_id>/delete", methods=["POST"])
+@login_required
+def admin_event_delete(event_id):
+    event = Event.query.get_or_404(event_id)
+    EventRegistration.query.filter_by(event_id=event.id).delete()
+    EventFeedback.query.filter_by(event_id=event.id).delete()
+    db.session.delete(event)
+    db.session.commit()
+    flash("Мероприятие удалено.", "success")
+    return redirect(url_for("admin_events"))
+
 
 @app.route("/admin/settings", methods=["GET", "POST"])
 @login_required

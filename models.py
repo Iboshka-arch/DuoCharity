@@ -116,3 +116,45 @@ class BotStartCooldown(db.Model):
     telegram_chat_id = db.Column(db.BigInteger, primary_key=True)
     last_start_at = db.Column(db.DateTime, default=datetime.utcnow)
     language = db.Column(db.String(2), nullable=True)
+
+class Event(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    date_text = db.Column(db.String(100), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    location = db.Column(db.String(200), nullable=True)
+    capacity = db.Column(db.Integer, nullable=True)
+    is_closed = db.Column(db.Boolean, default=False)
+    announcement_chat_id = db.Column(db.BigInteger, nullable=True)
+    announcement_message_id = db.Column(db.BigInteger, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def formatted_date(self):
+        return self.created_at.strftime("%d.%m.%Y")
+
+class EventRegistration(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, nullable=False)
+    volunteer_id = db.Column(db.Integer, nullable=False)
+    telegram_chat_id = db.Column(db.BigInteger, nullable=True)
+    status = db.Column(db.String(20), default="registered")
+    feedback_submitted = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class EventFeedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class VolunteerPenalty(db.Model):
+    volunteer_id = db.Column(db.Integer, primary_key=True)
+    no_show_count = db.Column(db.Integer, default=0)
+    suspended = db.Column(db.Boolean, default=False)
+
+class ConversationDraft(db.Model):
+    telegram_chat_id = db.Column(db.BigInteger, primary_key=True)
+    kind = db.Column(db.String(30))
+    state = db.Column(db.String(30))
+    data = db.Column(db.Text)

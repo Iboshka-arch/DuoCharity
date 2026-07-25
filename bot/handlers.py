@@ -1,4 +1,5 @@
 import html
+import json
 from datetime import datetime, timedelta
 
 import telebot
@@ -7,7 +8,7 @@ from telebot import types
 from bot.config import BOT_TOKEN, VOLUNTEER_GROUP_CHAT_ID, ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID
 from bot.keyboards import phone_request_keyboard, car_question_keyboard, car_confirm_keyboard, language_keyboard, language_change_keyboard
 from bot.translations import bt
-from models import db, Volunteer, VolunteerApplication, BotStartCooldown
+from models import db, Volunteer, VolunteerApplication, BotStartCooldown, ConversationDraft
 
 bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
 
@@ -123,6 +124,75 @@ def handle_base_command(message):
         bot.send_document(message.chat.id, output, visible_file_name="duo_volunteers.xlsx")
     except Exception as e:
         print(f"Не удалось отправить excel-базу владельцу: {e}")
+
+
+@bot.message_handler(commands=["stats"])
+def handle_stats_command(message):
+    if not OWNER_CHAT_ID or str(message.chat.id) != str(OWNER_CHAT_ID):
+        return
+
+    volunteers_count = Volunteer.query.count()
+    new_applications = VolunteerApplication.query.filter_by(status="new").count()
+    with_car = Volunteer.query.filter_by(has_car=True).count()
+
+    bot.send_message(
+        message.chat.id,
+        "📊 Статистика DUO Charity\n\n"
+        f"👥 Активных волонтёров: {volunteers_count}\n"
+        f"📥 Новых заявок: {new_applications}\n"
+        f"🚗 Волонтёров с машиной: {with_car}",
+    )
+
+
+@bot.message_handler(commands=["message"])
+def handle_message_command(message):
+    if not OWNER_CHAT_ID or str(message.chat.id) != str(OWNER_CHAT_ID):
+        return
+
+    draft = ConversationDraft.query.get(message.chat.id)
+    if draft:
+        draft.kind = "message"
+        draft.state = "awaiting_phone"
+        draft.data = None
+    else:
+        db.session.add(ConversationDraft(telegram_chat_id=message.chat.id, kind="message", state="awaiting_phone"))
+    db.session.commit()
+
+    bot.send_message(message.chat.id, "Введите номер телефона волонтёра (9 цифр):")
+
+
+def handle_message_draft_text(message, draft):
+    if draft.state == "awaiting_phone":
+        phone = normalize_phone(message.text)
+        volunteer = Volunteer.query.filter_by(phone=phone).first()
+        if not volunteer:
+            bot.send_message(message.chat.id, "Волонтёр с таким номером не найден.")
+            db.session.delete(draft)
+            db.session.commit()
+            return
+
+        draft.state = "awaiting_text"
+        draft.data = json.dumps({"phone": phone})
+        db.session.commit()
+        bot.send_message(message.chat.id, f"Найден: {volunteer.full_name}. Введите текст сообщения:")
+        return
+
+    if draft.state == "awaiting_text":
+        data = json.loads(draft.data or "{}")
+        volunteer = Volunteer.query.filter_by(phone=data.get("phone")).first()
+        db.session.delete(draft)
+        db.session.commit()
+
+        if not volunteer or not volunteer.telegram_chat_id:
+            bot.send_message(message.chat.id, "У волонтёра ещё не подключён Telegram, сообщение не отправлено.")
+            return
+
+        try:
+            bot.send_message(volunteer.telegram_chat_id, f"✉️ Сообщение от организаторов DUO Charity:\n\n{message.text}")
+            bot.send_message(message.chat.id, "Отправлено ✅")
+        except Exception as e:
+            bot.send_message(message.chat.id, "Не удалось отправить сообщение.")
+            print(f"Не удалось отправить личное сообщение волонтёру: {e}")
 
 
 @bot.message_handler(content_types=["contact"])
@@ -254,6 +324,16 @@ def handle_car_answer(call):
 
 @bot.message_handler(content_types=["text"])
 def handle_text(message):
+    draft = ConversationDraft.query.get(message.chat.id)
+    if draft:
+        if draft.kind == "message":
+            handle_message_draft_text(message, draft)
+            return
+        if draft.kind == "event_feedback":
+            from bot.events import process_feedback_comment
+            process_feedback_comment(message, draft)
+            return
+
     volunteer = Volunteer.query.filter_by(telegram_chat_id=message.chat.id).first()
     lang = volunteer.language if volunteer and volunteer.language else "ru"
     pending = volunteer.pending_action if volunteer else None
