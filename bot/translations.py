@@ -22,6 +22,8 @@ BOT_TEXTS = {
         "group_invite": "<b>Volontyorlar guruhimizga qo'shiling:</b> {link}\n(havola faqat siz uchun tekshiriladi — boshqa odamga uzatib bo'lmaydi)",
         "welcome_message": "🎉 <b>{mention}</b> jamoamizga qo'shildi — xush kelibsiz! 🤝\n🎉 <b>{mention}</b> присоединился(-лась) к нашей команде — добро пожаловать! 🤝\n\n📌 Qadalgan xabarni o'qishni unutmang / Не забудьте прочитать закреплённое сообщение.",
         "welcome_car_line": "\n\n🚗 Avtomobili bor / Есть автомобиль: <b>{brand}</b> ({plate})",
+        "change_language_prompt": "Tilni tanlang / Выберите язык:",
+        "language_changed": "Til o'zgartirildi. ✅",
     },
     "ru": {
         "start_choose_language": "Assalomu alaykum / Здравствуйте! 👋\n<b>DUO Charity botiga xush kelibsiz / Добро пожаловать в бота DUO Charity!</b>\n\nIltimos, tilni tanlang / Пожалуйста, выберите язык:",
@@ -46,6 +48,8 @@ BOT_TEXTS = {
         "group_invite": "<b>Присоединяйтесь к нашей группе волонтёров:</b> {link}\n(ссылка проверяется — переслать её другому не получится, доступ дадим только вам)",
         "welcome_message": "🎉 <b>{mention}</b> jamoamizga qo'shildi — xush kelibsiz! 🤝\n🎉 <b>{mention}</b> присоединился(-лась) к нашей команде — добро пожаловать! 🤝\n\n📌 Qadalgan xabarni o'qishni unutmang / Не забудьте прочитать закреплённое сообщение.",
         "welcome_car_line": "\n\n🚗 Avtomobili bor / Есть автомобиль: <b>{brand}</b> ({plate})",
+        "change_language_prompt": "Tilni tanlang / Выберите язык:",
+        "language_changed": "Язык изменён. ✅",
     },
 }
 

@@ -34,3 +34,12 @@ def car_confirm_keyboard(lang="ru"):
         types.InlineKeyboardButton(bt("car_no", lang), callback_data="car_confirm_no"),
     )
     return markup
+
+
+def language_change_keyboard():
+    markup = types.InlineKeyboardMarkup()
+    markup.add(
+        types.InlineKeyboardButton("🇺🇿 O'zbekcha", callback_data="setlang_uz"),
+        types.InlineKeyboardButton("🇷🇺 Русский", callback_data="setlang_ru"),
+    )
+    return markup

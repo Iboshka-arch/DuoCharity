@@ -5,7 +5,7 @@ import telebot
 from telebot import types
 
 from bot.config import BOT_TOKEN, VOLUNTEER_GROUP_CHAT_ID, ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID
-from bot.keyboards import phone_request_keyboard, car_question_keyboard, car_confirm_keyboard, language_keyboard
+from bot.keyboards import phone_request_keyboard, car_question_keyboard, car_confirm_keyboard, language_keyboard, language_change_keyboard
 from bot.translations import bt
 from models import db, Volunteer, VolunteerApplication, BotStartCooldown
 
@@ -38,6 +38,18 @@ def safe_delete_message(chat_id, message_id):
             print(f"Не удалось убрать кнопки у сообщения {message_id}: {e2}")
 
 
+def send_group_invite(chat_id, volunteer, lang):
+    try:
+        invite = bot.create_chat_invite_link(
+            int(VOLUNTEER_GROUP_CHAT_ID),
+            creates_join_request=True,
+            name=f"volunteer-{volunteer.id}",
+        )
+        bot.send_message(chat_id, bt("group_invite", lang, link=invite.invite_link), parse_mode="HTML")
+    except Exception as e:
+        print(f"Не удалось создать инвайт-ссылку: {e}")
+
+
 @bot.message_handler(commands=["start"])
 def handle_start(message):
     now = datetime.utcnow()
@@ -64,6 +76,37 @@ def handle_start(message):
         return
 
     safe_send_message(message.chat.id, bt("start_choose_language"), reply_markup=language_keyboard(), parse_mode="HTML")
+
+
+@bot.message_handler(commands=["language"])
+def handle_language_command(message):
+    safe_send_message(message.chat.id, bt("change_language_prompt"), reply_markup=language_change_keyboard())
+
+
+@bot.callback_query_handler(func=lambda call: call.data in ("setlang_uz", "setlang_ru"))
+def handle_language_change(call):
+    bot.answer_callback_query(call.id)
+    lang = "uz" if call.data == "setlang_uz" else "ru"
+    chat_id = call.message.chat.id
+
+    volunteer = Volunteer.query.filter_by(telegram_chat_id=chat_id).first()
+    if volunteer:
+        volunteer.language = lang
+    else:
+        application = VolunteerApplication.query.filter_by(telegram_chat_id=chat_id).first()
+        if application:
+            application.language = lang
+
+    cooldown = BotStartCooldown.query.get(chat_id)
+    if cooldown:
+        cooldown.language = lang
+    else:
+        cooldown = BotStartCooldown(telegram_chat_id=chat_id, last_start_at=datetime.utcnow(), language=lang)
+        db.session.add(cooldown)
+    db.session.commit()
+
+    safe_delete_message(chat_id, call.message.message_id)
+    bot.send_message(chat_id, bt("language_changed", lang))
 
 
 @bot.message_handler(content_types=["contact"])
@@ -93,18 +136,10 @@ def handle_contact(message):
 
         bot.send_message(message.chat.id, bt("matched", lang, name=volunteer.full_name), reply_markup=types.ReplyKeyboardRemove())
 
-        try:
-            invite = bot.create_chat_invite_link(
-                int(VOLUNTEER_GROUP_CHAT_ID),
-                creates_join_request=True,
-                name=f"volunteer-{volunteer.id}",
-            )
-            bot.send_message(message.chat.id, bt("group_invite", lang, link=invite.invite_link), parse_mode="HTML")
-        except Exception as e:
-            print(f"Не удалось создать инвайт-ссылку: {e}")
-
         if volunteer.has_car is None:
             bot.send_message(message.chat.id, bt("ask_car", lang), reply_markup=car_question_keyboard(lang))
+        else:
+            send_group_invite(message.chat.id, volunteer, lang)
         return
 
     application = (
@@ -146,18 +181,10 @@ def handle_language_choice(call):
         safe_delete_message(call.message.chat.id, call.message.message_id)
         bot.send_message(call.message.chat.id, bt("matched", lang, name=volunteer.full_name))
 
-        try:
-            invite = bot.create_chat_invite_link(
-                int(VOLUNTEER_GROUP_CHAT_ID),
-                creates_join_request=True,
-                name=f"volunteer-{volunteer.id}",
-            )
-            bot.send_message(call.message.chat.id, bt("group_invite", lang, link=invite.invite_link), parse_mode="HTML")
-        except Exception as e:
-            print(f"Не удалось создать инвайт-ссылку: {e}")
-
         if volunteer.has_car is None:
             bot.send_message(call.message.chat.id, bt("ask_car", lang), reply_markup=car_question_keyboard(lang))
+        else:
+            send_group_invite(call.message.chat.id, volunteer, lang)
         return
 
     application = VolunteerApplication.query.filter_by(telegram_chat_id=call.message.chat.id, pending_action="awaiting_language").first()
@@ -206,6 +233,7 @@ def handle_car_answer(call):
         volunteer.pending_action = None
         db.session.commit()
         bot.send_message(call.message.chat.id, bt("car_declined", lang))
+        send_group_invite(call.message.chat.id, volunteer, lang)
 
 
 @bot.message_handler(content_types=["text"])
@@ -251,6 +279,7 @@ def handle_car_confirm(call):
         volunteer.pending_action = None
         db.session.commit()
         bot.send_message(call.message.chat.id, bt("car_saved", lang))
+        send_group_invite(call.message.chat.id, volunteer, lang)
     else:
         volunteer.car_brand = None
         volunteer.car_plate = None

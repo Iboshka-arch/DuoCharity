@@ -38,21 +38,21 @@ def accept_application(application):
                 parse_mode="HTML",
             )
 
-            from bot.config import VOLUNTEER_GROUP_CHAT_ID
-            invite = bot.create_chat_invite_link(
-                int(VOLUNTEER_GROUP_CHAT_ID),
-                creates_join_request=True,
-                name=f"volunteer-{volunteer.id}",
-            )
-            safe_send_message(
-                volunteer.telegram_chat_id,
-                bt("group_invite", lang, link=invite.invite_link),
-                parse_mode="HTML",
-            )
-
             if volunteer.has_car is None:
                 from bot.keyboards import car_question_keyboard
                 safe_send_message(volunteer.telegram_chat_id, bt("ask_car", lang), reply_markup=car_question_keyboard(lang))
+            else:
+                from bot.config import VOLUNTEER_GROUP_CHAT_ID
+                invite = bot.create_chat_invite_link(
+                    int(VOLUNTEER_GROUP_CHAT_ID),
+                    creates_join_request=True,
+                    name=f"volunteer-{volunteer.id}",
+                )
+                safe_send_message(
+                    volunteer.telegram_chat_id,
+                    bt("group_invite", lang, link=invite.invite_link),
+                    parse_mode="HTML",
+                )
         except Exception as e:
             print(f"Не удалось уведомить волонтёра: {e}")
 
