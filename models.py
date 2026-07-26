@@ -90,7 +90,7 @@ class Volunteer(db.Model):
     has_car = db.Column(db.Boolean, nullable=True)
     car_plate = db.Column(db.String(20), nullable=True)
     car_brand = db.Column(db.String(60), nullable=True)
-    language = db.Column(db.String(2), nullable=True, default="ru")
+    language = db.Column(db.String(2), nullable=True, default="uz")
     pending_action = db.Column(db.String(50), nullable=True)
 
     is_active = db.Column(db.Boolean, default=True)

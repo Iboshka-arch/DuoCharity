@@ -68,7 +68,7 @@ def handle_start(message):
 
     volunteer = Volunteer.query.filter_by(telegram_chat_id=message.chat.id).first()
     if volunteer:
-        lang = volunteer.language or cooldown.language or "ru"
+        lang = volunteer.language or cooldown.language or "uz"
         safe_send_message(message.chat.id, bt("welcome_back", lang, name=volunteer.full_name))
         return
 
@@ -81,6 +81,7 @@ def handle_start(message):
 
 @bot.message_handler(commands=["language"])
 def handle_language_command(message):
+    safe_delete_message(message.chat.id, message.message_id)
     safe_send_message(message.chat.id, bt("change_language_prompt"), reply_markup=language_change_keyboard())
 
 
@@ -115,6 +116,8 @@ def handle_base_command(message):
     if not OWNER_CHAT_ID or str(message.chat.id) != str(OWNER_CHAT_ID):
         return
 
+    safe_delete_message(message.chat.id, message.message_id)
+
     from excel_export import build_active_volunteers_workbook
 
     volunteers = Volunteer.query.order_by(Volunteer.created_at.desc()).all()
@@ -130,6 +133,8 @@ def handle_base_command(message):
 def handle_stats_command(message):
     if not OWNER_CHAT_ID or str(message.chat.id) != str(OWNER_CHAT_ID):
         return
+
+    safe_delete_message(message.chat.id, message.message_id)
 
     volunteers_count = Volunteer.query.count()
     new_applications = VolunteerApplication.query.filter_by(status="new").count()
@@ -149,57 +154,103 @@ def handle_message_command(message):
     if not OWNER_CHAT_ID or str(message.chat.id) != str(OWNER_CHAT_ID):
         return
 
+    safe_delete_message(message.chat.id, message.message_id)
+
+    prompt = bot.send_message(message.chat.id, "Введите номер телефона волонтёра (9 цифр):")
+    data = json.dumps({"prompt_id": prompt.message_id})
+
     draft = ConversationDraft.query.get(message.chat.id)
     if draft:
         draft.kind = "message"
         draft.state = "awaiting_phone"
-        draft.data = None
+        draft.data = data
     else:
-        db.session.add(ConversationDraft(telegram_chat_id=message.chat.id, kind="message", state="awaiting_phone"))
+        db.session.add(ConversationDraft(telegram_chat_id=message.chat.id, kind="message", state="awaiting_phone", data=data))
     db.session.commit()
-
-    bot.send_message(message.chat.id, "Введите номер телефона волонтёра (9 цифр):")
 
 
 def handle_message_draft_text(message, draft):
+    data = json.loads(draft.data or "{}")
+    prev_prompt_id = data.get("prompt_id")
+
     if draft.state == "awaiting_phone":
         phone = normalize_phone(message.text)
         volunteer = Volunteer.query.filter_by(phone=phone).first()
+
+        if prev_prompt_id:
+            safe_delete_message(message.chat.id, prev_prompt_id)
+        safe_delete_message(message.chat.id, message.message_id)
+
         if not volunteer:
             bot.send_message(message.chat.id, "Волонтёр с таким номером не найден.")
             db.session.delete(draft)
             db.session.commit()
             return
 
+        prompt = bot.send_message(message.chat.id, f"Найден: {volunteer.full_name}. Введите текст сообщения:")
         draft.state = "awaiting_text"
-        draft.data = json.dumps({"phone": phone})
+        draft.data = json.dumps({"phone": phone, "name": volunteer.full_name, "prompt_id": prompt.message_id})
         db.session.commit()
-        bot.send_message(message.chat.id, f"Найден: {volunteer.full_name}. Введите текст сообщения:")
         return
 
     if draft.state == "awaiting_text":
-        data = json.loads(draft.data or "{}")
-        volunteer = Volunteer.query.filter_by(phone=data.get("phone")).first()
-        db.session.delete(draft)
+        if prev_prompt_id:
+            safe_delete_message(message.chat.id, prev_prompt_id)
+        safe_delete_message(message.chat.id, message.message_id)
+
+        text = message.text.strip()
+        markup = types.InlineKeyboardMarkup()
+        markup.add(
+            types.InlineKeyboardButton("✅ Отправить", callback_data="msgconfirm_yes"),
+            types.InlineKeyboardButton("❌ Отмена", callback_data="msgconfirm_no"),
+        )
+        confirm = bot.send_message(
+            message.chat.id,
+            f"Отправить волонтёру {data.get('name')}?\n\n«{text}»",
+            reply_markup=markup,
+        )
+        draft.state = "awaiting_confirm"
+        draft.data = json.dumps({"phone": data.get("phone"), "name": data.get("name"), "text": text, "prompt_id": confirm.message_id})
         db.session.commit()
+        return
 
-        if not volunteer or not volunteer.telegram_chat_id:
-            bot.send_message(message.chat.id, "У волонтёра ещё не подключён Telegram, сообщение не отправлено.")
-            return
 
-        try:
-            bot.send_message(volunteer.telegram_chat_id, f"✉️ Сообщение от организаторов DUO Charity:\n\n{message.text}")
-            bot.send_message(message.chat.id, "Отправлено ✅")
-        except Exception as e:
-            bot.send_message(message.chat.id, "Не удалось отправить сообщение.")
-            print(f"Не удалось отправить личное сообщение волонтёру: {e}")
+@bot.callback_query_handler(func=lambda call: call.data in ("msgconfirm_yes", "msgconfirm_no"))
+def handle_message_confirm(call):
+    bot.answer_callback_query(call.id)
+    draft = ConversationDraft.query.get(call.message.chat.id)
+
+    if not draft or draft.kind != "message" or draft.state != "awaiting_confirm":
+        safe_delete_message(call.message.chat.id, call.message.message_id)
+        return
+
+    data = json.loads(draft.data or "{}")
+    safe_delete_message(call.message.chat.id, call.message.message_id)
+    db.session.delete(draft)
+    db.session.commit()
+
+    if call.data == "msgconfirm_no":
+        bot.send_message(call.message.chat.id, "Отменено.")
+        return
+
+    volunteer = Volunteer.query.filter_by(phone=data.get("phone")).first()
+    if not volunteer or not volunteer.telegram_chat_id:
+        bot.send_message(call.message.chat.id, "У волонтёра ещё не подключён Telegram, сообщение не отправлено.")
+        return
+
+    try:
+        bot.send_message(volunteer.telegram_chat_id, f"✉️ Сообщение от организаторов DUO Charity:\n\n{data.get('text')}")
+        bot.send_message(call.message.chat.id, "Отправлено ✅")
+    except Exception as e:
+        bot.send_message(call.message.chat.id, "Не удалось отправить сообщение.")
+        print(f"Не удалось отправить личное сообщение волонтёру: {e}")
 
 
 @bot.message_handler(content_types=["contact"])
 def handle_contact(message):
     contact = message.contact
     cooldown = BotStartCooldown.query.get(message.chat.id)
-    lang = (cooldown.language if cooldown else None) or "ru"
+    lang = (cooldown.language if cooldown else None) or "uz"
 
     if contact.user_id != message.from_user.id:
         bot.send_message(message.chat.id, bt("own_contact_only", lang))
@@ -306,7 +357,7 @@ def handle_car_answer(call):
         safe_delete_message(call.message.chat.id, call.message.message_id)
         return
 
-    lang = volunteer.language or "ru"
+    lang = volunteer.language or "uz"
     safe_delete_message(call.message.chat.id, call.message.message_id)
 
     if call.data == "car_yes":
@@ -335,7 +386,7 @@ def handle_text(message):
             return
 
     volunteer = Volunteer.query.filter_by(telegram_chat_id=message.chat.id).first()
-    lang = volunteer.language if volunteer and volunteer.language else "ru"
+    lang = volunteer.language if volunteer and volunteer.language else "uz"
     pending = volunteer.pending_action if volunteer else None
 
     if pending and pending.startswith("awaiting_car_brand"):
@@ -377,7 +428,7 @@ def handle_car_confirm(call):
         safe_delete_message(call.message.chat.id, call.message.message_id)
         return
 
-    lang = volunteer.language or "ru"
+    lang = volunteer.language or "uz"
     safe_delete_message(call.message.chat.id, call.message.message_id)
 
     if call.data == "car_confirm_yes":
@@ -436,5 +487,5 @@ def handle_join_request(request):
 @bot.message_handler(content_types=["sticker", "photo", "voice", "video", "document", "audio"])
 def handle_other_content(message):
     volunteer = Volunteer.query.filter_by(telegram_chat_id=message.chat.id).first()
-    lang = volunteer.language if volunteer and volunteer.language else "ru"
+    lang = volunteer.language if volunteer and volunteer.language else "uz"
     safe_send_message(message.chat.id, bt("fallback", lang))

@@ -24,6 +24,18 @@ BOT_TEXTS = {
         "welcome_car_line": "\n\n🚗 Avtomobili bor: <b>{brand}</b> ({plate})",
         "change_language_prompt": "Tilni tanlang / Выберите язык:",
         "language_changed": "Til o'zgartirildi. ✅",
+
+        "event_registered": "Siz yozildingiz ✅",
+        "event_unregistered": "Yozuv bekor qilindi ❌",
+        "event_full": "Joy yo'q 😔",
+        "event_closed_alert": "Ro'yxat yopiq",
+        "event_need_start": "Avval botga shaxsiy xabar yozing",
+        "event_suspended_alert": "Siz oldingi tadbirga kelmagansiz, shu safar yozila olmaysiz. Keyingi safar yana yozilishingiz mumkin.",
+        "event_warning_1": "⚠️ 1/2. Siz tadbirga kelmadingiz.",
+        "event_warning_2": "⚠️ 2/2. Siz ketma-ket 2 ta tadbirga kelmadingiz — keyingi ro'yxatga olish vaqtinchalik yopiladi.",
+        "event_feedback_request": "Tadbir \"{title}\" yakunlandi. Uni 1 dan 5 gacha baholang (izoh ixtiyoriy, anonim).",
+        "event_feedback_ask_comment": "Rahmat! Izoh yozing yoki \"-\" yuboring.",
+        "event_feedback_thanks": "Rahmat! 🙏",
     },
     "ru": {
         "start_choose_language": "Assalomu alaykum / Здравствуйте! 👋\n<b>DUO Charity botiga xush kelibsiz / Добро пожаловать в бота DUO Charity!</b>\n\nIltimos, tilni tanlang / Пожалуйста, выберите язык:",
@@ -50,11 +62,23 @@ BOT_TEXTS = {
         "welcome_car_line": "\n\n🚗 Есть автомобиль: <b>{brand}</b> ({plate})",
         "change_language_prompt": "Tilni tanlang / Выберите язык:",
         "language_changed": "Язык изменён. ✅",
+
+        "event_registered": "Вы записаны ✅",
+        "event_unregistered": "Запись отменена ❌",
+        "event_full": "Мест больше нет 😔",
+        "event_closed_alert": "Регистрация закрыта",
+        "event_need_start": "Сначала напишите боту в личные сообщения",
+        "event_suspended_alert": "Вы пропустили прошлое мероприятие, в этот раз записаться нельзя. Со следующего раза снова можно.",
+        "event_warning_1": "⚠️ 1/2. Вы не пришли на мероприятие.",
+        "event_warning_2": "⚠️ 2/2. Вы не пришли на 2 мероприятия подряд — следующая запись будет временно недоступна.",
+        "event_feedback_request": "Мероприятие \"{title}\" завершено. Оцените от 1 до 5 (комментарий необязателен, анонимно).",
+        "event_feedback_ask_comment": "Спасибо! Напишите комментарий, или отправьте \"-\", чтобы пропустить.",
+        "event_feedback_thanks": "Спасибо за отзыв! 🙏",
     },
 }
 
 
-def bt(key, lang="ru", **kwargs):
-    lang = lang if lang in BOT_TEXTS else "ru"
-    text = BOT_TEXTS[lang].get(key, BOT_TEXTS["ru"].get(key, key))
+def bt(key, lang="uz", **kwargs):
+    lang = lang if lang in BOT_TEXTS else "uz"
+    text = BOT_TEXTS[lang].get(key, BOT_TEXTS["uz"].get(key, key))
     return text.format(**kwargs) if kwargs else text
