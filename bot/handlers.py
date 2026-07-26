@@ -81,7 +81,6 @@ def handle_start(message):
 
 @bot.message_handler(commands=["language"])
 def handle_language_command(message):
-    safe_delete_message(message.chat.id, message.message_id)
     safe_send_message(message.chat.id, bt("change_language_prompt"), reply_markup=language_change_keyboard())
 
 
@@ -116,8 +115,6 @@ def handle_base_command(message):
     if not OWNER_CHAT_ID or str(message.chat.id) != str(OWNER_CHAT_ID):
         return
 
-    safe_delete_message(message.chat.id, message.message_id)
-
     from excel_export import build_active_volunteers_workbook
 
     volunteers = Volunteer.query.order_by(Volunteer.created_at.desc()).all()
@@ -133,8 +130,6 @@ def handle_base_command(message):
 def handle_stats_command(message):
     if not OWNER_CHAT_ID or str(message.chat.id) != str(OWNER_CHAT_ID):
         return
-
-    safe_delete_message(message.chat.id, message.message_id)
 
     volunteers_count = Volunteer.query.count()
     new_applications = VolunteerApplication.query.filter_by(status="new").count()
@@ -153,8 +148,6 @@ def handle_stats_command(message):
 def handle_message_command(message):
     if not OWNER_CHAT_ID or str(message.chat.id) != str(OWNER_CHAT_ID):
         return
-
-    safe_delete_message(message.chat.id, message.message_id)
 
     prompt = bot.send_message(message.chat.id, "Введите номер телефона волонтёра (9 цифр):")
     data = json.dumps({"prompt_id": prompt.message_id})
@@ -179,7 +172,6 @@ def handle_message_draft_text(message, draft):
 
         if prev_prompt_id:
             safe_delete_message(message.chat.id, prev_prompt_id)
-        safe_delete_message(message.chat.id, message.message_id)
 
         if not volunteer:
             bot.send_message(message.chat.id, "Волонтёр с таким номером не найден.")
@@ -196,7 +188,6 @@ def handle_message_draft_text(message, draft):
     if draft.state == "awaiting_text":
         if prev_prompt_id:
             safe_delete_message(message.chat.id, prev_prompt_id)
-        safe_delete_message(message.chat.id, message.message_id)
 
         text = message.text.strip()
         markup = types.InlineKeyboardMarkup()
@@ -397,7 +388,6 @@ def handle_text(message):
         db.session.commit()
         if prev_id:
             safe_delete_message(message.chat.id, int(prev_id))
-        safe_delete_message(message.chat.id, message.message_id)
         return
 
     if pending and pending.startswith("awaiting_car_plate"):
@@ -413,7 +403,6 @@ def handle_text(message):
         )
         if prev_id:
             safe_delete_message(message.chat.id, int(prev_id))
-        safe_delete_message(message.chat.id, message.message_id)
         return
 
     bot.send_message(message.chat.id, bt("fallback", lang))
