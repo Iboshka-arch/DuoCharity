@@ -12,8 +12,14 @@
                 <h1>{{ t('hero_title_1') }} <span class="text-accent">{{ t('hero_title_accent') }}</span> {{ t('hero_title_2') }}</h1>
                 <p class="lead">{{ t('hero_lead') }}</p>
                 <div class="hero-actions">
-                    <a href="#donate" class="btn btn-primary">{{ t('hero_btn_donate') }}</a>
-                    <a href="{{ url_for('volunteer_form') }}" class="btn btn-outline">{{ t('hero_btn_volunteer') }}</a>
+                    <a href="#donate" class="btn btn-primary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-6.7-4.35-9.3-8.1C.8 10.1 1.2 6.6 4 4.9c2.2-1.3 4.9-.7 6.4 1.2L12 7.7l1.6-1.6c1.5-1.9 4.2-2.5 6.4-1.2 2.8 1.7 3.2 5.2 1.3 8-2.6 3.75-9.3 8.1-9.3 8.1Z"/></svg>
+                        {{ t('hero_btn_donate') }}
+                    </a>
+                    <a href="{{ url_for('volunteer_form') }}" class="btn btn-outline">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.2 14.3c2.4.3 4.3 2.1 4.3 4.7"/></svg>
+                        {{ t('hero_btn_volunteer') }}
+                    </a>
                 </div>
             </div>
             <div class="hero-media">
@@ -176,7 +182,10 @@
             <span class="eyebrow">{{ t('volunteer_eyebrow') }}</span>
             <h2>{{ t('volunteer_title') }}</h2>
             <p class="lead">{{ t('volunteer_lead') }}</p>
-            <a href="{{ url_for('volunteer_form') }}" class="btn btn-primary btn-large">{{ t('hero_btn_volunteer') }}</a>
+            <a href="{{ url_for('volunteer_form') }}" class="btn btn-primary btn-large">
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.2 14.3c2.4.3 4.3 2.1 4.3 4.7"/></svg>
+                {{ t('hero_btn_volunteer') }}
+            </a>
         </div>
     </section>
 
