@@ -377,19 +377,6 @@
     --bg: #ffffff;
     --bg-soft: #f8f9fc;
     --bg-tint: #fef6f3;
-
-    /* Uzbek 8-point star ornament, matching reference: navy field, teal/mint/cream stars in a diamond lattice */
-    --uz-star-navy: #132a63;
-    --uz-star-teal: #2f8f93;
-    --uz-star-mint: #7fd99a;
-    --uz-star-cream: #f3ead6;
-
-    /* Vivid tiled star fabric (bounded accent patches, e.g. hero/about corners) */
-    --uz-pattern-vivid: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cdefs%3E%3Cpath id='s' d='M0,-30 L5,-12 21.2,-21.2 12,-5 30,0 12,5 21.2,21.2 5,12 0,30 -5,12 -21.2,21.2 -12,5 -30,0 -12,-5 -21.2,-21.2 -5,-12 Z'/%3E%3C/defs%3E%3Crect width='200' height='200' fill='%23132a63'/%3E%3Cuse href='%23s' fill='%23f3ead6' transform='translate(0,0)'/%3E%3Cuse href='%23s' fill='%23f3ead6' transform='translate(200,0)'/%3E%3Cuse href='%23s' fill='%232f8f93' transform='translate(100,0)'/%3E%3Cuse href='%23s' fill='%23f3ead6' transform='translate(0,200)'/%3E%3Cuse href='%23s' fill='%23f3ead6' transform='translate(200,200)'/%3E%3Cuse href='%23s' fill='%232f8f93' transform='translate(100,200)'/%3E%3Cuse href='%23s' fill='%237fd99a' transform='translate(50,100)'/%3E%3Cuse href='%23s' fill='%232f8f93' transform='translate(150,100)'/%3E%3C/svg%3E");
-
-    /* Faint single-star outline for full-bleed washes over light/dark sections */
-    --uz-tile-navy: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cg transform='translate(45,45) scale(0.7)' fill='none' stroke='%231e3a8a' stroke-opacity='0.15' stroke-width='1.5'%3E%3Cpath d='M0,-30 L5,-12 21.2,-21.2 12,-5 30,0 12,5 21.2,21.2 5,12 0,30 -5,12 -21.2,21.2 -12,5 -30,0 -12,-5 -21.2,-21.2 -5,-12 Z'/%3E%3C/g%3E%3Ccircle cx='45' cy='45' r='2.2' fill='%237fd99a' fill-opacity='0.4'/%3E%3C/svg%3E");
-    --uz-tile-white: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cg transform='translate(45,45) scale(0.7)' fill='none' stroke='%23ffffff' stroke-opacity='0.14' stroke-width='1.5'%3E%3Cpath d='M0,-30 L5,-12 21.2,-21.2 12,-5 30,0 12,5 21.2,21.2 5,12 0,30 -5,12 -21.2,21.2 -12,5 -30,0 -12,-5 -21.2,-21.2 -5,-12 Z'/%3E%3C/g%3E%3Ccircle cx='45' cy='45' r='2.2' fill='%237fd99a' fill-opacity='0.45'/%3E%3C/svg%3E");
     --text: #1a1f36;
     --text-muted: #6b7280;
     --border: #e8eaf0;
@@ -640,42 +627,10 @@ h2 {
 
 .hero {
     padding: 64px 0 80px;
-    background: var(--uz-tile-navy) 0 0 / 84px 84px repeat,
-                radial-gradient(ellipse 90% 70% at 85% 6%, rgba(30, 58, 138, 0.16) 0%, transparent 60%),
-                radial-gradient(ellipse 70% 55% at 15% 100%, rgba(245, 185, 66, 0.12) 0%, transparent 65%),
-                linear-gradient(160deg, #e9f0ff 0%, #ffffff 45%, #fdf5f0 100%);
+    background: radial-gradient(ellipse 80% 60% at 20% 0%, var(--bg-tint) 0%, transparent 60%),
+                linear-gradient(180deg, var(--bg-soft) 0%, #fff 100%);
     position: relative;
     overflow: hidden;
-}
-
-.hero::before,
-.hero::after {
-    content: "";
-    position: absolute;
-    background: var(--uz-pattern-vivid) 0 0 / 58px 58px repeat;
-    box-shadow: var(--shadow-lg);
-    pointer-events: none;
-    z-index: 0;
-}
-
-.hero::before {
-    top: -46px;
-    right: -46px;
-    width: 220px;
-    height: 220px;
-    border-radius: 50%;
-    mask-image: radial-gradient(circle, #000 62%, transparent 100%);
-    -webkit-mask-image: radial-gradient(circle, #000 62%, transparent 100%);
-}
-
-.hero::after {
-    bottom: -34px;
-    left: -34px;
-    width: 150px;
-    height: 150px;
-    border-radius: 28px;
-    transform: rotate(8deg);
-    opacity: 0.9;
 }
 
 .hero-inner {
@@ -718,8 +673,7 @@ h2 {
 
 
 .stats {
-    background: var(--uz-tile-white) 0 0 / 84px 84px repeat,
-                linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
     padding: 52px 0;
     position: relative;
     overflow: hidden;
@@ -775,32 +729,12 @@ h2 {
 
 .about {
     padding: 88px 0;
-    position: relative;
-    overflow: hidden;
-    background: radial-gradient(ellipse 60% 50% at 100% 0%, rgba(30, 58, 138, 0.06) 0%, transparent 70%);
-}
-
-.about::before {
-    content: "";
-    position: absolute;
-    top: -40px;
-    left: -40px;
-    width: 130px;
-    height: 130px;
-    border-radius: 26px;
-    transform: rotate(-6deg);
-    background: var(--uz-pattern-vivid) 0 0 / 50px 50px repeat;
-    box-shadow: var(--shadow);
-    opacity: 0.85;
-    pointer-events: none;
 }
 
 .about-grid {
     display: flex;
     flex-direction: column;
     gap: 36px;
-    position: relative;
-    z-index: 1;
 }
 
 .about-photo {
@@ -874,8 +808,7 @@ h2 {
 
 .gallery {
     padding: 88px 0;
-    background: var(--uz-tile-navy) 0 0 / 84px 84px repeat,
-                linear-gradient(160deg, #eef3ff 0%, var(--bg-soft) 55%, var(--bg-soft) 100%);
+    background: var(--bg-soft);
 }
 
 .gallery-grid {
@@ -959,8 +892,7 @@ h2 {
 
 .donate {
     padding: 88px 0;
-    background: var(--uz-tile-white) 0 0 / 84px 84px repeat,
-                linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
     color: #fff;
     text-align: center;
     position: relative;
