@@ -3,10 +3,11 @@ document.addEventListener("DOMContentLoaded", function () {
 const promoOverlay = document.getElementById("promoOverlay");
     const promoClose = document.getElementById("promoClose");
 
-    if (promoOverlay) {
+    if (promoOverlay && !sessionStorage.getItem("promoShown")) {
         setTimeout(function () {
             promoOverlay.classList.add("show");
-        }, 1800);
+            sessionStorage.setItem("promoShown", "1");
+        }, 2600);
 
         function closePromo() {
             promoOverlay.classList.remove("show");

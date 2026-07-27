@@ -377,6 +377,12 @@
     --bg: #ffffff;
     --bg-soft: #f8f9fc;
     --bg-tint: #fef6f3;
+
+    /* Uzbek geometric ornament tiles (suzani/ikat-inspired), baked-in opacity via stroke-opacity/fill-opacity */
+    --uz-tile-navy: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 84 84'%3E%3Cg fill='none' stroke='%231e3a8a' stroke-opacity='0.16' stroke-width='1.1'%3E%3Cpath d='M42 6L78 42 42 78 6 42Z'/%3E%3Cpath d='M42 22L62 42 42 62 22 42Z'/%3E%3C/g%3E%3Ccircle cx='42' cy='42' r='2.3' fill='%23f5b942' fill-opacity='0.4'/%3E%3C/svg%3E");
+    --uz-tile-white: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='84' viewBox='0 0 84 84'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.14' stroke-width='1.1'%3E%3Cpath d='M42 6L78 42 42 78 6 42Z'/%3E%3Cpath d='M42 22L62 42 42 62 22 42Z'/%3E%3C/g%3E%3Ccircle cx='42' cy='42' r='2.3' fill='%23f5b942' fill-opacity='0.45'/%3E%3C/svg%3E");
+    /* Larger single medallion (8-point star) for hero "wow" accent */
+    --uz-medallion: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cg fill='none' stroke='%231e3a8a' stroke-width='1.4' opacity='0.5'%3E%3Ccircle cx='100' cy='100' r='90'/%3E%3Cpath d='M100 10 122 78 192 100 122 122 100 190 78 122 8 100 78 78Z'/%3E%3C/g%3E%3Cg fill='none' stroke='%23f5b942' stroke-width='1.2' opacity='0.6'%3E%3Ccircle cx='100' cy='100' r='52'/%3E%3Cpath d='M100 48 115 85 152 100 115 115 100 152 85 115 48 100 85 85Z'/%3E%3C/g%3E%3C/svg%3E");
     --text: #1a1f36;
     --text-muted: #6b7280;
     --border: #e8eaf0;
@@ -618,10 +624,37 @@ h2 {
 
 .hero {
     padding: 64px 0 80px;
-    background: radial-gradient(ellipse 80% 60% at 20% 0%, var(--bg-tint) 0%, transparent 60%),
-                linear-gradient(180deg, var(--bg-soft) 0%, #fff 100%);
+    background: var(--uz-tile-navy) 0 0 / 84px 84px repeat,
+                radial-gradient(ellipse 90% 70% at 85% 6%, rgba(30, 58, 138, 0.16) 0%, transparent 60%),
+                radial-gradient(ellipse 70% 55% at 15% 100%, rgba(245, 185, 66, 0.12) 0%, transparent 65%),
+                linear-gradient(160deg, #e9f0ff 0%, #ffffff 45%, #fdf5f0 100%);
     position: relative;
     overflow: hidden;
+}
+
+.hero::before,
+.hero::after {
+    content: "";
+    position: absolute;
+    background: var(--uz-medallion) center / contain no-repeat;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hero::before {
+    top: -70px;
+    right: -80px;
+    width: 340px;
+    height: 340px;
+}
+
+.hero::after {
+    bottom: -60px;
+    left: -70px;
+    width: 220px;
+    height: 220px;
+    transform: rotate(14deg);
+    opacity: 0.7;
 }
 
 .hero-inner {
@@ -664,7 +697,8 @@ h2 {
 
 
 .stats {
-    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+    background: var(--uz-tile-white) 0 0 / 84px 84px repeat,
+                linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
     padding: 52px 0;
     position: relative;
     overflow: hidden;
@@ -720,12 +754,29 @@ h2 {
 
 .about {
     padding: 88px 0;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(ellipse 60% 50% at 100% 0%, rgba(30, 58, 138, 0.06) 0%, transparent 70%);
+}
+
+.about::before {
+    content: "";
+    position: absolute;
+    top: -50px;
+    left: -60px;
+    width: 180px;
+    height: 180px;
+    background: var(--uz-medallion) center / contain no-repeat;
+    opacity: 0.35;
+    pointer-events: none;
 }
 
 .about-grid {
     display: flex;
     flex-direction: column;
     gap: 36px;
+    position: relative;
+    z-index: 1;
 }
 
 .about-photo {
@@ -799,7 +850,8 @@ h2 {
 
 .gallery {
     padding: 88px 0;
-    background: var(--bg-soft);
+    background: var(--uz-tile-navy) 0 0 / 84px 84px repeat,
+                linear-gradient(160deg, #eef3ff 0%, var(--bg-soft) 55%, var(--bg-soft) 100%);
 }
 
 .gallery-grid {
@@ -883,7 +935,8 @@ h2 {
 
 .donate {
     padding: 88px 0;
-    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+    background: var(--uz-tile-white) 0 0 / 84px 84px repeat,
+                linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
     color: #fff;
     text-align: center;
     position: relative;
@@ -1187,19 +1240,6 @@ h2 {
     display: inline-block !important;
 }
 
-.author-link {
-    color: #ffffff !important;
-    text-decoration: none !important;
-    font-weight: bold !important;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.4) !important;
-    transition: all 0.2s ease !important;
-}
-
-.author-link:hover {
-    color: #4da6ff !important;
-    border-bottom-color: #4da6ff !important;
-}
-
 @media (max-width: 480px) {
     .container {
         padding-left: 20px !important;
@@ -1332,10 +1372,13 @@ h2 {
     align-items: center;
     justify-content: center;
     padding: 20px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
 }
 
 .promo-overlay.show {
     display: flex;
+    opacity: 1;
 }
 
 .promo-modal {
@@ -1346,13 +1389,13 @@ h2 {
     max-width: 420px;
     width: 100%;
     text-align: center;
-    animation: promoPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: promoRise 0.5s cubic-bezier(0.22, 1, 0.36, 1);
     overflow: hidden;
 }
 
-@keyframes promoPop {
-    from { transform: scale(0.9); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+@keyframes promoRise {
+    from { transform: translateY(16px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 .promo-image {
