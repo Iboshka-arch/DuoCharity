@@ -12,7 +12,7 @@ from models import db, Volunteer, VolunteerApplication, BotStartCooldown, Conver
 
 bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
 
-VOLUNTEER_FORM_URL = "https://duo-charity.vercel.app/volunteer-form"
+VOLUNTEER_FORM_URL = "https://duocharity.uz/volunteer-form"
 START_COOLDOWN_SECONDS = 5
 
 
