@@ -10,7 +10,7 @@ TRANSLATIONS = {
         "nav_donate": "Yordam berish",
 
         # Hero
-        "hero_eyebrow": "Ezgu niyat bilan yaxshilik qil",
+        "hero_eyebrow": "Ezgu niyat bilan yaxshi ishlar qiling",
         "hero_title_1": "Birga",
         "hero_title_accent": "yaxshilik",
         "hero_title_2": "qilamiz.",
@@ -87,7 +87,7 @@ TRANSLATIONS = {
         "vf_thanks_bot_button": "Botni Telegramda ochish",
 
         # Footer
-        "footer_tagline": "Ezgu niyat bilan yaxshilik qil. DUO Charity — muhtojlarga yordam beruvchi xayriya jamg'armasi.",
+        "footer_tagline": "Ezgu niyat bilan yaxshi ishlar qiling. DUO Charity — muhtojlarga yordam beruvchi xayriya jamg'armasi.",
         "footer_contact": "Bog'lanish",
         "footer_nav": "Navigatsiya",
         "footer_rights": "Barcha huquqlar himoyalangan.",
@@ -209,7 +209,7 @@ TRANSLATIONS = {
         "nav_contact": "Контакты",
         "nav_donate": "Помочь",
 
-        "hero_eyebrow": "Делай добро с благими намерениями",
+        "hero_eyebrow": "Делайте хорошие дела с благими намерениями",
         "hero_title_1": "Вместе мы",
         "hero_title_accent": "творим",
         "hero_title_2": "добро.",
@@ -280,7 +280,7 @@ TRANSLATIONS = {
         "vf_thanks_bot_note": "Если заявку одобрят, мы напишем в Telegram — нажмите Start у нашего бота и дождитесь сообщения.",
         "vf_thanks_bot_button": "Открыть бота в Telegram",
 
-        "footer_tagline": "Делай добро с благими намерениями. DUO Charity — благотворительный фонд помощи нуждающимся.",
+        "footer_tagline": "Делайте хорошие дела с благими намерениями. DUO Charity — благотворительный фонд помощи нуждающимся.",
         "footer_contact": "Контакты",
         "footer_nav": "Навигация",
         "footer_rights": "Все права защищены.",
@@ -403,7 +403,7 @@ TRANSLATIONS = {
         "nav_contact": "Contact",
         "nav_donate": "Donate",
 
-        "hero_eyebrow": "Do good with good intentions",
+        "hero_eyebrow": "Do good deeds with good intentions",
         "hero_title_1": "Together we",
         "hero_title_accent": "create",
         "hero_title_2": "good.",
@@ -474,7 +474,7 @@ TRANSLATIONS = {
         "vf_thanks_bot_note": "If approved, we'll message you on Telegram — press Start on our bot and wait for a message.",
         "vf_thanks_bot_button": "Open the bot in Telegram",
 
-        "footer_tagline": "Do good with good intentions. DUO Charity — a charitable foundation helping those in need.",
+        "footer_tagline": "Do good deeds with good intentions. DUO Charity — a charitable foundation helping those in need.",
         "footer_contact": "Contact",
         "footer_nav": "Navigation",
         "footer_rights": "All rights reserved.",
