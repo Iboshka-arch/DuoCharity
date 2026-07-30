@@ -644,7 +644,7 @@ h2 {
     z-index: 1;
 }
 
-.hero-flower {
+.deco-flower {
     position: absolute;
     background: var(--peony) center / contain no-repeat;
     pointer-events: none;
@@ -835,6 +835,11 @@ h2 {
                 linear-gradient(150deg, #dcf0fb 0%, #a3d3f2 42%, #4f92da 100%);
     position: relative;
     overflow: hidden;
+}
+
+.gallery > .container {
+    position: relative;
+    z-index: 1;
 }
 
 .gallery-grid {
