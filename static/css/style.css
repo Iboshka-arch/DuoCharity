@@ -164,8 +164,8 @@
 }
 
 .btn-large {
-    padding: 15px 32px;
-    font-size: 1rem;
+    padding: 18px 40px;
+    font-size: 1.05rem;
     align-self: flex-start;
 }
 
@@ -401,7 +401,7 @@ html {
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     color: var(--text);
     background: var(--bg);
     line-height: 1.65;
@@ -1044,10 +1044,30 @@ button.donate-card {
 }
 
 .donate-channel-note {
-    margin: 12px 0 0;
+    margin: 0 0 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
     font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.65);
     text-align: center;
+}
+
+.donate-channel-note a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.donate-channel-note a:hover {
+    color: var(--gold);
+}
+
+.donate-channel-note a.donate-channel-link {
+    font-size: 0.8rem;
+    color: var(--gold);
+    text-decoration: none;
+    font-weight: 600;
 }
 
 .donate-popover {
@@ -1151,48 +1171,6 @@ button.donate-card {
 
 .volunteer .lead {
     margin: 0 auto;
-}
-
-.volunteer-form {
-    margin-top: 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    text-align: left;
-}
-
-.form-row {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.volunteer-form input,
-.volunteer-form textarea {
-    width: 100%;
-    padding: 13px 16px;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 0.95rem;
-    background: var(--bg-soft);
-}
-
-.volunteer-form input:focus,
-.volunteer-form textarea:focus {
-    outline: none;
-    border-color: var(--navy);
-    background: #fff;
-}
-
-.volunteer-form button {
-    align-self: flex-start;
-}
-
-@media (min-width: 600px) {
-    .form-row {
-        flex-direction: row;
-    }
 }
 
 .site-footer {

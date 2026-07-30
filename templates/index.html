@@ -172,6 +172,11 @@
 
             <div class="donate-options">
                 <div class="donate-primary-wrap">
+                    <p class="donate-channel-note">
+                        <a href="https://t.me/duo_charity" target="_blank" rel="noopener">{{ t('donate_channel_note') }}</a>
+                        <a href="https://t.me/duo_charity" target="_blank" rel="noopener" class="donate-channel-link">t.me/duo_charity</a>
+                    </p>
+
                     <button type="button" class="donate-card donate-card--primary" id="donateCardTrigger" aria-expanded="false" aria-controls="donateCardPopover">
                         <span class="donate-method">{{ t('donate_card') }}</span>
                         <span class="donate-value">{{ settings.get('card_value', '—') }}</span>
@@ -185,8 +190,6 @@
                         <span class="donate-popover-recipient">{{ t('donate_recipient_label') }}: Madina Saidkarimova</span>
                         <button type="button" class="donate-copy-btn" id="donateCopyBtn" data-copied-text="{{ t('donate_copied') }}" data-default-text="{{ t('donate_copy_action') }}">{{ t('donate_copy_action') }}</button>
                     </div>
-
-                    <p class="donate-channel-note">{{ t('donate_channel_note') }}</p>
                 </div>
 
                 <div class="donate-card donate-card--disabled">
