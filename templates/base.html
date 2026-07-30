@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}DUO Charity{% endblock %}</title>
     <meta name="description" content="DUO Charity — O'zbekistondagi muhtoj oilalar, bolalar va keksalarga ko'maklashuvchi xayriya jamg'armasi.">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "NGO",
+        "name": "DUO Charity",
+        "url": "https://duocharity.uz/",
+        "logo": "https://duocharity.uz{{ url_for('static', filename='images/duo-logo.png') }}",
+        "description": "DUO Charity — O'zbekistondagi muhtoj oilalar, bolalar va keksalarga ko'maklashuvchi xayriya jamg'armasi.",
+        "sameAs": [
+            "https://www.instagram.com/duo_charity/",
+            "https://t.me/duo_charity"
+        ]
+    }
+    </script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
