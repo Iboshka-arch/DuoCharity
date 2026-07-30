@@ -29,10 +29,7 @@ def notify_new_application(application):
     for chat_id in (ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID):
         if not chat_id:
             continue
-        try:
-            safe_send_message(chat_id, text, reply_markup=keyboard, parse_mode="HTML")
-        except Exception as e:
-            print(f"Не удалось отправить уведомление в {chat_id}: {e}")
+        safe_send_message(chat_id, text, reply_markup=keyboard, parse_mode="HTML")
 
 ADMIN_CHAT_IDS = {str(ADMIN_GROUP_CHAT_ID), str(OWNER_CHAT_ID)}
 

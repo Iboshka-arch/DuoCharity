@@ -53,6 +53,9 @@ def send_group_invite(chat_id, volunteer, lang):
 
 @bot.message_handler(commands=["start"])
 def handle_start(message):
+    if message.chat.type != "private":
+        return
+
     now = datetime.utcnow()
     cooldown = BotStartCooldown.query.get(message.chat.id)
 
@@ -81,11 +84,17 @@ def handle_start(message):
 
 @bot.message_handler(commands=["language"])
 def handle_language_command(message):
+    if message.chat.type != "private":
+        return
+
     safe_send_message(message.chat.id, bt("change_language_prompt"), reply_markup=language_change_keyboard())
 
 
 @bot.callback_query_handler(func=lambda call: call.data in ("setlang_uz", "setlang_ru"))
 def handle_language_change(call):
+    if call.message.chat.type != "private":
+        return
+
     bot.answer_callback_query(call.id)
     lang = "uz" if call.data == "setlang_uz" else "ru"
     chat_id = call.message.chat.id
@@ -237,8 +246,75 @@ def handle_message_confirm(call):
         print(f"Не удалось отправить личное сообщение волонтёру: {e}")
 
 
+@bot.message_handler(commands=["support"])
+def handle_support_command(message):
+    if message.chat.type != "private":
+        return
+
+    volunteer = Volunteer.query.filter_by(telegram_chat_id=message.chat.id).first()
+    lang = volunteer.language if volunteer and volunteer.language else "uz"
+
+    prompt = bot.send_message(message.chat.id, bt("support_ask", lang))
+    data = json.dumps({"prompt_id": prompt.message_id})
+
+    draft = ConversationDraft.query.get(message.chat.id)
+    if draft:
+        draft.kind = "support"
+        draft.state = "awaiting_text"
+        draft.data = data
+    else:
+        db.session.add(ConversationDraft(telegram_chat_id=message.chat.id, kind="support", state="awaiting_text", data=data))
+    db.session.commit()
+
+
+def handle_support_draft_text(message, draft):
+    data = json.loads(draft.data or "{}")
+    prev_prompt_id = data.get("prompt_id")
+    if prev_prompt_id:
+        safe_delete_message(message.chat.id, prev_prompt_id)
+
+    volunteer = Volunteer.query.filter_by(telegram_chat_id=message.chat.id).first()
+    application = None
+    if not volunteer:
+        application = VolunteerApplication.query.filter_by(telegram_chat_id=message.chat.id).first()
+
+    lang = (volunteer.language if volunteer else None) or (application.language if application else None) or "uz"
+
+    if volunteer:
+        name, phone = volunteer.full_name, volunteer.phone
+    elif application:
+        name, phone = application.full_name, application.phone
+    else:
+        name = " ".join(filter(None, [message.from_user.first_name, message.from_user.last_name])) or "Без имени"
+        phone = None
+
+    username = f"@{message.from_user.username}" if message.from_user.username else "—"
+
+    admin_text = (
+        "🆘 <b>Обращение в поддержку</b>\n\n"
+        f"👤 <b>От:</b> {html.escape(name)}\n"
+        f"📞 <b>Телефон:</b> {html.escape(phone) if phone else '—'}\n"
+        f"✈️ <b>Telegram:</b> {html.escape(username)}\n"
+        f"🆔 <b>Chat ID:</b> {message.chat.id}\n\n"
+        f"💬 {html.escape(message.text.strip())}"
+    )
+
+    for chat_id in (ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID):
+        if not chat_id:
+            continue
+        safe_send_message(chat_id, admin_text, parse_mode="HTML")
+
+    db.session.delete(draft)
+    db.session.commit()
+
+    bot.send_message(message.chat.id, bt("support_sent", lang))
+
+
 @bot.message_handler(content_types=["contact"])
 def handle_contact(message):
+    if message.chat.type != "private":
+        return
+
     contact = message.contact
     cooldown = BotStartCooldown.query.get(message.chat.id)
     lang = (cooldown.language if cooldown else None) or "uz"
@@ -297,6 +373,9 @@ def handle_contact(message):
 
 @bot.callback_query_handler(func=lambda call: call.data in ("lang_uz", "lang_ru"))
 def handle_language_choice(call):
+    if call.message.chat.type != "private":
+        return
+
     bot.answer_callback_query(call.id)
     lang = "uz" if call.data == "lang_uz" else "ru"
 
@@ -338,6 +417,9 @@ def handle_language_choice(call):
 
 @bot.callback_query_handler(func=lambda call: call.data in ("car_yes", "car_no"))
 def handle_car_answer(call):
+    if call.message.chat.type != "private":
+        return
+
     volunteer = Volunteer.query.filter_by(telegram_chat_id=call.message.chat.id).first()
     bot.answer_callback_query(call.id)
 
@@ -366,6 +448,9 @@ def handle_car_answer(call):
 
 @bot.message_handler(content_types=["text"])
 def handle_text(message):
+    if message.chat.type != "private":
+        return
+
     draft = ConversationDraft.query.get(message.chat.id)
     if draft:
         if draft.kind == "message":
@@ -374,6 +459,9 @@ def handle_text(message):
         if draft.kind == "event_feedback":
             from bot.events import process_feedback_comment
             process_feedback_comment(message, draft)
+            return
+        if draft.kind == "support":
+            handle_support_draft_text(message, draft)
             return
 
     volunteer = Volunteer.query.filter_by(telegram_chat_id=message.chat.id).first()
@@ -410,6 +498,9 @@ def handle_text(message):
 
 @bot.callback_query_handler(func=lambda call: call.data in ("car_confirm_yes", "car_confirm_no"))
 def handle_car_confirm(call):
+    if call.message.chat.type != "private":
+        return
+
     volunteer = Volunteer.query.filter_by(telegram_chat_id=call.message.chat.id, pending_action="awaiting_car_confirm").first()
     bot.answer_callback_query(call.id)
 
@@ -475,6 +566,9 @@ def handle_join_request(request):
 
 @bot.message_handler(content_types=["sticker", "photo", "voice", "video", "document", "audio"])
 def handle_other_content(message):
+    if message.chat.type != "private":
+        return
+
     volunteer = Volunteer.query.filter_by(telegram_chat_id=message.chat.id).first()
     lang = volunteer.language if volunteer and volunteer.language else "uz"
     safe_send_message(message.chat.id, bt("fallback", lang))
