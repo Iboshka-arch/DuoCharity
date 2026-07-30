@@ -49,6 +49,12 @@ TRANSLATIONS = {
         "donate_title": "Kichik yordam katta o'zgarishga aylanadi!",
         "donate_lead": "Quyidagi to'lov usullari orqali jamg'armani qo'llab-quvvatlashingiz mumkin. Har bir so'm muhtojlarga yetkaziladi.",
         "donate_card": "Bank karta",
+        "donate_tap_hint": "Bosing",
+        "donate_copy_action": "Nusxalash",
+        "donate_coming_soon": "Tez orada",
+        "donate_channel_note": "Yuborgan summangiz «@Duo_charity» kanalida e'lon qilinadi.",
+        "donate_copied": "Nusxalandi!",
+        "donate_recipient_label": "Qabul qiluvchi",
 
         "volunteer_eyebrow": "Volontyorlik",
         "volunteer_title": "Jamoamizga qo'shiling",
@@ -61,7 +67,104 @@ TRANSLATIONS = {
         "promo_title":  "Yaxshilik qilishga tayyormisiz?",
         "promo_text": "DUO Charity bilan birga muhtoj oilalar, bolalar va keksalarga yordam bering.",
 
-        "footer_privacy_link": "Политика конфиденциальности",
+        "footer_privacy_link": "Shaxsiy ma'lumotlarni qayta ishlash siyosati",
+
+        "pp_title": "Shaxsiy ma'lumotlarni qayta ishlash siyosati",
+        "pp_body": """DUO Charity
+duocharity.uz sayti va DUO Charity Telegram botiga nisbatan qo'llaniladi
+
+1. Umumiy qoidalar
+
+1.1. Ushbu Shaxsiy ma'lumotlarni qayta ishlash siyosati duocharity.uz sayti va DUO Charity Telegram botidan foydalanuvchilarning shaxsiy ma'lumotlarini olish, saqlash, ishlatish, uzatish va o'chirish tartibini belgilaydi.
+
+1.2. DUO Charity (bundan buyon — «Tashkilot») shaxsiy ma'lumotlarni O'zbekiston Respublikasi qonunchiligiga, jumladan O'zbekiston Respublikasining «Shaxsiy ma'lumotlar to'g'risida»gi ЗРУ-547-sonli Qonuniga muvofiq qayta ishlaydi.
+
+1.3. Ushbu Siyosat e'lon qilingan vaqtda DUO Charity loyihasi tashkiliy shakllanish bosqichida. Davlat ro'yxatidan o'tgandan so'ng, shaxsiy ma'lumotlar operatori haqidagi ma'lumotlar to'ldiriladi.
+
+1.4. Shaxsiy ma'lumotlarni qayta ishlash uchun DUO Charity loyihasi ma'muriyati javobgardir.
+
+1.5. Shaxsiy ma'lumotlarni qayta ishlash bilan bog'liq savollar bo'yicha foydalanuvchi Telegram orqali murojaat qilishi mumkin: @Duo_charity_admin.
+
+2. Ma'lumotlarni qayta ishlashning huquqiy asoslari
+
+2.1. Tashkilot shaxsiy ma'lumotlarni quyidagi asoslarda qayta ishlaydi: shaxsiy ma'lumotlar subyektining roziligi; volontyorlik arizalarini ko'rib chiqish zarurati; O'zbekiston Respublikasi qonunchiligida nazarda tutilgan majburiyatlarni bajarish; sayt va Telegram-botning ishlashini ta'minlash.
+
+3. Shaxsiy ma'lumotlarni qayta ishlashga rozilik
+
+3.1. duocharity.uz sayti orqali ariza yuborish yoki DUO Charity Telegram-boti orqali ma'lumot uzatish orqali foydalanuvchi quyidagilarni tasdiqlaydi: ushbu Siyosat bilan tanishganligini; o'z shaxsiy ma'lumotlarini qayta ishlashga roziligini; ushbu hujjatda ko'rsatilgan ma'lumotlarni saqlash va qayta ishlash shartlariga roziligini.
+
+3.2. Foydalanuvchi shaxsiy ma'lumotlarini taqdim etishdan bosh tortish huquqiga ega. Bunday holda arizani ko'rib chiqish va xizmatning ayrim funksiyalaridan foydalanish imkonsiz bo'lishi mumkin.
+
+4. Qayta ishlanadigan shaxsiy ma'lumotlar ro'yxati
+
+4.1. Volontyorlikka ariza berishda Tashkilot quyidagi ma'lumotlarni olishi mumkin: ism va familiya; telefon raqami; Telegram foydalanuvchi nomi (username); jinsi; yoshi; band bo'lish holati (o'qiydi yoki ishlaydi); foydalanuvchi yuborgan xabar matni.
+
+4.2. DUO Charity Telegram-botidan foydalanishda qo'shimcha ravishda quyidagilar qayta ishlanishi mumkin: Telegram foydalanuvchi identifikatori (Telegram ID); foydalanuvchi Telegramning o'rnatilgan vositalari orqali uzatgan telefon raqami; yuk tashish uchun shaxsiy avtomobili borligi, uning markasi va davlat raqami haqidagi ma'lumotlar — yuklarni tashishda ishtirok etadigan volontyorlar uchun; tadbirlarga yozilish ma'lumotlari va tadbirlardan keyingi fikr-mulohaza natijalari (baho va izoh, anonim tarzda taqdim etiladi); xabarnomalarni yuborish uchun zarur bo'lgan texnik ma'lumotlar.
+
+4.3. Tashkilot quyidagilarni so'ramaydi va qayta ishlamaydi: pasport ma'lumotlari; yashash manzili; biometrik ma'lumotlar; genetik ma'lumotlar; qonunchilikda boshqacha tartib nazarda tutilmagan bo'lsa, boshqa maxsus toifadagi shaxsiy ma'lumotlar.
+
+5. Shaxsiy ma'lumotlarni qayta ishlash maqsadlari
+
+5.1. Shaxsiy ma'lumotlar faqat quyidagi maqsadlarda ishlatiladi: volontyorlik arizalarini ko'rib chiqish; nomzodlar va faoliyatdagi volontyorlar bilan aloqa; arizalarni ko'rib chiqish natijalari haqida xabar berish; tadbirlarni tashkil etish va ishtirokchilarni ro'yxatga olish; faoliyatdagi volontyorlar reestrini yuritish; sayt va Telegram-botning ishlashini ta'minlash.
+
+5.2. Tashkilot shaxsiy ma'lumotlarni reklama maqsadlarida ishlatmaydi va ularni marketing xabarnomalari uchun uchinchi shaxslarga uzatmaydi.
+
+6. Shaxsiy ma'lumotlarni uzatish va saqlash
+
+6.1. Shaxsiy ma'lumotlar Tashkilot tomonidan sayt va xizmatlarning ishlashini ta'minlash uchun foydalaniladigan uchinchi tomon texnik provayderlari serverlarida saqlanishi mumkin.
+
+6.2. Ushbu Siyosat e'lon qilingan vaqtda ma'lumotlar bazasi O'zbekiston Respublikasi hududidan tashqarida joylashgan Neon va Amazon Web Services (AWS) infratuzilmasidan foydalangan holda joylashtirilgan.
+
+6.3. Telegram-botdan foydalanishda ma'lumotlarning bir qismi Telegram infratuzilmasi orqali qayta ishlanadi.
+
+6.4. Ariza yuborish yoki Telegram-botdan foydalanish orqali foydalanuvchi ko'rsatilgan xizmatlarning ishlashi uchun zarur bo'lgan hajmda shaxsiy ma'lumotlarni chegaralararo uzatishga roziligini bildiradi.
+
+7. Shaxsiy ma'lumotlarni saqlash muddatlari
+
+7.1. Volontyorlik arizalari qaror qabul qilish uchun zarur bo'lgan, ammo qabul qilingan vaqtdan boshlab 48 soatdan oshmagan muddatda ko'rib chiqiladi.
+
+7.2. Ariza qabul qilinmagan taqdirda, qonunchilikda boshqacha tartib talab qilinmasa, murojaatni ko'rib chiqish yakunlangandan so'ng shaxsiy ma'lumotlar o'chiriladi.
+
+7.3. Faoliyatdagi volontyorlarning shaxsiy ma'lumotlari ularning Tashkilot faoliyatida ishtirok etish davomida saqlanadi.
+
+7.4. Volontyorning ishtiroki tugatilgandan yoki ma'lumotlarni o'chirish talabi olingandan so'ng, ma'lumotlar O'zbekiston Respublikasi qonunchiligida nazarda tutilgan muddatlarda o'chiriladi.
+
+8. Shaxsiy ma'lumotlar subyektining huquqlari
+
+8.1. Foydalanuvchi quyidagi huquqlarga ega: o'z shaxsiy ma'lumotlari haqida ma'lumot olish; ma'lumotlarni aniqlashtirish, yangilash yoki tuzatishni talab qilish; o'z shaxsiy ma'lumotlarini o'chirishni talab qilish; ilgari berilgan qayta ishlashga roziligini qaytarib olish; shaxsiy ma'lumotlarni qayta ishlash masalalari bo'yicha shikoyat va so'rovlar bilan murojaat qilish.
+
+8.2. Ko'rsatilgan huquqlarni amalga oshirish uchun foydalanuvchi ushbu Siyosatning 1-bo'limida ko'rsatilgan kontaktlar orqali murojaat qilishi mumkin.
+
+9. Voyaga yetmaganlar ma'lumotlarini qayta ishlash
+
+9.1. Volontyorlik faoliyatida ishtirok etish 16 yoshdan boshlab ruxsat etiladi.
+
+9.2. 16 yoshgacha bo'lgan shaxslar Tashkilot faoliyatida faqat qonunchilikda nazarda tutilgan hollarda ota-ona yoki qonuniy vakilning roziligi bo'lgandagina ishtirok etishi mumkin.
+
+10. Shaxsiy ma'lumotlar xavfsizligi
+
+10.1. Tashkilot shaxsiy ma'lumotlarni quyidagilardan himoya qilish uchun zarur tashkiliy va texnik choralarni ko'radi: ruxsatsiz kirish; o'zgartirish; tarqatish; yo'qotish; yo'q qilish.
+
+10.2. Shaxsiy ma'lumotlarga kirish faqat bunday ma'lumot o'z vazifalarini bajarish uchun zarur bo'lgan Tashkilotning vakolatli vakillariga taqdim etiladi.
+
+10.3. Sayt orqali ma'lumot uzatish uchun himoyalangan aloqa kanallaridan (HTTPS) foydalaniladi.
+
+11. Cookie fayllaridan foydalanish
+
+11.1. Sayt xizmatning to'g'ri ishlashi uchun zarur bo'lgan texnik Cookie fayllaridan foydalanishi mumkin.
+
+11.2. Cookie fayllari foydalanuvchilar ma'lumotlarini sotish yoki ularni reklama maqsadida uchinchi shaxslarga uzatish uchun ishlatilmaydi.
+
+12. Siyosatga o'zgartirish kiritish
+
+12.1. Tashkilot ushbu Siyosatga o'zgartirishlar kiritish huquqiga ega.
+
+12.2. Amaldagi tahrir doimo duocharity.uz saytida e'lon qilinadi.
+
+12.3. Siyosatning yangi tahriri e'lon qilingandan so'ng saytdan foydalanishni davom ettirish foydalanuvchining kiritilgan o'zgartirishlarga roziligini anglatadi.
+
+Kuchga kirish sanasi: 2026-yil 1-avgust
+Shaxsiy ma'lumotlar bo'yicha aloqa: @Duo_charity_admin""",
 
         "vf_personal_info": "Shaxsiy ma'lumotlar",
         "vf_phone": "Telefon raqam",
@@ -243,6 +346,12 @@ TRANSLATIONS = {
         "donate_title": "Небольшая помощь может привести к большим переменам!",
         "donate_lead": "Вы можете поддержать фонд через следующие способы оплаты. Каждая сумма доходит до нуждающихся.",
         "donate_card": "Банковская карта",
+        "donate_tap_hint": "Нажмите",
+        "donate_copy_action": "Скопировать",
+        "donate_coming_soon": "Скоро",
+        "donate_channel_note": "Отправленная вами сумма будет опубликована в канале «@Duo_charity».",
+        "donate_copied": "Скопировано!",
+        "donate_recipient_label": "Получатель",
 
         "volunteer_eyebrow": "Волонтёрство",
         "volunteer_title": "Присоединяйтесь к нашей команде",
@@ -256,6 +365,103 @@ TRANSLATIONS = {
         "promo_text": "Присоединяйтесь к DUO Charity и помогите нуждающимся семьям, детям и пожилым людям.",
         
         "footer_privacy_link": "Политика конфиденциальности",
+
+        "pp_title": "Политика обработки персональных данных",
+        "pp_body": """DUO Charity
+Действует в отношении сайта duocharity.uz и Telegram-бота DUO Charity
+
+1. Общие положения
+
+1.1. Настоящая Политика обработки персональных данных определяет порядок получения, хранения, использования, передачи и удаления персональных данных пользователей сайта duocharity.uz и Telegram-бота DUO Charity.
+
+1.2. DUO Charity (далее — «Организация») осуществляет обработку персональных данных в соответствии с законодательством Республики Узбекистан, включая Закон Республики Узбекистан № ЗРУ-547 «О персональных данных».
+
+1.3. На момент публикации настоящей Политики проект DUO Charity находится на стадии организационного формирования. После государственной регистрации сведения об операторе персональных данных будут дополнены.
+
+1.4. Ответственным за обработку персональных данных является администрация проекта DUO Charity.
+
+1.5. По вопросам, связанным с обработкой персональных данных, пользователь может обратиться через Telegram: @Duo_charity_admin.
+
+2. Правовые основания обработки данных
+
+2.1. Организация осуществляет обработку персональных данных на следующих основаниях: согласие субъекта персональных данных; необходимость рассмотрения заявок на волонтёрство; выполнение обязанностей, предусмотренных законодательством Республики Узбекистан; обеспечение функционирования сайта и Telegram-бота.
+
+3. Согласие на обработку персональных данных
+
+3.1. Отправляя заявку через сайт duocharity.uz либо передавая данные через Telegram-бота DUO Charity, пользователь подтверждает: ознакомление с настоящей Политикой; согласие на обработку своих персональных данных; согласие с условиями хранения и обработки данных, указанными в настоящем документе.
+
+3.2. Пользователь вправе отказаться от предоставления персональных данных. В этом случае рассмотрение заявки и использование отдельных функций сервиса могут быть невозможны.
+
+4. Перечень обрабатываемых персональных данных
+
+4.1. При подаче заявки на волонтёрство Организация может получать следующие данные: имя и фамилию; номер телефона; имя пользователя (username) в Telegram; пол; возраст; сведения о роде занятий (учится или работает); текст сообщения, направленного пользователем.
+
+4.2. При использовании Telegram-бота DUO Charity дополнительно могут обрабатываться: идентификатор пользователя Telegram (Telegram ID); номер телефона, переданный пользователем через встроенные средства Telegram; сведения о наличии личного автомобиля, его марке и государственном номере — для волонтёров, участвующих в перевозке грузов; данные о регистрации на мероприятия и результаты обратной связи после мероприятий (оценка и комментарий, предоставляются анонимно); технические данные, необходимые для отправки уведомлений.
+
+4.3. Организация не запрашивает и не обрабатывает: паспортные данные; адрес проживания; биометрические данные; генетические данные; иные специальные категории персональных данных, если иное не предусмотрено законодательством.
+
+5. Цели обработки персональных данных
+
+5.1. Персональные данные используются исключительно для следующих целей: рассмотрение заявок на волонтёрство; связь с кандидатами и действующими волонтёрами; уведомление о результатах рассмотрения заявок; организация мероприятий и регистрация участников; ведение реестра действующих волонтёров; обеспечение работы сайта и Telegram-бота.
+
+5.2. Организация не использует персональные данные в рекламных целях и не передаёт их третьим лицам для маркетинговых рассылок.
+
+6. Передача и хранение персональных данных
+
+6.1. Персональные данные могут храниться на серверах сторонних технических провайдеров, используемых Организацией для обеспечения работы сайта и сервисов.
+
+6.2. На момент публикации настоящей Политики база данных размещается с использованием инфраструктуры Neon и Amazon Web Services (AWS), расположенной за пределами Республики Узбекистан.
+
+6.3. При использовании Telegram-бота часть данных обрабатывается посредством инфраструктуры Telegram.
+
+6.4. Отправляя заявку или используя Telegram-бота, пользователь выражает согласие на трансграничную передачу персональных данных в объёме, необходимом для функционирования указанных сервисов.
+
+7. Сроки хранения персональных данных
+
+7.1. Заявки на волонтёрство рассматриваются в течение срока, необходимого для принятия решения, но не более 48 часов с момента получения.
+
+7.2. В случае отказа в принятии заявки персональные данные удаляются после завершения рассмотрения обращения, если иное не требуется законодательством.
+
+7.3. Персональные данные действующих волонтёров хранятся в течение периода их участия в деятельности Организации.
+
+7.4. После прекращения участия волонтёра либо получения требования об удалении данных информация удаляется в сроки, предусмотренные законодательством Республики Узбекистан.
+
+8. Права субъекта персональных данных
+
+8.1. Пользователь имеет право: получать информацию о своих персональных данных; требовать уточнения, обновления или исправления данных; требовать удаления своих персональных данных; отзывать ранее предоставленное согласие на обработку данных; обращаться с жалобами и запросами по вопросам обработки персональных данных.
+
+8.2. Для реализации указанных прав пользователь может обратиться по контактам, указанным в разделе 1 настоящей Политики.
+
+9. Обработка данных несовершеннолетних
+
+9.1. Участие в волонтёрской деятельности допускается с 16 лет.
+
+9.2. Лица младше 16 лет могут участвовать в деятельности Организации только при наличии согласия родителя либо законного представителя в случаях, предусмотренных законодательством.
+
+10. Безопасность персональных данных
+
+10.1. Организация принимает необходимые организационные и технические меры для защиты персональных данных от: несанкционированного доступа; изменения; распространения; утраты; уничтожения.
+
+10.2. Доступ к персональным данным предоставляется только уполномоченным представителям Организации, которым такая информация необходима для выполнения своих обязанностей.
+
+10.3. Для передачи данных через сайт используются защищённые каналы связи (HTTPS).
+
+11. Использование файлов Cookie
+
+11.1. Сайт может использовать технические файлы Cookie, необходимые для корректной работы сервиса.
+
+11.2. Cookie не используются для продажи данных пользователей или передачи их третьим лицам в рекламных целях.
+
+12. Изменение Политики
+
+12.1. Организация вправе вносить изменения в настоящую Политику.
+
+12.2. Актуальная редакция всегда публикуется на сайте duocharity.uz.
+
+12.3. Продолжение использования сайта после публикации новой редакции Политики означает согласие пользователя с внесёнными изменениями.
+
+Дата вступления в силу: 01 августа 2026 года
+Контакт по вопросам персональных данных: @Duo_charity_admin""",
 
         "vf_personal_info": "Личные данные",
         "vf_phone": "Номер телефона",
@@ -437,6 +643,12 @@ TRANSLATIONS = {
         "donate_title": "Small help becomes a big change!",
         "donate_lead": "You can support the foundation through the payment methods below. Every dollar reaches those in need.",
         "donate_card": "Bank card",
+        "donate_tap_hint": "Tap",
+        "donate_copy_action": "Copy",
+        "donate_coming_soon": "Coming soon",
+        "donate_channel_note": "The amount you send will be published on the channel «@Duo_charity».",
+        "donate_copied": "Copied!",
+        "donate_recipient_label": "Recipient",
 
         "volunteer_eyebrow": "Volunteer",
         "volunteer_title": "Join our team",
@@ -450,6 +662,103 @@ TRANSLATIONS = {
         "promo_text": "Join DUO Charity and help families, children, and elderly people in need.",
 
         "footer_privacy_link": "Privacy Policy",
+
+        "pp_title": "Personal Data Processing Policy",
+        "pp_body": """DUO Charity
+Applies to the website duocharity.uz and the DUO Charity Telegram bot
+
+1. General provisions
+
+1.1. This Personal Data Processing Policy defines the procedure for collecting, storing, using, transferring, and deleting the personal data of users of the website duocharity.uz and the DUO Charity Telegram bot.
+
+1.2. DUO Charity (hereinafter — the "Organization") processes personal data in accordance with the legislation of the Republic of Uzbekistan, including Law of the Republic of Uzbekistan No. ZRU-547 "On Personal Data".
+
+1.3. At the time of publication of this Policy, the DUO Charity project is at the stage of organizational formation. Once state registration is completed, information about the personal data operator will be updated.
+
+1.4. The administration of the DUO Charity project is responsible for the processing of personal data.
+
+1.5. For questions related to the processing of personal data, users may contact us via Telegram: @Duo_charity_admin.
+
+2. Legal grounds for data processing
+
+2.1. The Organization processes personal data on the following grounds: consent of the data subject; the need to review volunteer applications; fulfillment of obligations provided for by the legislation of the Republic of Uzbekistan; ensuring the functioning of the website and the Telegram bot.
+
+3. Consent to the processing of personal data
+
+3.1. By submitting an application through the website duocharity.uz or providing data through the DUO Charity Telegram bot, the user confirms: that they have read this Policy; consent to the processing of their personal data; agreement with the terms of storage and processing of data set out in this document.
+
+3.2. The user has the right to refuse to provide personal data. In this case, the review of the application and the use of certain service features may become impossible.
+
+4. List of processed personal data
+
+4.1. When submitting a volunteer application, the Organization may collect the following data: first and last name; phone number; Telegram username; gender; age; occupation status (studying or working); the text of the message sent by the user.
+
+4.2. When using the DUO Charity Telegram bot, the following may additionally be processed: the user's Telegram identifier (Telegram ID); the phone number shared by the user via Telegram's built-in tools; information on whether the user has a personal vehicle, its make, and license plate number — for volunteers involved in transporting goods; event registration data and post-event feedback results (rating and comment, submitted anonymously); technical data required to send notifications.
+
+4.3. The Organization does not request or process: passport data; residential address; biometric data; genetic data; other special categories of personal data, unless otherwise required by law.
+
+5. Purposes of personal data processing
+
+5.1. Personal data is used exclusively for the following purposes: reviewing volunteer applications; communicating with candidates and active volunteers; notifying users of application review results; organizing events and registering participants; maintaining a registry of active volunteers; ensuring the operation of the website and the Telegram bot.
+
+5.2. The Organization does not use personal data for advertising purposes and does not share it with third parties for marketing mailings.
+
+6. Transfer and storage of personal data
+
+6.1. Personal data may be stored on the servers of third-party technical providers used by the Organization to ensure the operation of the website and its services.
+
+6.2. At the time of publication of this Policy, the database is hosted using Neon and Amazon Web Services (AWS) infrastructure located outside the Republic of Uzbekistan.
+
+6.3. When using the Telegram bot, part of the data is processed through Telegram's infrastructure.
+
+6.4. By submitting an application or using the Telegram bot, the user consents to the cross-border transfer of personal data to the extent necessary for the operation of the services referred to above.
+
+7. Personal data retention periods
+
+7.1. Volunteer applications are reviewed within the time required to make a decision, but no more than 48 hours from the moment of receipt.
+
+7.2. If an application is declined, personal data is deleted after the review is completed, unless otherwise required by law.
+
+7.3. The personal data of active volunteers is stored for as long as they participate in the Organization's activities.
+
+7.4. After a volunteer's participation ends, or upon receiving a request for data deletion, the information is deleted within the time limits provided for by the legislation of the Republic of Uzbekistan.
+
+8. Rights of the data subject
+
+8.1. The user has the right to: receive information about their personal data; request clarification, updating, or correction of data; request deletion of their personal data; withdraw previously given consent to data processing; submit complaints and inquiries regarding the processing of personal data.
+
+8.2. To exercise these rights, the user may contact us using the details provided in Section 1 of this Policy.
+
+9. Processing of minors' data
+
+9.1. Participation in volunteer activities is allowed from the age of 16.
+
+9.2. Persons under the age of 16 may participate in the Organization's activities only with the consent of a parent or legal guardian, in cases provided for by law.
+
+10. Security of personal data
+
+10.1. The Organization takes the necessary organizational and technical measures to protect personal data from: unauthorized access; alteration; disclosure; loss; destruction.
+
+10.2. Access to personal data is granted only to authorized representatives of the Organization who need such information to perform their duties.
+
+10.3. Secure communication channels (HTTPS) are used to transmit data through the website.
+
+11. Use of Cookies
+
+11.1. The website may use technical Cookie files necessary for the correct operation of the service.
+
+11.2. Cookies are not used to sell user data or to share it with third parties for advertising purposes.
+
+12. Changes to the Policy
+
+12.1. The Organization reserves the right to make changes to this Policy.
+
+12.2. The current version is always published on the website duocharity.uz.
+
+12.3. Continued use of the website after a new version of the Policy is published means the user agrees to the changes made.
+
+Effective date: August 1, 2026
+Contact for personal data inquiries: @Duo_charity_admin""",
 
         "vf_personal_info": "Personal Information",
         "vf_phone": "Phone number",

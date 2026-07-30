@@ -171,21 +171,32 @@
             <p class="lead">{{ t('donate_lead') }}</p>
 
             <div class="donate-options">
-                <a href="#" class="donate-card">
+                <div class="donate-primary-wrap">
+                    <button type="button" class="donate-card donate-card--primary" id="donateCardTrigger" aria-expanded="false" aria-controls="donateCardPopover">
+                        <span class="donate-method">{{ t('donate_card') }}</span>
+                        <span class="donate-value">{{ settings.get('card_value', '—') }}</span>
+                        <span class="donate-recipient">{{ t('donate_recipient_label') }}: Madina Saidkarimova</span>
+                        <span class="donate-hint">👆 {{ t('donate_tap_hint') }}</span>
+                    </button>
+
+                    <div class="donate-popover" id="donateCardPopover" role="dialog" hidden>
+                        <span class="donate-popover-label">{{ t('donate_card') }}</span>
+                        <code class="donate-popover-value" id="donateCopyValue">{{ settings.get('card_value', '—') }}</code>
+                        <span class="donate-popover-recipient">{{ t('donate_recipient_label') }}: Madina Saidkarimova</span>
+                        <button type="button" class="donate-copy-btn" id="donateCopyBtn" data-copied-text="{{ t('donate_copied') }}" data-default-text="{{ t('donate_copy_action') }}">{{ t('donate_copy_action') }}</button>
+                    </div>
+
+                    <p class="donate-channel-note">{{ t('donate_channel_note') }}</p>
+                </div>
+
+                <div class="donate-card donate-card--disabled">
                     <span class="donate-method">Payme</span>
-                    <span class="donate-value">{{ settings.get('payme_value', '—') }}</span>
-                    <span class="donate-arrow">→</span>
-                </a>
-                <a href="#" class="donate-card">
+                    <span class="donate-badge">{{ t('donate_coming_soon') }}</span>
+                </div>
+                <div class="donate-card donate-card--disabled">
                     <span class="donate-method">Click</span>
-                    <span class="donate-value">{{ settings.get('click_value', '—') }}</span>
-                    <span class="donate-arrow">→</span>
-                </a>
-                <a href="#" class="donate-card">
-                    <span class="donate-method">{{ t('donate_card') }}</span>
-                    <span class="donate-value">{{ settings.get('card_value', '—') }}</span>
-                    <span class="donate-arrow">→</span>
-                </a>
+                    <span class="donate-badge">{{ t('donate_coming_soon') }}</span>
+                </div>
             </div>
         </div>
     </section>
