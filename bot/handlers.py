@@ -289,21 +289,21 @@ def handle_support_draft_text(message, draft):
         phone = None
 
     username = f"@{message.from_user.username}" if message.from_user.username else "—"
+    name_link = f'<a href="tg://user?id={message.chat.id}">{html.escape(name)}</a>'
 
     admin_text = (
         "🆘 <b>Обращение в поддержку</b>\n\n"
-        f"👤 <b>От:</b> {html.escape(name)}\n"
+        f"👤 <b>От:</b> {name_link}\n"
         f"📞 <b>Телефон:</b> {html.escape(phone) if phone else '—'}\n"
         f"✈️ <b>Telegram:</b> {html.escape(username)}\n\n"
-        f"<blockquote>{html.escape(message.text.strip())}</blockquote>"
+        f"<blockquote>{html.escape(message.text.strip())}</blockquote>\n\n"
+        "↩️ Чтобы ответить — свайпните это сообщение (Reply) и напишите текст."
     )
-    reply_keyboard = types.InlineKeyboardMarkup()
-    reply_keyboard.add(types.InlineKeyboardButton("↩️ Ответить", callback_data=f"support_reply_{message.chat.id}"))
 
     for chat_id in (ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID):
         if not chat_id:
             continue
-        safe_send_message(chat_id, admin_text, reply_markup=reply_keyboard, parse_mode="HTML")
+        safe_send_message(chat_id, admin_text, parse_mode="HTML")
 
     db.session.delete(draft)
     db.session.commit()
@@ -311,45 +311,28 @@ def handle_support_draft_text(message, draft):
     bot.send_message(message.chat.id, bt("support_sent", lang))
 
 
-@bot.callback_query_handler(func=lambda call: call.data.startswith("support_reply_"))
-def handle_support_reply_click(call):
-    target_chat_id = int(call.data.split("_", 2)[2])
-    chat_id = call.message.chat.id
-
-    data = json.dumps({"target_chat_id": target_chat_id})
-    draft = ConversationDraft.query.get(chat_id)
-    if draft:
-        draft.kind = "admin_reply"
-        draft.state = "awaiting_text"
-        draft.data = data
-    else:
-        db.session.add(ConversationDraft(telegram_chat_id=chat_id, kind="admin_reply", state="awaiting_text", data=data))
-    db.session.commit()
-
-    bot.answer_callback_query(call.id, "Напишите ответ следующим сообщением ✍️")
-    bot.send_message(chat_id, "✍️ Напишите ответ следующим сообщением — перешлю его пользователю.")
+def extract_support_target(reply_to_message):
+    if not reply_to_message or not reply_to_message.entities:
+        return None
+    for entity in reply_to_message.entities:
+        if entity.type == "text_link" and entity.url and entity.url.startswith("tg://user?id="):
+            try:
+                return int(entity.url.split("=", 1)[1])
+            except (ValueError, IndexError):
+                return None
+    return None
 
 
-def handle_admin_reply_draft_text(message, draft):
-    data = json.loads(draft.data or "{}")
-    target_chat_id = data.get("target_chat_id")
-
-    db.session.delete(draft)
-    db.session.commit()
-
-    if not target_chat_id:
-        bot.send_message(message.chat.id, "Не удалось определить получателя.")
-        return
-
+def handle_admin_reply_to_support(message, target_chat_id):
     sent = safe_send_message(
         target_chat_id,
         f"💬 <b>Ответ от поддержки DUO Charity:</b>\n\n{html.escape(message.text.strip())}",
         parse_mode="HTML",
     )
     if sent:
-        bot.send_message(message.chat.id, "Отправлено ✅")
+        bot.send_message(message.chat.id, "Отправлено ✅", reply_to_message_id=message.message_id)
     else:
-        bot.send_message(message.chat.id, "Не удалось отправить — пользователь мог заблокировать бота.")
+        bot.send_message(message.chat.id, "Не удалось отправить — пользователь мог заблокировать бота.", reply_to_message_id=message.message_id)
 
 
 @bot.message_handler(content_types=["contact"])
@@ -490,13 +473,15 @@ def handle_car_answer(call):
 
 @bot.message_handler(content_types=["text"])
 def handle_text(message):
-    draft = ConversationDraft.query.get(message.chat.id)
-
-    if message.chat.type != "private":
-        if draft and draft.kind == "admin_reply":
-            handle_admin_reply_draft_text(message, draft)
+    support_target = extract_support_target(message.reply_to_message)
+    if support_target:
+        handle_admin_reply_to_support(message, support_target)
         return
 
+    if message.chat.type != "private":
+        return
+
+    draft = ConversationDraft.query.get(message.chat.id)
     if draft:
         if draft.kind == "message":
             handle_message_draft_text(message, draft)
@@ -507,9 +492,6 @@ def handle_text(message):
             return
         if draft.kind == "support":
             handle_support_draft_text(message, draft)
-            return
-        if draft.kind == "admin_reply":
-            handle_admin_reply_draft_text(message, draft)
             return
 
     volunteer = Volunteer.query.filter_by(telegram_chat_id=message.chat.id).first()
