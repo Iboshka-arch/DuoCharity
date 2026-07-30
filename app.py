@@ -156,6 +156,40 @@ def home():
         settings=settings,
     )
 
+@app.route("/robots.txt")
+def robots_txt():
+    lines = [
+        "User-agent: *",
+        "Disallow: /admin",
+        "Disallow: /bot/webhook",
+        "Allow: /",
+        f"Sitemap: https://{request.host}/sitemap.xml",
+    ]
+    return app.response_class("\n".join(lines) + "\n", mimetype="text/plain")
+
+@app.route("/sitemap.xml")
+def sitemap_xml():
+    base = f"https://{request.host}"
+    static_paths = ["/", "/volunteer-form", "/privacy-policy"]
+    urls = [{"loc": base + path} for path in static_paths]
+    for post in Post.query.order_by(Post.created_at.desc()).all():
+        urls.append({
+            "loc": f"{base}/news/{post.id}",
+            "lastmod": post.created_at.strftime("%Y-%m-%d"),
+        })
+
+    xml_parts = ['<?xml version="1.0" encoding="UTF-8"?>',
+                 '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for entry in urls:
+        xml_parts.append("<url>")
+        xml_parts.append(f"<loc>{entry['loc']}</loc>")
+        if "lastmod" in entry:
+            xml_parts.append(f"<lastmod>{entry['lastmod']}</lastmod>")
+        xml_parts.append("</url>")
+    xml_parts.append("</urlset>")
+
+    return app.response_class("\n".join(xml_parts), mimetype="application/xml")
+
 @app.route("/admin/init-db")
 @login_required
 def admin_init_db():
