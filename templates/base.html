@@ -133,9 +133,9 @@
 
             <div class="footer-col">
                 <h4>{{ t('footer_contact') }}</h4>
-                <p>{{ settings.get('contact_address', '') if settings else "Toshkent shahri, Mirzo Ulug'bek tumani" }}</p>
-                <p>{{ settings.get('contact_phone', '') if settings else '+998 90 000 00 00' }}</p>
-                <p>{{ settings.get('contact_email', '') if settings else 'info@duocharity.uz' }}</p>
+                {% if settings and settings.get('contact_address') %}<p>{{ settings.get('contact_address') }}</p>{% endif %}
+                {% if settings and settings.get('contact_phone') %}<p>{{ settings.get('contact_phone') }}</p>{% endif %}
+                {% if settings and settings.get('contact_email') %}<p>{{ settings.get('contact_email') }}</p>{% endif %}
             </div>
 
             <div class="footer-col">
