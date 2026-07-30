@@ -1010,7 +1010,9 @@ button.donate-card {
 }
 
 .donate-value {
-    font-size: 1rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
     color: #fff;
 }
 
@@ -1020,7 +1022,14 @@ button.donate-card {
 }
 
 .donate-hint {
-    margin-top: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: rgba(245, 185, 66, 0.16);
+    border: 1px solid rgba(245, 185, 66, 0.4);
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--gold);
@@ -1045,9 +1054,6 @@ button.donate-card {
 
 .donate-channel-note {
     margin: 0 0 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
     font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.65);
     text-align: center;
@@ -1061,13 +1067,6 @@ button.donate-card {
 
 .donate-channel-note a:hover {
     color: var(--gold);
-}
-
-.donate-channel-note a.donate-channel-link {
-    font-size: 0.8rem;
-    color: var(--gold);
-    text-decoration: none;
-    font-weight: 600;
 }
 
 .donate-popover {
