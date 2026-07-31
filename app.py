@@ -99,13 +99,27 @@ def get_current_language():
     return request.cookies.get("lang", DEFAULT_LANGUAGE)
 
 
+OCCUPATION_LEGACY_MAP = {"talaba": "study", "ishlayman": "work"}
+
+
+def occupation_label(value, t):
+    normalized = OCCUPATION_LEGACY_MAP.get(value, value)
+    if normalized == "study":
+        return t("vf_occupation_study")
+    if normalized == "work":
+        return t("vf_occupation_work")
+    return value or ""
+
+
 @app.context_processor
 def inject_translator():
     lang = get_current_language()
+    t = get_translator(lang)
     return {
-        "t": get_translator(lang),
+        "t": t,
         "current_lang": lang,
         "languages": LANGUAGES,
+        "occupation_label": lambda value: occupation_label(value, t),
     }
 
 @app.route("/bot/webhook", methods=["POST"])

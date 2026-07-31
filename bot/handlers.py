@@ -136,24 +136,6 @@ def handle_base_command(message):
         print(f"Не удалось отправить excel-базу владельцу: {e}")
 
 
-@bot.message_handler(commands=["stats"])
-def handle_stats_command(message):
-    if not OWNER_CHAT_ID or str(message.chat.id) != str(OWNER_CHAT_ID):
-        return
-
-    volunteers_count = Volunteer.query.count()
-    new_applications = VolunteerApplication.query.filter_by(status="new").count()
-    with_car = Volunteer.query.filter_by(has_car=True).count()
-
-    bot.send_message(
-        message.chat.id,
-        "📊 Статистика DUO Charity\n\n"
-        f"👥 Активных волонтёров: {volunteers_count}\n"
-        f"📥 Новых заявок: {new_applications}\n"
-        f"🚗 Волонтёров с машиной: {with_car}",
-    )
-
-
 def build_status_report():
     problems = []
     lines = []
@@ -190,9 +172,13 @@ def build_status_report():
 
     lines.append("")
     try:
-        volunteers_count = Volunteer.query.count()
-        new_applications = VolunteerApplication.query.filter_by(status="new").count()
-        lines.append(f"🗄 База данных: в норме — {volunteers_count} волонтёров, {new_applications} новых заявок")
+        volunteers = Volunteer.query.order_by(Volunteer.created_at.desc()).all()
+        waiting_confirmation = VolunteerApplication.query.filter_by(status="new").count()
+        with_car = sum(1 for v in volunteers if v.has_car)
+        lines.append(
+            f"🗄 База данных: в норме — {len(volunteers)} волонтёров, "
+            f"{waiting_confirmation} ждут подтверждения, {with_car} с машиной"
+        )
     except Exception as e:
         problems.append(f"база данных недоступна: {e}")
         lines.append("🗄 База данных: ⚠️ недоступна")
@@ -352,6 +338,9 @@ def handle_message_confirm(call):
 @bot.message_handler(commands=["support"])
 def handle_support_command(message):
     if message.chat.type != "private":
+        volunteer = Volunteer.query.filter_by(telegram_user_id=message.from_user.id).first()
+        lang = volunteer.language if volunteer and volunteer.language else "uz"
+        bot.reply_to(message, bt("support_group_redirect", lang))
         return
 
     volunteer = Volunteer.query.filter_by(telegram_chat_id=message.chat.id).first()

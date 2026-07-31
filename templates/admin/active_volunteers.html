@@ -38,7 +38,7 @@
                 <tr>
                     <td data-label="{{ t('adm_col_name') }}">
                         <strong>{{ v.full_name }}</strong>
-                        {% if v.occupation %}<p class="table-excerpt">{{ v.occupation }}</p>{% endif %}
+                        {% if v.occupation %}<p class="table-excerpt">{{ occupation_label(v.occupation) }}</p>{% endif %}
                     </td>
                     <td data-label="{{ t('adm_col_phone') }}">
                         <a href="tel:{{ v.phone }}">{{ v.phone }}</a>

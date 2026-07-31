@@ -4,6 +4,14 @@ import openpyxl
 from openpyxl.styles import Font
 
 
+def _occupation_label(value):
+    if value in ("study", "talaba"):
+        return "Учится"
+    if value in ("work", "ishlayman"):
+        return "Работает"
+    return value or ""
+
+
 def _autosize_columns(ws):
     for column_cells in ws.columns:
         length = max(len(str(cell.value)) if cell.value else 0 for cell in column_cells)
@@ -29,7 +37,7 @@ def build_active_volunteers_workbook(volunteers):
             v.telegram or "",
             gender_label,
             v.age or "",
-            v.occupation or "",
+            _occupation_label(v.occupation),
             car_label,
             v.car_brand or "",
             v.car_plate or "",
@@ -62,7 +70,7 @@ def build_applications_workbook(applications):
             a.telegram or "",
             gender_label,
             a.age or "",
-            a.occupation or "",
+            _occupation_label(a.occupation),
             a.message or "",
             a.status or "",
             a.created_at.strftime("%d.%m.%Y"),

@@ -171,62 +171,67 @@ const promoOverlay = document.getElementById("promoOverlay");
     }
 
     // ---------- Реквизиты для доната (попап с копированием) ----------
-    const donateCardTrigger = document.getElementById("donateCardTrigger");
-    const donateCardPopover = document.getElementById("donateCardPopover");
-    const donateCopyBtn = document.getElementById("donateCopyBtn");
-    const donateCopyValue = document.getElementById("donateCopyValue");
+    function setupDonateCard(triggerId, popoverId, copyBtnId, copyValueId) {
+        const trigger = document.getElementById(triggerId);
+        const popover = document.getElementById(popoverId);
+        const copyBtn = document.getElementById(copyBtnId);
+        const copyValue = document.getElementById(copyValueId);
 
-    if (donateCardTrigger && donateCardPopover) {
-        donateCardTrigger.addEventListener("click", function (e) {
-            e.stopPropagation();
-            const isHidden = donateCardPopover.hidden;
-            donateCardPopover.hidden = !isHidden;
-            donateCardTrigger.setAttribute("aria-expanded", String(isHidden));
-        });
+        if (trigger && popover) {
+            trigger.addEventListener("click", function (e) {
+                e.stopPropagation();
+                const isHidden = popover.hidden;
+                popover.hidden = !isHidden;
+                trigger.setAttribute("aria-expanded", String(isHidden));
+            });
 
-        donateCardPopover.addEventListener("click", function (e) {
-            e.stopPropagation();
-        });
+            popover.addEventListener("click", function (e) {
+                e.stopPropagation();
+            });
 
-        document.addEventListener("click", function () {
-            donateCardPopover.hidden = true;
-            donateCardTrigger.setAttribute("aria-expanded", "false");
-        });
-    }
+            document.addEventListener("click", function () {
+                popover.hidden = true;
+                trigger.setAttribute("aria-expanded", "false");
+            });
+        }
 
-    if (donateCopyBtn && donateCopyValue) {
-        donateCopyBtn.addEventListener("click", function () {
-            const value = donateCopyValue.textContent.trim();
-            const copiedText = donateCopyBtn.dataset.copiedText || "Copied!";
-            const defaultText = donateCopyBtn.dataset.defaultText || donateCopyBtn.textContent;
+        if (copyBtn && copyValue) {
+            copyBtn.addEventListener("click", function () {
+                const value = copyValue.textContent.trim();
+                const copiedText = copyBtn.dataset.copiedText || "Copied!";
+                const defaultText = copyBtn.dataset.defaultText || copyBtn.textContent;
 
-            function showCopied() {
-                donateCopyBtn.textContent = copiedText;
-                setTimeout(function () {
-                    donateCopyBtn.textContent = defaultText;
-                }, 2000);
-            }
-
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(value).then(showCopied).catch(function () {
-                    showCopied();
-                });
-            } else {
-                const tempInput = document.createElement("textarea");
-                tempInput.value = value;
-                tempInput.style.position = "fixed";
-                tempInput.style.opacity = "0";
-                document.body.appendChild(tempInput);
-                tempInput.select();
-                try {
-                    document.execCommand("copy");
-                } catch (err) {
-                    // копирование не поддерживается — пользователь всё равно видит значение в попапе
+                function showCopied() {
+                    copyBtn.textContent = copiedText;
+                    setTimeout(function () {
+                        copyBtn.textContent = defaultText;
+                    }, 2000);
                 }
-                document.body.removeChild(tempInput);
-                showCopied();
-            }
-        });
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(value).then(showCopied).catch(function () {
+                        showCopied();
+                    });
+                } else {
+                    const tempInput = document.createElement("textarea");
+                    tempInput.value = value;
+                    tempInput.style.position = "fixed";
+                    tempInput.style.opacity = "0";
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    try {
+                        document.execCommand("copy");
+                    } catch (err) {
+                        // копирование не поддерживается — пользователь всё равно видит значение в попапе
+                    }
+                    document.body.removeChild(tempInput);
+                    showCopied();
+                }
+            });
+        }
     }
+
+    setupDonateCard("donateCardTrigger", "donateCardPopover", "donateCopyBtn", "donateCopyValue");
+    setupDonateCard("donateHumoTrigger", "donateHumoPopover", "donateHumoCopyBtn", "donateHumoCopyValue");
 
 });

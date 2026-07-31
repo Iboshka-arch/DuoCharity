@@ -37,7 +37,11 @@
 
             <label class="full-width">
                 {{ t('vf_occupation') }}
-                <input type="text" name="occupation" value="{{ volunteer.occupation if volunteer else '' }}">
+                <select name="occupation">
+                    <option value="">—</option>
+                    <option value="study" {{ 'selected' if volunteer and volunteer.occupation in ('study', 'talaba') }}>{{ t('vf_occupation_study') }}</option>
+                    <option value="work" {{ 'selected' if volunteer and volunteer.occupation in ('work', 'ishlayman') }}>{{ t('vf_occupation_work') }}</option>
+                </select>
             </label>
 
             <label>

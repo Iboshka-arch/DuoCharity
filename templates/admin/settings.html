@@ -23,7 +23,8 @@
 
         <h3 class="form-section-title">{{ t('adm_payments_section') }}</h3>
         <div class="form-grid">
-            <label>{{ t('donate_card') }}<input type="text" name="card_value" value="{{ settings.get('card_value', '') }}"></label>
+            <label>Uzcard<input type="text" name="card_value" value="{{ settings.get('card_value', '') }}"></label>
+            <label>Humo<input type="text" name="humo_value" value="{{ settings.get('humo_value', '') }}"></label>
             <label>Payme<input type="text" name="payme_value" value="{{ settings.get('payme_value', '') }}"></label>
             <label>Click<input type="text" name="click_value" value="{{ settings.get('click_value', '') }}"></label>
         </div>

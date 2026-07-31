@@ -17,7 +17,7 @@
             <div class="volunteer-row-summary" onclick="toggleVolunteerDetails({{ app.id }})">
                 <div class="volunteer-row-main">
                     <strong>{{ app.full_name }}</strong>
-                    {% if app.occupation %}<span class="volunteer-row-occupation">{{ app.occupation }}</span>{% endif %}
+                    {% if app.occupation %}<span class="volunteer-row-occupation">{{ occupation_label(app.occupation) }}</span>{% endif %}
                 </div>
                 <span class="volunteer-row-date">{{ app.created_at.strftime('%d.%m.%Y') }}</span>
                 <span class="status-badge status-badge-{{ app.status }}">

@@ -184,17 +184,33 @@
                     </p>
 
                     <button type="button" class="donate-card donate-card--primary" id="donateCardTrigger" aria-expanded="false" aria-controls="donateCardPopover">
-                        <span class="donate-method">{{ t('donate_card') }}</span>
+                        <span class="donate-method">Uzcard</span>
                         <span class="donate-value">{{ settings.get('card_value', '—') }}</span>
                         <span class="donate-recipient">{{ t('donate_recipient_label') }}: Madina Saidkarimova</span>
                         <span class="donate-hint">{{ t('donate_copy_action') }}</span>
                     </button>
 
                     <div class="donate-popover" id="donateCardPopover" role="dialog" hidden>
-                        <span class="donate-popover-label">{{ t('donate_card') }}</span>
+                        <span class="donate-popover-label">Uzcard</span>
                         <code class="donate-popover-value" id="donateCopyValue">{{ settings.get('card_value', '—') }}</code>
                         <span class="donate-popover-recipient">{{ t('donate_recipient_label') }}: Madina Saidkarimova</span>
                         <button type="button" class="donate-copy-btn" id="donateCopyBtn" data-copied-text="{{ t('donate_copied') }}" data-default-text="{{ t('donate_copy_action') }}">{{ t('donate_copy_action') }}</button>
+                    </div>
+                </div>
+
+                <div class="donate-primary-wrap">
+                    <button type="button" class="donate-card donate-card--primary" id="donateHumoTrigger" aria-expanded="false" aria-controls="donateHumoPopover">
+                        <span class="donate-method">Humo</span>
+                        <span class="donate-value">{{ settings.get('humo_value', '—') }}</span>
+                        <span class="donate-recipient">{{ t('donate_recipient_label') }}: Madina Saidkarimova</span>
+                        <span class="donate-hint">{{ t('donate_copy_action') }}</span>
+                    </button>
+
+                    <div class="donate-popover" id="donateHumoPopover" role="dialog" hidden>
+                        <span class="donate-popover-label">Humo</span>
+                        <code class="donate-popover-value" id="donateHumoCopyValue">{{ settings.get('humo_value', '—') }}</code>
+                        <span class="donate-popover-recipient">{{ t('donate_recipient_label') }}: Madina Saidkarimova</span>
+                        <button type="button" class="donate-copy-btn" id="donateHumoCopyBtn" data-copied-text="{{ t('donate_copied') }}" data-default-text="{{ t('donate_copy_action') }}">{{ t('donate_copy_action') }}</button>
                     </div>
                 </div>
 
