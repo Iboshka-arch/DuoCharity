@@ -1,5 +1,6 @@
 import html
 import json
+import time
 from datetime import datetime, timedelta
 
 import telebot
@@ -158,18 +159,54 @@ def handle_status_command(message):
     if not OWNER_CHAT_ID or str(message.from_user.id) != str(OWNER_CHAT_ID):
         return
 
+    problems = []
+    lines = []
+
+    start = time.monotonic()
     try:
         info = bot.get_webhook_info()
-        lines = ["🟢 На связи, хозяин! Вебхук подключен." if info.url else "🔴 Вебхук не настроен!"]
-        lines.append(f"🔗 {info.url or '—'}")
+        ping_ms = int((time.monotonic() - start) * 1000)
+        if not info.url:
+            problems.append("вебхук не настроен")
+        lines.append(f"🔗 Вебхук: {'подключен' if info.url else 'не подключен'} ({info.url or '—'})")
         lines.append(f"📬 В очереди: {info.pending_update_count}")
+        lines.append(f"⏱ Пинг Telegram API: {ping_ms} мс")
         if info.last_error_message:
             when = datetime.utcfromtimestamp(info.last_error_date).strftime("%d.%m %H:%M UTC") if info.last_error_date else "?"
-            lines.append(f"⚠️ Последняя ошибка ({when}): {info.last_error_message}")
+            problems.append(f"была ошибка доставки вебхука ({when}): {info.last_error_message}")
     except Exception as e:
-        lines = [f"🔴 Не удалось получить статус: {e}"]
+        problems.append(f"не удалось получить статус вебхука: {e}")
 
-    bot.send_message(message.chat.id, "\n".join(lines))
+    lines.append("")
+    lines.append("👥 Группы:")
+    for label, chat_id in (("Волонтёры", VOLUNTEER_GROUP_CHAT_ID), ("Админы", ADMIN_GROUP_CHAT_ID)):
+        if not chat_id:
+            problems.append(f"группа «{label}» не задана в конфиге")
+            lines.append(f"  • {label}: не задано в конфиге")
+            continue
+        try:
+            chat = bot.get_chat(chat_id)
+            count = bot.get_chat_member_count(chat_id)
+            lines.append(f"  • {label}: «{chat.title or 'без названия'}» — {count} участников")
+        except Exception as e:
+            problems.append(f"группа «{label}» недоступна: {e}")
+            lines.append(f"  • {label}: ⚠️ недоступна")
+
+    lines.append("")
+    try:
+        volunteers_count = Volunteer.query.count()
+        new_applications = VolunteerApplication.query.filter_by(status="new").count()
+        lines.append(f"🗄 База данных: в норме — {volunteers_count} волонтёров, {new_applications} новых заявок")
+    except Exception as e:
+        problems.append(f"база данных недоступна: {e}")
+        lines.append("🗄 База данных: ⚠️ недоступна")
+
+    if problems:
+        header = f"🔴 Обнаружены неисправности ({len(problems)}):\n" + "\n".join(f"— {p}" for p in problems)
+    else:
+        header = "🟢 Неисправности не найдены, всё в норме, хозяин!"
+
+    bot.send_message(message.chat.id, header + "\n\n" + "\n".join(lines))
 
 
 @bot.message_handler(commands=["message"])
