@@ -154,11 +154,7 @@ def handle_stats_command(message):
     )
 
 
-@bot.message_handler(commands=["status"])
-def handle_status_command(message):
-    if not OWNER_CHAT_ID or str(message.from_user.id) != str(OWNER_CHAT_ID):
-        return
-
+def build_status_report():
     problems = []
     lines = []
 
@@ -201,12 +197,63 @@ def handle_status_command(message):
         problems.append(f"база данных недоступна: {e}")
         lines.append("🗄 База данных: ⚠️ недоступна")
 
+    return problems, lines
+
+
+def format_status_report(problems, lines, ok_suffix=""):
     if problems:
         header = f"🔴 Обнаружены неисправности ({len(problems)}):\n" + "\n".join(f"— {p}" for p in problems)
     else:
-        header = "🟢 Неисправности не найдены, всё в норме, хозяин!"
+        header = f"🟢 Неисправности не найдены, всё в норме{ok_suffix}!"
+    return header + "\n\n" + "\n".join(lines)
 
-    bot.send_message(message.chat.id, header + "\n\n" + "\n".join(lines))
+
+@bot.message_handler(commands=["status"])
+def handle_status_command(message):
+    if not OWNER_CHAT_ID or str(message.from_user.id) != str(OWNER_CHAT_ID):
+        return
+
+    problems, lines = build_status_report()
+    bot.send_message(message.chat.id, format_status_report(problems, lines, ok_suffix=", хозяин"))
+
+
+@bot.message_handler(commands=["givestatus"])
+def handle_givestatus_command(message):
+    if not OWNER_CHAT_ID or str(message.from_user.id) != str(OWNER_CHAT_ID):
+        return
+
+    reply = message.reply_to_message
+    if not reply:
+        bot.send_message(message.chat.id, "Ответьте (Reply) на сообщение человека, для которого нужен статус, и повторите /givestatus.")
+        return
+
+    target_chat_id = None
+    target_name = None
+
+    if reply.from_user and not reply.from_user.is_bot and reply.from_user.id != message.from_user.id:
+        target_chat_id = reply.from_user.id
+        target_name = reply.from_user.first_name or (f"@{reply.from_user.username}" if reply.from_user.username else None)
+    else:
+        target_chat_id = lookup_support_ticket(message.chat.id, reply.message_id)
+        if target_chat_id:
+            volunteer = Volunteer.query.filter_by(telegram_chat_id=target_chat_id).first()
+            application = volunteer or VolunteerApplication.query.filter_by(telegram_chat_id=target_chat_id).first()
+            target_name = getattr(application, "full_name", None)
+
+    if not target_chat_id:
+        bot.send_message(message.chat.id, "Не удалось определить, кому отправить статус — ответьте на сообщение этого человека.")
+        return
+
+    target_name = target_name or "друг"
+    problems, lines = build_status_report()
+    report = format_status_report(problems, lines)
+
+    if message.chat.type == "private":
+        sent = safe_send_message(target_chat_id, report)
+        bot.send_message(message.chat.id, "Отправлено ✅" if sent else "Не удалось отправить — пользователь мог не запускать бота.")
+    else:
+        mention = f'<a href="tg://user?id={target_chat_id}">{html.escape(target_name)}</a>'
+        bot.send_message(message.chat.id, f"{mention}\n\n{html.escape(report)}", parse_mode="HTML")
 
 
 @bot.message_handler(commands=["message"])
