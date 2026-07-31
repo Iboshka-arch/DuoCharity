@@ -315,11 +315,8 @@ def extract_support_target(reply_to_message):
     if not reply_to_message or not reply_to_message.entities:
         return None
     for entity in reply_to_message.entities:
-        if entity.type == "text_link" and entity.url and entity.url.startswith("tg://user?id="):
-            try:
-                return int(entity.url.split("=", 1)[1])
-            except (ValueError, IndexError):
-                return None
+        if entity.type == "text_mention" and entity.user:
+            return entity.user.id
     return None
 
 
