@@ -246,7 +246,7 @@ def handle_givestatus_command(message):
 
     target_name = target_name or "друг"
     problems, lines = build_status_report()
-    report = format_status_report(problems, lines)
+    report = format_status_report(problems, lines, ok_suffix=", хозяин")
 
     if message.chat.type == "private":
         sent = safe_send_message(target_chat_id, report)
