@@ -523,6 +523,75 @@ def admin_active_volunteer_delete(volunteer_id):
     db.session.commit()
     flash("Волонтёр удалён из списка.", "success")
     return redirect(url_for("admin_active_volunteers"))
+
+
+def _apply_volunteer_form(volunteer):
+    volunteer.full_name = request.form.get("full_name", "").strip()
+    volunteer.phone = request.form.get("phone", "").strip()
+    volunteer.telegram = request.form.get("telegram", "").strip() or None
+    volunteer.gender = request.form.get("gender", "").strip() or None
+    age = request.form.get("age", "").strip()
+    volunteer.age = int(age) if age.isdigit() else None
+    volunteer.occupation = request.form.get("occupation", "").strip() or None
+
+    has_car = request.form.get("has_car", "")
+    volunteer.has_car = {"1": True, "0": False}.get(has_car)
+    volunteer.car_brand = request.form.get("car_brand", "").strip() or None
+    volunteer.car_plate = request.form.get("car_plate", "").strip() or None
+
+
+@app.route("/admin/active-volunteers/new", methods=["GET", "POST"])
+@login_required
+def admin_active_volunteer_new():
+    t = get_translator(get_current_language())
+
+    if request.method == "POST":
+        phone = request.form.get("phone", "").strip()
+
+        if not request.form.get("full_name", "").strip() or not phone:
+            flash(t("vf_error_name_phone"), "error")
+            return render_template("admin/volunteer_edit_form.html", volunteer=None)
+
+        if Volunteer.query.filter_by(phone=phone).first():
+            flash(t("adm_vol_phone_taken"), "error")
+            return render_template("admin/volunteer_edit_form.html", volunteer=None)
+
+        volunteer = Volunteer()
+        _apply_volunteer_form(volunteer)
+        db.session.add(volunteer)
+        db.session.commit()
+
+        flash(t("adm_vol_added"), "success")
+        return redirect(url_for("admin_active_volunteers"))
+
+    return render_template("admin/volunteer_edit_form.html", volunteer=None)
+
+
+@app.route("/admin/active-volunteers/<int:volunteer_id>/edit", methods=["GET", "POST"])
+@login_required
+def admin_active_volunteer_edit(volunteer_id):
+    volunteer = Volunteer.query.get_or_404(volunteer_id)
+    t = get_translator(get_current_language())
+
+    if request.method == "POST":
+        phone = request.form.get("phone", "").strip()
+
+        if not request.form.get("full_name", "").strip() or not phone:
+            flash(t("vf_error_name_phone"), "error")
+            return render_template("admin/volunteer_edit_form.html", volunteer=volunteer)
+
+        duplicate = Volunteer.query.filter(Volunteer.phone == phone, Volunteer.id != volunteer.id).first()
+        if duplicate:
+            flash(t("adm_vol_phone_taken"), "error")
+            return render_template("admin/volunteer_edit_form.html", volunteer=volunteer)
+
+        _apply_volunteer_form(volunteer)
+        db.session.commit()
+
+        flash(t("adm_vol_updated"), "success")
+        return redirect(url_for("admin_active_volunteers"))
+
+    return render_template("admin/volunteer_edit_form.html", volunteer=volunteer)
  
 
 @app.route("/admin/events")

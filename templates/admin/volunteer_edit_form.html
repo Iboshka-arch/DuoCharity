@@ -1,0 +1,68 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ t('adm_edit_volunteer') if volunteer else t('adm_add_volunteer') }} — DUO Charity Admin{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">{{ t('adm_edit_volunteer') if volunteer else t('adm_add_volunteer') }}</h1>
+
+    <form method="post" class="admin-form">
+        <div class="form-grid">
+            <label class="full-width">
+                {{ t('adm_col_name') }}
+                <input type="text" name="full_name" value="{{ volunteer.full_name if volunteer else '' }}" required>
+            </label>
+
+            <label>
+                {{ t('vf_phone') }}
+                <input type="text" name="phone" value="{{ volunteer.phone if volunteer else '' }}" required>
+            </label>
+
+            <label>
+                {{ t('vf_telegram') }}
+                <input type="text" name="telegram" value="{{ volunteer.telegram if volunteer else '' }}" placeholder="@username">
+            </label>
+
+            <label>
+                {{ t('vf_age') }}
+                <input type="number" name="age" value="{{ volunteer.age if volunteer and volunteer.age else '' }}" min="14" max="90">
+            </label>
+
+            <label>
+                {{ t('vf_gender') }}
+                <select name="gender">
+                    <option value="">—</option>
+                    <option value="male" {{ 'selected' if volunteer and volunteer.gender == 'male' }}>{{ t('vf_male') }}</option>
+                    <option value="female" {{ 'selected' if volunteer and volunteer.gender == 'female' }}>{{ t('vf_female') }}</option>
+                </select>
+            </label>
+
+            <label class="full-width">
+                {{ t('vf_occupation') }}
+                <input type="text" name="occupation" value="{{ volunteer.occupation if volunteer else '' }}">
+            </label>
+
+            <label>
+                {{ t('adm_vol_has_car') }}
+                <select name="has_car">
+                    <option value="" {{ 'selected' if not volunteer or volunteer.has_car is none }}>{{ t('adm_vol_unspecified') }}</option>
+                    <option value="1" {{ 'selected' if volunteer and volunteer.has_car == true }}>{{ t('adm_vol_yes') }}</option>
+                    <option value="0" {{ 'selected' if volunteer and volunteer.has_car == false }}>{{ t('adm_vol_no') }}</option>
+                </select>
+            </label>
+
+            <label>
+                {{ t('adm_vol_car_brand') }}
+                <input type="text" name="car_brand" value="{{ volunteer.car_brand if volunteer else '' }}">
+            </label>
+
+            <label>
+                {{ t('adm_vol_car_plate') }}
+                <input type="text" name="car_plate" value="{{ volunteer.car_plate if volunteer else '' }}">
+            </label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{{ t('adm_save') if volunteer else t('adm_add') }}</button>
+            <a href="{{ url_for('admin_active_volunteers') }}" class="btn btn-outline">{{ t('adm_cancel') }}</a>
+        </div>
+    </form>
+{% endblock %}

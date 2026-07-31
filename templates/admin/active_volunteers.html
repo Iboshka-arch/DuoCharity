@@ -7,7 +7,10 @@
             <h1 class="page-title">{{ t('adm_active_volunteers') }}</h1>
             <p class="page-subtitle">{{ volunteers|length }} {{ t('adm_active_volunteers_count') }}</p>
         </div>
-        <a href="{{ url_for('admin_active_volunteers_export') }}" class="btn btn-outline">{{ t('adm_download_excel') }}</a>
+        <div class="page-head-actions">
+            <a href="{{ url_for('admin_active_volunteer_new') }}" class="btn btn-primary">{{ t('adm_add_volunteer') }}</a>
+            <a href="{{ url_for('admin_active_volunteers_export') }}" class="btn btn-outline">{{ t('adm_download_excel') }}</a>
+        </div>
     </div>
 
     <form method="get" class="admin-search-form">
@@ -57,6 +60,7 @@
                         {% endif %}
                     </td>
                     <td class="table-actions" data-label="">
+                        <a href="{{ url_for('admin_active_volunteer_edit', volunteer_id=v.id) }}" class="btn-small">{{ t('adm_edit') }}</a>
                         <form method="post" action="{{ url_for('admin_active_volunteer_delete', volunteer_id=v.id) }}"
                               onsubmit="return confirm('{{ t('adm_confirm_delete_active_volunteer') }}');">
                             <button type="submit" class="btn-small btn-small-danger">{{ t('adm_delete') }}</button>
