@@ -153,6 +153,25 @@ def handle_stats_command(message):
     )
 
 
+@bot.message_handler(commands=["status"])
+def handle_status_command(message):
+    if not OWNER_CHAT_ID or str(message.from_user.id) != str(OWNER_CHAT_ID):
+        return
+
+    try:
+        info = bot.get_webhook_info()
+        lines = ["🟢 На связи, хозяин! Вебхук подключен." if info.url else "🔴 Вебхук не настроен!"]
+        lines.append(f"🔗 {info.url or '—'}")
+        lines.append(f"📬 В очереди: {info.pending_update_count}")
+        if info.last_error_message:
+            when = datetime.utcfromtimestamp(info.last_error_date).strftime("%d.%m %H:%M UTC") if info.last_error_date else "?"
+            lines.append(f"⚠️ Последняя ошибка ({when}): {info.last_error_message}")
+    except Exception as e:
+        lines = [f"🔴 Не удалось получить статус: {e}"]
+
+    bot.send_message(message.chat.id, "\n".join(lines))
+
+
 @bot.message_handler(commands=["message"])
 def handle_message_command(message):
     if not OWNER_CHAT_ID or str(message.chat.id) != str(OWNER_CHAT_ID):
