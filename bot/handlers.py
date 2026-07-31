@@ -303,7 +303,9 @@ def handle_support_draft_text(message, draft):
     for chat_id in (ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID):
         if not chat_id:
             continue
-        safe_send_message(chat_id, admin_text, parse_mode="HTML")
+        sent_msg = safe_send_message(chat_id, admin_text, parse_mode="HTML")
+        if sent_msg:
+            register_support_ticket(int(chat_id), sent_msg.message_id, message.chat.id)
 
     db.session.delete(draft)
     db.session.commit()
@@ -311,13 +313,27 @@ def handle_support_draft_text(message, draft):
     bot.send_message(message.chat.id, bt("support_sent", lang))
 
 
-def extract_support_target(reply_to_message):
-    if not reply_to_message or not reply_to_message.entities:
+def register_support_ticket(admin_chat_id, message_id, target_chat_id):
+    draft = ConversationDraft.query.get(admin_chat_id)
+    tickets = json.loads(draft.data or "{}") if draft and draft.kind == "support_tickets" else {}
+    tickets[str(message_id)] = target_chat_id
+    data = json.dumps(tickets)
+
+    if draft:
+        draft.kind = "support_tickets"
+        draft.state = "active"
+        draft.data = data
+    else:
+        db.session.add(ConversationDraft(telegram_chat_id=admin_chat_id, kind="support_tickets", state="active", data=data))
+    db.session.commit()
+
+
+def lookup_support_ticket(admin_chat_id, message_id):
+    draft = ConversationDraft.query.get(admin_chat_id)
+    if not draft or draft.kind != "support_tickets":
         return None
-    for entity in reply_to_message.entities:
-        if entity.type == "text_mention" and entity.user:
-            return entity.user.id
-    return None
+    tickets = json.loads(draft.data or "{}")
+    return tickets.get(str(message_id))
 
 
 def handle_admin_reply_to_support(message, target_chat_id):
@@ -470,10 +486,11 @@ def handle_car_answer(call):
 
 @bot.message_handler(content_types=["text"])
 def handle_text(message):
-    support_target = extract_support_target(message.reply_to_message)
-    if support_target:
-        handle_admin_reply_to_support(message, support_target)
-        return
+    if message.reply_to_message:
+        support_target = lookup_support_ticket(message.chat.id, message.reply_to_message.message_id)
+        if support_target:
+            handle_admin_reply_to_support(message, support_target)
+            return
 
     if message.chat.type != "private":
         return
