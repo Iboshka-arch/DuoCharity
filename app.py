@@ -296,12 +296,18 @@ def volunteer_thanks():
 def admin_login():
     if request.method == "POST":
         ip = get_client_ip()
-        window_start = datetime.utcnow() - timedelta(minutes=LOGIN_LOCKOUT_WINDOW_MINUTES)
-        recent_failures = AdminLoginEvent.query.filter(
-            AdminLoginEvent.ip_address == ip,
-            AdminLoginEvent.success.is_(False),
-            AdminLoginEvent.created_at >= window_start,
-        ).count()
+
+        try:
+            window_start = datetime.utcnow() - timedelta(minutes=LOGIN_LOCKOUT_WINDOW_MINUTES)
+            recent_failures = AdminLoginEvent.query.filter(
+                AdminLoginEvent.ip_address == ip,
+                AdminLoginEvent.success.is_(False),
+                AdminLoginEvent.created_at >= window_start,
+            ).count()
+        except Exception as e:
+            db.session.rollback()
+            print(f"Не удалось проверить блокировку входа: {e}")
+            recent_failures = 0
 
         if recent_failures >= LOGIN_LOCKOUT_MAX_ATTEMPTS:
             flash("Слишком много неудачных попыток входа. Попробуйте позже.", "error")
@@ -313,13 +319,17 @@ def admin_login():
         admin = Admin.query.filter_by(username=username).first()
         success = bool(admin and admin.check_password(password))
 
-        db.session.add(AdminLoginEvent(
-            username_attempted=username,
-            success=success,
-            ip_address=ip,
-            user_agent=request.headers.get("User-Agent", "")[:255],
-        ))
-        db.session.commit()
+        try:
+            db.session.add(AdminLoginEvent(
+                username_attempted=username,
+                success=success,
+                ip_address=ip,
+                user_agent=request.headers.get("User-Agent", "")[:255],
+            ))
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            print(f"Не удалось записать попытку входа: {e}")
 
         if success:
             session["admin_id"] = admin.id
@@ -354,8 +364,14 @@ def admin_dashboard():
 @app.route("/admin/activity")
 @login_required
 def admin_activity():
-    activity_entries = ActivityLog.query.order_by(ActivityLog.created_at.desc()).limit(200).all()
-    login_events = AdminLoginEvent.query.order_by(AdminLoginEvent.created_at.desc()).limit(200).all()
+    try:
+        activity_entries = ActivityLog.query.order_by(ActivityLog.created_at.desc()).limit(200).all()
+        login_events = AdminLoginEvent.query.order_by(AdminLoginEvent.created_at.desc()).limit(200).all()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Не удалось загрузить журнал активности: {e}")
+        flash("Таблицы журнала ещё не созданы — зайдите на /admin/init-db.", "error")
+        activity_entries, login_events = [], []
     return render_template("admin/activity.html", activity_entries=activity_entries, login_events=login_events)
 
 
