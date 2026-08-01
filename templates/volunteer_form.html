@@ -28,6 +28,7 @@
         {% endwith %}
 
         <form class="volunteer-full-form" method="post" action="{{ url_for('volunteer_submit') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
             <div class="form-section">
                 <h3>{{ t('vf_personal_info') }}</h3>
