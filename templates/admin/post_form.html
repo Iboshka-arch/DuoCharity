@@ -5,6 +5,7 @@
     <h1 class="page-title">{{ t('adm_edit_post') if post else t('adm_new_post') }}</h1>
 
     <form method="post" enctype="multipart/form-data" class="admin-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <label>
             {{ t('adm_col_title') }}
             <input type="text" name="title" value="{{ post.title if post else '' }}" required>

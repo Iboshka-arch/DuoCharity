@@ -63,6 +63,7 @@
                         <a href="{{ url_for('admin_active_volunteer_edit', volunteer_id=v.id) }}" class="btn-small">{{ t('adm_edit') }}</a>
                         <form method="post" action="{{ url_for('admin_active_volunteer_delete', volunteer_id=v.id) }}"
                               onsubmit="return confirm('{{ t('adm_confirm_delete_active_volunteer') }}');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn-small btn-small-danger">{{ t('adm_delete') }}</button>
                         </form>
                     </td>

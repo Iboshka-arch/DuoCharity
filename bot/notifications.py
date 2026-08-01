@@ -46,6 +46,14 @@ def safe_answer(call, text=None):
         print(f"Не удалось ответить на callback (вероятно, устарел): {e}")
 
 
+def _admin_actor_label(call):
+    user = call.from_user
+    name = " ".join(filter(None, [user.first_name, user.last_name])) or str(user.id)
+    if user.username:
+        name = f"{name} (@{user.username})"
+    return f"tg:{user.id}:{name}", html.escape(name)
+
+
 @bot.callback_query_handler(func=lambda call: call.data.startswith("app_accept_") or call.data.startswith("app_decline_"))
 def handle_admin_decision(call):
     if str(call.message.chat.id) not in ADMIN_CHAT_IDS:
@@ -63,14 +71,16 @@ def handle_admin_decision(call):
             print(f"Не удалось убрать кнопки: {e}")
         return
 
+    actor, actor_display = _admin_actor_label(call)
+
     if call.data.startswith("app_accept_"):
-        volunteer, created = accept_application(application)
+        volunteer, created = accept_application(application, actor)
         safe_answer(call, "Принято ✅")
-        note = "\n\n✅ Принят(а) в волонтёры" if created else "\n\n⚠️ Уже был(а) в списке волонтёров"
+        note = f"\n\n✅ Принят(а) в волонтёры — {actor_display}" if created else f"\n\n⚠️ Уже был(а) в списке волонтёров — {actor_display}"
     else:
-        decline_application(application)
+        decline_application(application, actor)
         safe_answer(call, "Отклонено")
-        note = "\n\n❌ Заявка отклонена"
+        note = f"\n\n❌ Заявка отклонена — {actor_display}"
 
     try:
         bot.edit_message_text(

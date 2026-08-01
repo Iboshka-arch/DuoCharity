@@ -166,3 +166,18 @@ class ConversationDraft(db.Model):
     kind = db.Column(db.String(30))
     state = db.Column(db.String(30))
     data = db.Column(db.Text)
+
+class ActivityLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    actor = db.Column(db.String(200), nullable=False)
+    action = db.Column(db.String(100), nullable=False)
+    detail = db.Column(db.String(500), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class AdminLoginEvent(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username_attempted = db.Column(db.String(80), nullable=True)
+    success = db.Column(db.Boolean, default=False)
+    ip_address = db.Column(db.String(64), nullable=True)
+    user_agent = db.Column(db.String(255), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

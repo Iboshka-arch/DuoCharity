@@ -4,14 +4,17 @@ from bot.handlers import bot
 from bot.utils import safe_send_message
 from bot.translations import bt
 from models import db, Volunteer
+from activity_log import log_activity
 
 
-def accept_application(application):
+def accept_application(application, actor):
     existing = Volunteer.query.filter_by(phone=application.phone).first()
 
     if existing:
+        full_name = application.full_name
         db.session.delete(application)
         db.session.commit()
+        log_activity(actor, "application_accept", f"{full_name} (уже был(а) в списке)")
         return existing, False
 
     volunteer = Volunteer(
@@ -56,9 +59,12 @@ def accept_application(application):
         except Exception as e:
             print(f"Не удалось уведомить волонтёра: {e}")
 
+    log_activity(actor, "application_accept", volunteer.full_name)
     return volunteer, True
 
 
-def decline_application(application):
+def decline_application(application, actor):
+    full_name = application.full_name
     db.session.delete(application)
     db.session.commit()
+    log_activity(actor, "application_decline", full_name)

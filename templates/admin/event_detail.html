@@ -19,11 +19,13 @@
         <div class="table-actions">
             {% if event.is_closed %}
             <form method="post" action="{{ url_for('admin_event_open', event_id=event.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn btn-outline">{{ t('adm_open_event') }}</button>
             </form>
             {% else %}
             <form method="post" action="{{ url_for('admin_event_close', event_id=event.id) }}"
                   onsubmit="return confirm('{{ t('adm_confirm_close_event') }}');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn btn-primary">{{ t('adm_close_event') }}</button>
             </form>
             {% endif %}
@@ -38,6 +40,7 @@
 
     {% if rows %}
     <form method="post" action="{{ url_for('admin_event_attendance', event_id=event.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="admin-table-wrapper">
             <table class="admin-table admin-table-responsive">
                 <thead>

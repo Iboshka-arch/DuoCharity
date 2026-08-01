@@ -6,6 +6,7 @@
     <p class="page-subtitle">{{ t('adm_gallery_sub') }}</p>
 
     <form method="post" action="{{ url_for('admin_gallery_upload') }}" enctype="multipart/form-data" class="upload-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="file" name="image" accept=".png,.jpg,.jpeg,.webp" required>
         <input type="text" name="caption" placeholder="{{ t('adm_caption') }}">
         <button type="submit" class="btn btn-primary">{{ t('adm_upload') }}</button>
@@ -19,6 +20,7 @@
             {% if image.caption %}<p>{{ image.caption }}</p>{% endif %}
             <form method="post" action="{{ url_for('admin_gallery_delete', image_id=image.id) }}"
                   onsubmit="return confirm('{{ t('adm_confirm_delete') }}');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn-small btn-small-danger">{{ t('adm_delete') }}</button>
             </form>
         </div>

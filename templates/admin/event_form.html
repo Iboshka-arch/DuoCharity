@@ -5,6 +5,7 @@
     <h1 class="page-title">{{ t('adm_new_event') }}</h1>
 
     <form method="post" class="admin-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <label>
             {{ t('adm_event_title') }}
             <input type="text" name="title" required>

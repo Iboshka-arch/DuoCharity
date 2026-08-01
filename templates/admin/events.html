@@ -44,6 +44,7 @@
                         <a href="{{ url_for('admin_event_detail', event_id=event.id) }}" class="btn-small">{{ t('adm_edit') }}</a>
                         <form method="post" action="{{ url_for('admin_event_delete', event_id=event.id) }}"
                               onsubmit="return confirm('{{ t('adm_confirm_delete') }}');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn-small btn-small-danger">{{ t('adm_delete') }}</button>
                         </form>
                     </td>

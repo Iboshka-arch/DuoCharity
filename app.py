@@ -3,10 +3,12 @@ from datetime import datetime, timedelta
 from functools import wraps
 
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response, send_from_directory
+from flask_wtf import CSRFProtect
 from werkzeug.utils import secure_filename
 
-from models import db, Admin, Post, GalleryImage, HeroImage, VolunteerApplication, Volunteer, SiteSetting, Event, EventRegistration, EventFeedback
+from models import db, Admin, Post, GalleryImage, HeroImage, VolunteerApplication, Volunteer, SiteSetting, Event, EventRegistration, EventFeedback, ActivityLog, AdminLoginEvent
 from translations import get_translator, LANGUAGES, DEFAULT_LANGUAGE
+from activity_log import log_activity
 
 import telebot
 from bot.handlers import bot as telegram_bot
@@ -17,20 +19,27 @@ from bot.events import publish_event, close_event_and_notify, reopen_event
 
 from excel_export import build_active_volunteers_workbook, build_applications_workbook
 from flask import send_file
- 
+
 from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-key-local")
+
+secret_key = os.environ.get("SECRET_KEY")
+if not secret_key:
+    if os.environ.get("VERCEL"):
+        raise RuntimeError("SECRET_KEY env var must be set in production")
+    secret_key = "dev-secret-key-local"
+app.config["SECRET_KEY"] = secret_key
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config["MAX_CONTENT_LENGTH"] = 8 * 1024 * 1024
-
-load_dotenv() 
 
 database_url = os.environ.get("DATABASE_URL")
 if not database_url:
@@ -45,6 +54,17 @@ app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 db.init_app(app)
+csrf = CSRFProtect(app)
+
+LOGIN_LOCKOUT_MAX_ATTEMPTS = 5
+LOGIN_LOCKOUT_WINDOW_MINUTES = 15
+
+
+def get_client_ip():
+    forwarded = request.headers.get("X-Forwarded-For", "")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.remote_addr
 
 def allowed_file(filename):
     if not filename or "." not in filename:
@@ -122,6 +142,7 @@ def inject_translator():
         "occupation_label": lambda value: occupation_label(value, t),
     }
 
+@csrf.exempt
 @app.route("/bot/webhook", methods=["POST"])
 def bot_webhook():
     try:
@@ -274,12 +295,35 @@ def volunteer_thanks():
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
+        ip = get_client_ip()
+        window_start = datetime.utcnow() - timedelta(minutes=LOGIN_LOCKOUT_WINDOW_MINUTES)
+        recent_failures = AdminLoginEvent.query.filter(
+            AdminLoginEvent.ip_address == ip,
+            AdminLoginEvent.success.is_(False),
+            AdminLoginEvent.created_at >= window_start,
+        ).count()
+
+        if recent_failures >= LOGIN_LOCKOUT_MAX_ATTEMPTS:
+            flash("Слишком много неудачных попыток входа. Попробуйте позже.", "error")
+            return render_template("admin/login.html")
+
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
 
         admin = Admin.query.filter_by(username=username).first()
-        if admin and admin.check_password(password):
+        success = bool(admin and admin.check_password(password))
+
+        db.session.add(AdminLoginEvent(
+            username_attempted=username,
+            success=success,
+            ip_address=ip,
+            user_agent=request.headers.get("User-Agent", "")[:255],
+        ))
+        db.session.commit()
+
+        if success:
             session["admin_id"] = admin.id
+            log_activity(f"admin:{admin.username}", "admin_login", ip)
             return redirect(url_for("admin_dashboard"))
 
         flash("Login yoki parol noto'g'ri.", "error")
@@ -305,6 +349,14 @@ def admin_dashboard():
         images_count=images_count,
         new_applications_count=new_applications_count,
     )
+
+
+@app.route("/admin/activity")
+@login_required
+def admin_activity():
+    activity_entries = ActivityLog.query.order_by(ActivityLog.created_at.desc()).limit(200).all()
+    login_events = AdminLoginEvent.query.order_by(AdminLoginEvent.created_at.desc()).limit(200).all()
+    return render_template("admin/activity.html", activity_entries=activity_entries, login_events=login_events)
 
 
 @app.route("/admin/posts")
@@ -492,8 +544,11 @@ def admin_volunteer_status(app_id):
 @login_required
 def admin_volunteer_delete(app_id):
     application = VolunteerApplication.query.get_or_404(app_id)
+    admin = db.session.get(Admin, session["admin_id"])
+    full_name = application.full_name
     db.session.delete(application)
     db.session.commit()
+    log_activity(f"admin:{admin.username}", "application_delete", full_name)
     flash(get_translator(get_current_language())('adm_volunteer_deleted'), "success")
     return redirect(url_for("admin_volunteers"))
 
@@ -506,7 +561,8 @@ def admin_volunteer_accept(app_id):
         flash("Эта заявка уже обработана.", "error")
         return redirect(url_for("admin_volunteers"))
 
-    volunteer, created = accept_application(application)
+    admin = db.session.get(Admin, session["admin_id"])
+    volunteer, created = accept_application(application, f"admin:{admin.username}")
 
     if created:
         flash(f"{volunteer.full_name} добавлен(а) в список волонтёров.", "success")
@@ -533,8 +589,11 @@ def admin_active_volunteers():
 @login_required
 def admin_active_volunteer_delete(volunteer_id):
     volunteer = Volunteer.query.get_or_404(volunteer_id)
+    admin = db.session.get(Admin, session["admin_id"])
+    full_name = volunteer.full_name
     db.session.delete(volunteer)
     db.session.commit()
+    log_activity(f"admin:{admin.username}", "volunteer_delete", full_name)
     flash("Волонтёр удалён из списка.", "success")
     return redirect(url_for("admin_active_volunteers"))
 
@@ -695,7 +754,9 @@ def admin_event_attendance(event_id):
 @login_required
 def admin_event_close(event_id):
     event = Event.query.get_or_404(event_id)
+    admin = db.session.get(Admin, session["admin_id"])
     close_event_and_notify(event)
+    log_activity(f"admin:{admin.username}", "event_close", event.title)
     flash("Регистрация закрыта, участникам разослан запрос на отзыв.", "success")
     return redirect(url_for("admin_event_detail", event_id=event.id))
 
@@ -704,7 +765,9 @@ def admin_event_close(event_id):
 @login_required
 def admin_event_open(event_id):
     event = Event.query.get_or_404(event_id)
+    admin = db.session.get(Admin, session["admin_id"])
     reopen_event(event)
+    log_activity(f"admin:{admin.username}", "event_open", event.title)
     flash("Регистрация снова открыта.", "success")
     return redirect(url_for("admin_event_detail", event_id=event.id))
 
@@ -713,10 +776,13 @@ def admin_event_open(event_id):
 @login_required
 def admin_event_delete(event_id):
     event = Event.query.get_or_404(event_id)
+    admin = db.session.get(Admin, session["admin_id"])
+    title = event.title
     EventRegistration.query.filter_by(event_id=event.id).delete()
     EventFeedback.query.filter_by(event_id=event.id).delete()
     db.session.delete(event)
     db.session.commit()
+    log_activity(f"admin:{admin.username}", "event_delete", title)
     flash("Мероприятие удалено.", "success")
     return redirect(url_for("admin_events"))
 
@@ -739,6 +805,7 @@ def admin_settings():
             admin = db.session.get(Admin, session["admin_id"])
             admin.set_password(new_password)
             db.session.commit()
+            log_activity(f"admin:{admin.username}", "password_change")
             flash("Пароль успешно изменен.", "success")
             return redirect(url_for("admin_settings"))
 

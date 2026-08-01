@@ -1,0 +1,87 @@
+{% extends "admin/base.html" %}
+{% block title %}Активность — DUO Charity Admin{% endblock %}
+
+{% set action_labels = {
+    "application_accept": "Заявка принята",
+    "application_decline": "Заявка отклонена",
+    "application_delete": "Заявка удалена",
+    "volunteer_delete": "Волонтёр удалён",
+    "event_close": "Событие закрыто",
+    "event_open": "Событие открыто",
+    "event_delete": "Событие удалено",
+    "password_change": "Смена пароля",
+    "admin_login": "Вход в админку",
+} %}
+
+{% block content %}
+    <div class="page-head">
+        <div>
+            <h1 class="page-title">Активность</h1>
+            <p class="page-subtitle">Критичные действия и попытки входа в админку</p>
+        </div>
+    </div>
+
+    <h2 class="page-title" style="font-size: 1.1rem; margin: 24px 0 12px;">Действия</h2>
+    {% if activity_entries %}
+    <div class="admin-table-wrapper">
+        <table class="admin-table admin-table-responsive">
+            <thead>
+                <tr>
+                    <th>Когда</th>
+                    <th>Кто</th>
+                    <th>Действие</th>
+                    <th>Детали</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in activity_entries %}
+                <tr>
+                    <td data-label="Когда">{{ entry.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td data-label="Кто">{{ entry.actor }}</td>
+                    <td data-label="Действие">{{ action_labels.get(entry.action, entry.action) }}</td>
+                    <td data-label="Детали">{{ entry.detail or '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state-admin">Пока нет записей.</p>
+    {% endif %}
+
+    <h2 class="page-title" style="font-size: 1.1rem; margin: 32px 0 12px;">Входы в админку</h2>
+    {% if login_events %}
+    <div class="admin-table-wrapper">
+        <table class="admin-table admin-table-responsive">
+            <thead>
+                <tr>
+                    <th>Когда</th>
+                    <th>Логин</th>
+                    <th>Результат</th>
+                    <th>IP</th>
+                    <th>User-Agent</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in login_events %}
+                <tr>
+                    <td data-label="Когда">{{ event.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td data-label="Логин">{{ event.username_attempted or '—' }}</td>
+                    <td data-label="Результат">
+                        {% if event.success %}
+                        <span class="status-badge status-badge-closed">успех</span>
+                        {% else %}
+                        <span class="status-badge status-badge-new">провал</span>
+                        {% endif %}
+                    </td>
+                    <td data-label="IP">{{ event.ip_address or '—' }}</td>
+                    <td data-label="User-Agent">{{ event.user_agent or '—' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="empty-state-admin">Пока нет записей.</p>
+    {% endif %}
+{% endblock %}

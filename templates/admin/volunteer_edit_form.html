@@ -5,6 +5,7 @@
     <h1 class="page-title">{{ t('adm_edit_volunteer') if volunteer else t('adm_add_volunteer') }}</h1>
 
     <form method="post" class="admin-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <div class="form-grid">
             <label class="full-width">
                 {{ t('adm_col_name') }}

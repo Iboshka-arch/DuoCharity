@@ -6,6 +6,7 @@
     <p class="page-subtitle">{{ t('adm_hero_sub') }}</p>
 
     <form method="post" action="{{ url_for('admin_hero_upload') }}" enctype="multipart/form-data" class="upload-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="file" name="image" accept=".png,.jpg,.jpeg,.webp" required>
         <button type="submit" class="btn btn-primary">{{ t('adm_upload') }}</button>
     </form>
@@ -17,6 +18,7 @@
             <img src="{{ image.filename }}">
             <form method="post" action="{{ url_for('admin_hero_delete', image_id=image.id) }}"
                   onsubmit="return confirm('{{ t('adm_confirm_delete') }}');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="btn-small btn-small-danger">{{ t('adm_delete') }}</button>
             </form>
         </div>
@@ -28,6 +30,7 @@
 
     <h3 class="form-section-title">{{ t('adm_about_photo_title') }}</h3>
     <form method="post" action="{{ url_for('admin_about_photo_upload') }}" enctype="multipart/form-data" class="upload-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <input type="file" name="about_photo" accept=".png,.jpg,.jpeg,.webp" required>
         <button type="submit" class="btn btn-primary">{{ t('adm_upload') }}</button>
     </form>
@@ -39,6 +42,7 @@
         
         <form method="post" action="{{ url_for('admin_about_photo_delete') }}"
               onsubmit="return confirm('{{ t('adm_confirm_delete') }}');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn-small btn-small-danger" style="background-color: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
                 {{ t('adm_delete') }}
             </button>
