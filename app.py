@@ -630,14 +630,26 @@ def admin_volunteer_accept(app_id):
 @login_required
 def admin_active_volunteers():
     search_query = request.args.get("q", "").strip()
+    bot_filter = request.args.get("bot", "").strip()
+
     volunteers_query = Volunteer.query
     if search_query:
         like = f"%{search_query}%"
         volunteers_query = volunteers_query.filter(
             db.or_(Volunteer.full_name.ilike(like), Volunteer.phone.ilike(like))
         )
+    if bot_filter == "connected":
+        volunteers_query = volunteers_query.filter(Volunteer.telegram_chat_id.isnot(None))
+    elif bot_filter == "not_connected":
+        volunteers_query = volunteers_query.filter(Volunteer.telegram_chat_id.is_(None))
+
     volunteers = volunteers_query.order_by(Volunteer.created_at.desc()).all()
-    return render_template("admin/active_volunteers.html", volunteers=volunteers, search_query=search_query)
+    return render_template(
+        "admin/active_volunteers.html",
+        volunteers=volunteers,
+        search_query=search_query,
+        bot_filter=bot_filter,
+    )
  
  
 @app.route("/admin/active-volunteers/<int:volunteer_id>/delete", methods=["POST"])
