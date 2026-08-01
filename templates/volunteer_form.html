@@ -11,6 +11,12 @@
         <h1>{{ t('volunteer_title') }}</h1>
         <p class="lead">{{ t('volunteer_lead') }}</p>
 
+        <div class="vf-bot-note">
+            <span class="vf-bot-note-icon">📲</span>
+            <p>{{ t('vf_bot_note') }}</p>
+            <a href="https://t.me/DuoCharityBot" target="_blank" class="btn btn-outline">{{ t('vf_thanks_bot_button') }}</a>
+        </div>
+
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
             <div class="flash-container">
@@ -121,6 +127,35 @@
 </section>
 
 <style>
+
+.vf-bot-note {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin: 20px 0 28px;
+    padding: 16px 20px;
+    background: #eef4ff;
+    border: 1px solid #cfe0fb;
+    border-radius: 14px;
+}
+
+.vf-bot-note-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.vf-bot-note p {
+    flex: 1;
+    min-width: 200px;
+    margin: 0;
+    font-size: 14px;
+    color: #33415c;
+}
+
+.vf-bot-note .btn {
+    flex-shrink: 0;
+}
 
 .vf-phone-field .phone-input-wrap {
     position: relative;
