@@ -877,6 +877,31 @@ def admin_settings():
     settings = get_settings()
     return render_template("admin/settings.html", settings=settings)
 
+
+@app.route("/admin/normalize-names", methods=["POST"])
+@login_required
+def admin_normalize_names():
+    admin = db.session.get(Admin, session["admin_id"])
+    updated = 0
+
+    for application in VolunteerApplication.query.all():
+        normalized = normalize_name_part(application.full_name)
+        if normalized != application.full_name:
+            application.full_name = normalized
+            updated += 1
+
+    for volunteer in Volunteer.query.all():
+        normalized = normalize_name_part(volunteer.full_name)
+        if normalized != volunteer.full_name:
+            volunteer.full_name = normalized
+            updated += 1
+
+    db.session.commit()
+    log_activity(f"admin:{admin.username}", "normalize_names", f"обновлено записей: {updated}")
+    flash(f"Обновлено имён: {updated}.", "success")
+    return redirect(url_for("admin_settings"))
+
+
 @app.route("/admin/volunteers/export")
 @login_required
 def admin_volunteers_export():

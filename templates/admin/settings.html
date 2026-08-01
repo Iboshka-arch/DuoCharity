@@ -44,4 +44,13 @@
             <button type="submit" class="btn btn-outline">{{ t('adm_change_password') }}</button>
         </div>
     </form>
+
+    <h3 class="form-section-title">Обслуживание</h3>
+    <form method="post" action="{{ url_for('admin_normalize_names') }}"
+          onsubmit="return confirm('Привести регистр и транслитерацию всех имён (заявки + волонтёры) к единому виду?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="form-actions">
+            <button type="submit" class="btn btn-outline">Нормализовать старые имена</button>
+        </div>
+    </form>
 {% endblock %}
