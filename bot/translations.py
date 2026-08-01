@@ -1,9 +1,11 @@
 BOT_TEXTS = {
     "uz": {
         "start_choose_language": "Assalomu alaykum / Здравствуйте! 👋\n<b>DUO Charity botiga xush kelibsiz / Добро пожаловать в бота DUO Charity!</b>\n\nIltimos, tilni tanlang / Пожалуйста, выберите язык:",
-        "ask_phone": "Xabarnomalar yuborishimiz uchun telefon raqamingizni ulashing. 📱\n\nAgar saytda anketa to'ldirgan bo'lsangiz — biz uni raqamingiz orqali topamiz. Ariza ko'rib chiqilmoqda, iltimos kuting. ⏳",
+        "ask_phone": "Xabarnomalar yuborishimiz uchun telefon raqamingizni ulashing. 📱\n\nAgar saytda anketa to'ldirgan bo'lsangiz — biz uni raqamingiz orqali topamiz. Ariza ko'rib chiqilmoqda, iltimos kuting. ⏳\n\nTelegram'dagi raqamingiz anketadagidan boshqacha bo'lsa — anketada ko'rsatgan raqamni shunchaki matn qilib yozib yuboring.",
         "welcome_back": "Salom, {name}! 👋 Siz allaqachon DUO Charity volontyorisiz — hammasi joyida.",
         "not_matched": "Raqamingiz DUO Charity faol volontyorlari ro'yxatida topilmadi.\n\nAnketani shu yerda to'ldiring:\n{form_link}\n\nSavollar: /support buyrug'ini yozing",
+        "not_matched_try_manual": "Telegram raqamingiz ro'yxatda topilmadi. 😕\n\nAgar anketada boshqa raqam ko'rsatgan bo'lsangiz — o'sha raqamni shu yerga matn qilib yozing (masalan: 901234567).\n\nAks holda anketani shu yerda to'ldiring:\n{form_link}\n\nSavollar: /support buyrug'ini yozing",
+        "manual_phone_not_found": "Bu raqam ham ro'yxatda topilmadi. 😕\n\nAnketani shu yerda to'ldiring:\n{form_link}\n\nSavollar: /support buyrug'ini yozing",
         "matched": "Rahmat, {name}! Siz DUO Charity xabarnomalariga ulandingiz. ✅",
         "choose_language": "Iltimos, tilni tanlang / Пожалуйста, выберите язык:",
         "ask_car": "Yuk tashish uchun shaxsiy avtomobilingiz bormi? 🚗",
@@ -42,9 +44,11 @@ BOT_TEXTS = {
     },
     "ru": {
         "start_choose_language": "Assalomu alaykum / Здравствуйте! 👋\n<b>DUO Charity botiga xush kelibsiz / Добро пожаловать в бота DUO Charity!</b>\n\nIltimos, tilni tanlang / Пожалуйста, выберите язык:",
-        "ask_phone": "Чтобы присылать уведомления, поделитесь номером телефона. 📱\n\nЕсли вы уже подали заявку на сайте — мы найдём её по номеру. Заявка на рассмотрении, пожалуйста, подождите. ⏳",
+        "ask_phone": "Чтобы присылать уведомления, поделитесь номером телефона. 📱\n\nЕсли вы уже подали заявку на сайте — мы найдём её по номеру. Заявка на рассмотрении, пожалуйста, подождите. ⏳\n\nЕсли в Telegram у вас другой номер, не тот, что в анкете — просто напишите номер из анкеты текстом.",
         "welcome_back": "Привет, {name}! 👋 Вы уже волонтёр DUO Charity — всё в порядке.",
         "not_matched": "Не нашли ваш номер в списке действующих волонтёров.\n\nЗаполните анкету здесь:\n{form_link}\n\nВопросы: напишите /support",
+        "not_matched_try_manual": "Номер вашего Telegram не нашли в списке. 😕\n\nЕсли в анкете указывали другой номер — напишите его сюда текстом (например: 901234567).\n\nЕсли анкету ещё не заполняли:\n{form_link}\n\nВопросы: напишите /support",
+        "manual_phone_not_found": "Этот номер тоже не нашли в списке. 😕\n\nЗаполните анкету здесь:\n{form_link}\n\nВопросы: напишите /support",
         "matched": "Спасибо, {name}! Вы подключены к уведомлениям DUO Charity. ✅",
         "choose_language": "Iltimos, tilni tanlang / Пожалуйста, выберите язык:",
         "ask_car": "Есть ли у вас личный автомобиль для перевозки продуктов и вещей? 🚗",

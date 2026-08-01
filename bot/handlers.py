@@ -440,27 +440,13 @@ def handle_admin_reply_to_support(message, target_chat_id):
         bot.send_message(message.chat.id, "Не удалось отправить — пользователь мог заблокировать бота.", reply_to_message_id=message.message_id)
 
 
-@bot.message_handler(content_types=["contact"])
-def handle_contact(message):
-    if message.chat.type != "private":
-        return
-
-    contact = message.contact
-    cooldown = BotStartCooldown.query.get(message.chat.id)
-    lang = (cooldown.language if cooldown else None) or "uz"
-
-    if contact.user_id != message.from_user.id:
-        bot.send_message(message.chat.id, bt("own_contact_only", lang))
-        return
-
-    phone = normalize_phone(contact.phone_number)
-
+def resolve_phone_match(message, phone, lang):
     volunteer = Volunteer.query.filter_by(phone=phone).first()
     if volunteer:
         if volunteer.telegram_chat_id == message.chat.id:
             v_lang = volunteer.language or lang
             bot.send_message(message.chat.id, bt("matched", v_lang, name=volunteer.full_name), reply_markup=types.ReplyKeyboardRemove())
-            return
+            return True
 
         volunteer.telegram_user_id = message.from_user.id
         volunteer.telegram_chat_id = message.chat.id
@@ -474,7 +460,7 @@ def handle_contact(message):
             bot.send_message(message.chat.id, bt("ask_car", lang), reply_markup=car_question_keyboard(lang))
         else:
             send_group_invite(message.chat.id, volunteer, lang)
-        return
+        return True
 
     application = (
         VolunteerApplication.query
@@ -492,11 +478,31 @@ def handle_contact(message):
         db.session.commit()
 
         bot.send_message(message.chat.id, bt("pending_review", lang), reply_markup=types.ReplyKeyboardRemove())
+        return True
+
+    return False
+
+
+@bot.message_handler(content_types=["contact"])
+def handle_contact(message):
+    if message.chat.type != "private":
+        return
+
+    contact = message.contact
+    cooldown = BotStartCooldown.query.get(message.chat.id)
+    lang = (cooldown.language if cooldown else None) or "uz"
+
+    if contact.user_id != message.from_user.id:
+        bot.send_message(message.chat.id, bt("own_contact_only", lang))
+        return
+
+    phone = normalize_phone(contact.phone_number)
+    if resolve_phone_match(message, phone, lang):
         return
 
     bot.send_message(
         message.chat.id,
-        bt("not_matched", lang, form_link=VOLUNTEER_FORM_URL),
+        bt("not_matched_try_manual", lang, form_link=VOLUNTEER_FORM_URL),
         reply_markup=types.ReplyKeyboardRemove(),
     )
 
@@ -628,6 +634,17 @@ def handle_text(message):
         if prev_id:
             safe_delete_message(message.chat.id, int(prev_id))
         return
+
+    if not volunteer:
+        digits = "".join(ch for ch in message.text if ch.isdigit())
+        if len(digits) >= 9:
+            cooldown = BotStartCooldown.query.get(message.chat.id)
+            phone_lang = (cooldown.language if cooldown else None) or lang
+            phone = normalize_phone(message.text)
+            if resolve_phone_match(message, phone, phone_lang):
+                return
+            bot.send_message(message.chat.id, bt("manual_phone_not_found", phone_lang, form_link=VOLUNTEER_FORM_URL))
+            return
 
     bot.send_message(message.chat.id, bt("fallback", lang))
 
