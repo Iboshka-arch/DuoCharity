@@ -242,7 +242,8 @@ def privacy_policy():
 
 @app.route("/volunteer", methods=["POST"])
 def volunteer_submit():
-    full_name = request.form.get("full_name", "").strip()
+    first_name = request.form.get("first_name", "").strip()
+    last_name = request.form.get("last_name", "").strip()
     phone = request.form.get("phone", "").strip()
     telegram = request.form.get("telegram", "").strip()
     gender = request.form.get("gender", "").strip()
@@ -250,9 +251,11 @@ def volunteer_submit():
     occupation = request.form.get("occupation", "").strip()
     message = request.form.get("message", "").strip()
 
-    if not full_name or not phone:
+    if not first_name or not last_name or not phone:
         flash(get_translator(get_current_language())('vf_error_name_phone'), "error")
         return redirect(url_for("volunteer_form"))
+
+    full_name = f"{first_name} {last_name}".strip()
 
     if not gender or not age.isdigit():
         flash(get_translator(get_current_language())('vf_error_required'), "error")
