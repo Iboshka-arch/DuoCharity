@@ -295,14 +295,16 @@ def volunteer_submit():
         flash(get_translator(get_current_language())('vf_error_required'), "error")
         return redirect(url_for("volunteer_form"))
 
-    existing_volunteer = Volunteer.query.filter_by(phone=phone).first()
+    existing_volunteer = Volunteer.query.filter(
+        db.or_(Volunteer.phone == phone, Volunteer.full_name == full_name)
+    ).first()
     if existing_volunteer:
         flash(get_translator(get_current_language())('vf_error_already_volunteer'), "error")
         return redirect(url_for("volunteer_form"))
 
     cooldown_cutoff = datetime.utcnow() - timedelta(hours=24)
     recent_application = VolunteerApplication.query.filter(
-        VolunteerApplication.phone == phone,
+        db.or_(VolunteerApplication.phone == phone, VolunteerApplication.full_name == full_name),
         VolunteerApplication.created_at > cooldown_cutoff,
     ).first()
 
