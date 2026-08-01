@@ -72,6 +72,40 @@ def allowed_file(filename):
     ext = filename.rsplit(".", 1)[1].lower()
     return ext in ALLOWED_EXTENSIONS
 
+CYRILLIC_TO_LATIN = {
+    "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "ё": "yo",
+    "ж": "j", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
+    "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u",
+    "ф": "f", "х": "x", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "sht",
+    "ъ": "", "ы": "i", "ь": "", "э": "e", "ю": "yu", "я": "ya",
+    "ў": "o'", "қ": "q", "ғ": "g'", "ҳ": "h", "е": "e",
+}
+
+
+def _transliterate_word(word):
+    chars = []
+    for i, ch in enumerate(word.lower()):
+        if ch == "е" and i == 0:
+            chars.append("ye")
+        else:
+            chars.append(CYRILLIC_TO_LATIN.get(ch, ch))
+    return "".join(chars)
+
+
+def normalize_name_part(value):
+    value = value.strip()
+    if not value:
+        return value
+
+    words = []
+    for word in value.split():
+        if any(ch.lower() in CYRILLIC_TO_LATIN for ch in word):
+            word = _transliterate_word(word)
+        else:
+            word = word.lower()
+        words.append(word[:1].upper() + word[1:])
+    return " ".join(words)
+
 def save_uploaded_file(file_storage):
     if not file_storage or file_storage.filename == "":
         print(f"DEBUG filename: {file_storage.filename if file_storage else 'None'}")
@@ -242,8 +276,8 @@ def privacy_policy():
 
 @app.route("/volunteer", methods=["POST"])
 def volunteer_submit():
-    first_name = request.form.get("first_name", "").strip()
-    last_name = request.form.get("last_name", "").strip()
+    first_name = normalize_name_part(request.form.get("first_name", ""))
+    last_name = normalize_name_part(request.form.get("last_name", ""))
     phone = request.form.get("phone", "").strip()
     telegram = request.form.get("telegram", "").strip()
     gender = request.form.get("gender", "").strip()
