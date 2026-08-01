@@ -974,8 +974,10 @@ h2 {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     width: 100%;
+    height: 100%;
     font: inherit;
     color: inherit;
     transition: background 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
@@ -1058,10 +1060,15 @@ button.donate-card {
     position: relative;
     display: flex;
     flex-direction: column;
+    height: 100%;
+}
+
+.donate-primary-wrap .donate-card--primary {
+    flex: 1;
 }
 
 .donate-channel-note {
-    margin: 0 0 14px;
+    margin: 0 0 22px;
     font-size: 0.85rem;
     color: rgba(255, 255, 255, 0.65);
     text-align: center;

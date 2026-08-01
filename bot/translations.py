@@ -1,7 +1,7 @@
 BOT_TEXTS = {
     "uz": {
         "start_choose_language": "Assalomu alaykum / Здравствуйте! 👋\n<b>DUO Charity botiga xush kelibsiz / Добро пожаловать в бота DUO Charity!</b>\n\nIltimos, tilni tanlang / Пожалуйста, выберите язык:",
-        "ask_phone": "Xabarnomalar yuborishimiz uchun telefon raqamingizni ulashing. 📱",
+        "ask_phone": "Xabarnomalar yuborishimiz uchun telefon raqamingizni ulashing. 📱\n\nAgar saytda anketa to'ldirgan bo'lsangiz — biz uni raqamingiz orqali topamiz. Ariza ko'rib chiqilmoqda, iltimos kuting. ⏳",
         "welcome_back": "Salom, {name}! 👋 Siz allaqachon DUO Charity volontyorisiz — hammasi joyida.",
         "not_matched": "Raqamingiz DUO Charity faol volontyorlari ro'yxatida topilmadi.\n\nAnketani shu yerda to'ldiring:\n{form_link}\n\nSavollar: /support buyrug'ini yozing",
         "matched": "Rahmat, {name}! Siz DUO Charity xabarnomalariga ulandingiz. ✅",
@@ -42,7 +42,7 @@ BOT_TEXTS = {
     },
     "ru": {
         "start_choose_language": "Assalomu alaykum / Здравствуйте! 👋\n<b>DUO Charity botiga xush kelibsiz / Добро пожаловать в бота DUO Charity!</b>\n\nIltimos, tilni tanlang / Пожалуйста, выберите язык:",
-        "ask_phone": "Чтобы присылать уведомления, поделитесь номером телефона. 📱",
+        "ask_phone": "Чтобы присылать уведомления, поделитесь номером телефона. 📱\n\nЕсли вы уже подали заявку на сайте — мы найдём её по номеру. Заявка на рассмотрении, пожалуйста, подождите. ⏳",
         "welcome_back": "Привет, {name}! 👋 Вы уже волонтёр DUO Charity — всё в порядке.",
         "not_matched": "Не нашли ваш номер в списке действующих волонтёров.\n\nЗаполните анкету здесь:\n{form_link}\n\nВопросы: напишите /support",
         "matched": "Спасибо, {name}! Вы подключены к уведомлениям DUO Charity. ✅",

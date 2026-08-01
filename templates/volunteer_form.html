@@ -52,7 +52,11 @@
 
                 <div class="vf-field">
                     <label>{{ t('vf_telegram') }}</label>
-                    <input type="text" name="telegram" placeholder="@username" required>
+                    <input type="text" name="telegram" id="vfTelegramInput" placeholder="@username" required>
+                    <label class="vf-no-telegram-check">
+                        <input type="checkbox" id="vfNoTelegram">
+                        <span>{{ t('vf_no_telegram') }}</span>
+                    </label>
                 </div>
 
                 <div class="vf-field">
@@ -186,5 +190,53 @@
 .radio-pill span {
     font-size: 15px;
 }
+
+.vf-no-telegram-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 13.5px;
+    color: #666;
+    cursor: pointer;
+    user-select: none;
+}
+
+.vf-no-telegram-check input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+#vfTelegramInput.vf-input-disabled {
+    background: #f2f2f2;
+    color: #999;
+    cursor: not-allowed;
+}
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var noTelegramCheckbox = document.getElementById("vfNoTelegram");
+    var telegramInput = document.getElementById("vfTelegramInput");
+
+    if (noTelegramCheckbox && telegramInput) {
+        noTelegramCheckbox.addEventListener("change", function () {
+            if (this.checked) {
+                telegramInput.dataset.prevValue = telegramInput.value;
+                telegramInput.value = "no_username";
+                telegramInput.readOnly = true;
+                telegramInput.required = false;
+                telegramInput.classList.add("vf-input-disabled");
+            } else {
+                telegramInput.value = telegramInput.dataset.prevValue || "";
+                telegramInput.readOnly = false;
+                telegramInput.required = true;
+                telegramInput.classList.remove("vf-input-disabled");
+                telegramInput.focus();
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

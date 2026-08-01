@@ -177,12 +177,12 @@
             <h2>{{ t('donate_title') }}</h2>
             <p class="lead">{{ t('donate_lead') }}</p>
 
+            <p class="donate-channel-note">
+                <a href="https://t.me/duo_charity" target="_blank" rel="noopener">{{ t('donate_channel_note') }}</a>
+            </p>
+
             <div class="donate-options">
                 <div class="donate-primary-wrap">
-                    <p class="donate-channel-note">
-                        <a href="https://t.me/duo_charity" target="_blank" rel="noopener">{{ t('donate_channel_note') }}</a>
-                    </p>
-
                     <button type="button" class="donate-card donate-card--primary" id="donateCardTrigger" aria-expanded="false" aria-controls="donateCardPopover">
                         <span class="donate-method">Uzcard</span>
                         <span class="donate-value">{{ settings.get('card_value', '—') }}</span>

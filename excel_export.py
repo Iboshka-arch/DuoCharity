@@ -3,12 +3,20 @@ from io import BytesIO
 import openpyxl
 from openpyxl.styles import Font
 
+from models import NO_TELEGRAM_USERNAME
+
 
 def _occupation_label(value):
     if value in ("study", "talaba"):
         return "Учится"
     if value in ("work", "ishlayman"):
         return "Работает"
+    return value or ""
+
+
+def _telegram_label(value):
+    if value == NO_TELEGRAM_USERNAME:
+        return "Нет username"
     return value or ""
 
 
@@ -34,7 +42,7 @@ def build_active_volunteers_workbook(volunteers):
         ws.append([
             v.full_name,
             v.phone,
-            v.telegram or "",
+            _telegram_label(v.telegram),
             gender_label,
             v.age or "",
             _occupation_label(v.occupation),
@@ -67,7 +75,7 @@ def build_applications_workbook(applications):
         ws.append([
             a.full_name,
             a.phone,
-            a.telegram or "",
+            _telegram_label(a.telegram),
             gender_label,
             a.age or "",
             _occupation_label(a.occupation),

@@ -4,6 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
 
+NO_TELEGRAM_USERNAME = "no_username"
+
 
 class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -65,10 +67,13 @@ class VolunteerApplication(db.Model):
 
 
     def telegram_url(self):
-        if not self.telegram:
+        if not self.telegram or self.telegram == NO_TELEGRAM_USERNAME:
             return None
         clean = self.telegram.strip().lstrip("@")
         return f"https://t.me/{clean}" if clean else None
+
+    def has_no_telegram_username(self):
+        return self.telegram == NO_TELEGRAM_USERNAME
 
 
 class SiteSetting(db.Model):
@@ -97,10 +102,13 @@ class Volunteer(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def telegram_url(self):
-        if not self.telegram:
+        if not self.telegram or self.telegram == NO_TELEGRAM_USERNAME:
             return None
         clean = self.telegram.strip().lstrip("@")
         return f"https://t.me/{clean}" if clean else None
+
+    def has_no_telegram_username(self):
+        return self.telegram == NO_TELEGRAM_USERNAME
 
     def formatted_date(self):
         return self.created_at.strftime("%d.%m.%Y")

@@ -6,9 +6,15 @@ from bot.handlers import bot
 from bot.utils import safe_send_message
 from bot.config import ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID
 from bot.actions import accept_application, decline_application
-from models import VolunteerApplication
+from models import VolunteerApplication, NO_TELEGRAM_USERNAME
 
 ADMIN_PANEL_URL = "https://duocharity.uz/admin"
+
+
+def _telegram_line(application):
+    if application.telegram == NO_TELEGRAM_USERNAME:
+        return "Нет username"
+    return html.escape(application.telegram) if application.telegram else "—"
 
 
 def notify_new_application(application):
@@ -22,7 +28,7 @@ def notify_new_application(application):
         "📥 <b>Новая заявка на волонтёрство</b>\n\n"
         f"👤 <b>Имя:</b> {html.escape(application.full_name)}\n"
         f"📞 <b>Телефон:</b> {html.escape(application.phone)}\n"
-        f"✈️ <b>Telegram:</b> {html.escape(application.telegram) if application.telegram else '—'}\n\n"
+        f"✈️ <b>Telegram:</b> {_telegram_line(application)}\n\n"
         f"🔗 {ADMIN_PANEL_URL}"
     )
 

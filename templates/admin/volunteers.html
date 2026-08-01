@@ -39,6 +39,8 @@
                         <span class="detail-label">Telegram</span>
                         {% if app.telegram_url() %}
                         <a href="{{ app.telegram_url() }}" target="_blank" class="detail-value detail-link">{{ app.telegram }} ↗</a>
+                        {% elif app.has_no_telegram_username() %}
+                        <span class="detail-value">{{ t('adm_no_username') }}</span>
                         {% else %}
                         <span class="detail-value">—</span>
                         {% endif %}
