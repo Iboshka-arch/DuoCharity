@@ -156,6 +156,8 @@ duocharity.uz sayti va DUO Charity Telegram botiga nisbatan qo'llaniladi
 
 11.2. Cookie fayllari foydalanuvchilar ma'lumotlarini sotish yoki ularni reklama maqsadida uchinchi shaxslarga uzatish uchun ishlatilmaydi.
 
+11.3. Sayt tashrif buyuruvchilar statistikasini (tashrif buyuruvchilar soni, ko'rilgan sahifalar) shaxsini bevosita aniqlamaydigan tarzda yig'ish uchun Google Analytics xizmatidan foydalanadi.
+
 12. Siyosatga o'zgartirish kiritish
 
 12.1. Tashkilot ushbu Siyosatga o'zgartirishlar kiritish huquqiga ega.
@@ -468,6 +470,8 @@ Shaxsiy ma'lumotlar bo'yicha aloqa: @Duo_charity_admin""",
 
 11.2. Cookie не используются для продажи данных пользователей или передачи их третьим лицам в рекламных целях.
 
+11.3. Сайт использует Google Analytics для сбора статистики посещаемости (количество посетителей, просматриваемые страницы) без прямой идентификации личности пользователя.
+
 12. Изменение Политики
 
 12.1. Организация вправе вносить изменения в настоящую Политику.
@@ -779,6 +783,8 @@ Applies to the website duocharity.uz and the DUO Charity Telegram bot
 11.1. The website may use technical Cookie files necessary for the correct operation of the service.
 
 11.2. Cookies are not used to sell user data or to share it with third parties for advertising purposes.
+
+11.3. The website uses Google Analytics to collect visitor statistics (number of visitors, pages viewed) without directly identifying individual users.
 
 12. Changes to the Policy
 
