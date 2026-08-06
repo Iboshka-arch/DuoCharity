@@ -717,6 +717,35 @@ def handle_join_request(request):
     except Exception as e:
         print(f"Не удалось обработать заявку на вступление: {e}")
 
+
+@bot.message_handler(content_types=["new_chat_members"])
+def handle_new_chat_members(message):
+    if not VOLUNTEER_GROUP_CHAT_ID or message.chat.id != int(VOLUNTEER_GROUP_CHAT_ID):
+        return
+
+    for member in message.new_chat_members:
+        if member.is_bot:
+            continue
+
+        volunteer = Volunteer.query.filter_by(telegram_user_id=member.id).first()
+        if volunteer:
+            continue
+
+        mention = f'<a href="tg://user?id={member.id}">{html.escape(member.first_name or "друг")}</a>'
+
+        try:
+            bot.send_message(message.chat.id, bt("stranger_join_prompt", "uz", mention=mention, form_link=VOLUNTEER_FORM_URL), parse_mode="HTML")
+            bot.send_message(message.chat.id, bt("stranger_join_prompt", "ru", mention=mention, form_link=VOLUNTEER_FORM_URL), parse_mode="HTML")
+        except Exception as e:
+            print(f"Не удалось поприветствовать нового участника {member.id}: {e}")
+
+        admin_text = f"⚠️ {mention} вступил(а) в группу напрямую, минуя регистрацию (ID: {member.id})."
+        for chat_id in (ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID):
+            if not chat_id:
+                continue
+            safe_send_message(chat_id, admin_text, parse_mode="HTML")
+
+
 @bot.message_handler(content_types=["sticker", "photo", "voice", "video", "document", "audio"])
 def handle_other_content(message):
     if message.chat.type != "private":
