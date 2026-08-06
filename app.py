@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import datetime, timedelta
 from functools import wraps
 
@@ -105,6 +106,11 @@ def normalize_name_part(value):
             word = word.lower()
         words.append(word[:1].upper() + word[1:])
     return " ".join(words)
+
+INVALID_NAME_CHARS = re.compile(r'[\d"();<>=\[\]{}\\/]')
+
+def is_valid_name_part(value):
+    return bool(value) and len(value) <= 40 and not INVALID_NAME_CHARS.search(value)
 
 def save_uploaded_file(file_storage):
     if not file_storage or file_storage.filename == "":
@@ -287,6 +293,10 @@ def volunteer_submit():
 
     if not first_name or not last_name or not phone:
         flash(get_translator(get_current_language())('vf_error_name_phone'), "error")
+        return redirect(url_for("volunteer_form"))
+
+    if not is_valid_name_part(first_name) or not is_valid_name_part(last_name):
+        flash(get_translator(get_current_language())('vf_error_invalid_name'), "error")
         return redirect(url_for("volunteer_form"))
 
     full_name = f"{first_name} {last_name}".strip()
