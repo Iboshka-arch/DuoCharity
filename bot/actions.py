@@ -1,6 +1,6 @@
 import html
 
-from bot.handlers import bot
+from bot.handlers import bot, send_group_invite, find_and_consume_pending_telegram
 from bot.utils import safe_send_message
 from bot.translations import bt
 from models import db, Volunteer
@@ -32,6 +32,14 @@ def accept_application(application, actor):
     db.session.delete(application)
     db.session.commit()
 
+    if not volunteer.telegram_chat_id:
+        pending = find_and_consume_pending_telegram(volunteer.phone)
+        if pending:
+            volunteer.telegram_user_id = pending["user_id"]
+            volunteer.telegram_chat_id = pending["chat_id"]
+            volunteer.language = pending["lang"]
+            db.session.commit()
+
     if volunteer.telegram_chat_id:
         lang = volunteer.language or "ru"
         try:
@@ -45,17 +53,7 @@ def accept_application(application, actor):
                 from bot.keyboards import car_question_keyboard
                 safe_send_message(volunteer.telegram_chat_id, bt("ask_car", lang), reply_markup=car_question_keyboard(lang))
             else:
-                from bot.config import VOLUNTEER_GROUP_CHAT_ID
-                invite = bot.create_chat_invite_link(
-                    int(VOLUNTEER_GROUP_CHAT_ID),
-                    creates_join_request=True,
-                    name=f"volunteer-{volunteer.id}",
-                )
-                safe_send_message(
-                    volunteer.telegram_chat_id,
-                    bt("group_invite", lang, link=invite.invite_link),
-                    parse_mode="HTML",
-                )
+                send_group_invite(volunteer.telegram_chat_id, volunteer, lang)
         except Exception as e:
             print(f"Не удалось уведомить волонтёра: {e}")
 

@@ -40,7 +40,32 @@ def safe_delete_message(chat_id, message_id):
             print(f"Не удалось убрать кнопки у сообщения {message_id}: {e2}")
 
 
+def is_in_volunteer_group(user_id):
+    if not VOLUNTEER_GROUP_CHAT_ID or not user_id:
+        return False
+    try:
+        member = bot.get_chat_member(int(VOLUNTEER_GROUP_CHAT_ID), user_id)
+        return member.status in ("member", "administrator", "creator")
+    except Exception:
+        return False
+
+
+def announce_existing_member(volunteer):
+    if not VOLUNTEER_GROUP_CHAT_ID or not volunteer.telegram_user_id:
+        return
+    mention = f'<a href="tg://user?id={volunteer.telegram_user_id}">{html.escape(volunteer.full_name)}</a>'
+    try:
+        bot.send_message(int(VOLUNTEER_GROUP_CHAT_ID), bt("welcome_message", "uz", mention=mention), parse_mode="HTML")
+        bot.send_message(int(VOLUNTEER_GROUP_CHAT_ID), bt("welcome_message", "ru", mention=mention), parse_mode="HTML")
+    except Exception as e:
+        print(f"Не удалось объявить об успешной регистрации в группе: {e}")
+
+
 def send_group_invite(chat_id, volunteer, lang):
+    if is_in_volunteer_group(volunteer.telegram_user_id):
+        announce_existing_member(volunteer)
+        return
+
     try:
         invite = bot.create_chat_invite_link(
             int(VOLUNTEER_GROUP_CHAT_ID),
@@ -50,6 +75,36 @@ def send_group_invite(chat_id, volunteer, lang):
         bot.send_message(chat_id, bt("group_invite", lang, link=invite.invite_link), parse_mode="HTML")
     except Exception as e:
         print(f"Не удалось создать инвайт-ссылку: {e}")
+
+
+def remember_unmatched_phone(message, phone, lang):
+    data = json.dumps({"phone": phone, "user_id": message.from_user.id, "lang": lang})
+    draft = ConversationDraft.query.get(message.chat.id)
+    if draft:
+        draft.kind = "unmatched_phone"
+        draft.state = "pending"
+        draft.data = data
+    else:
+        db.session.add(ConversationDraft(telegram_chat_id=message.chat.id, kind="unmatched_phone", state="pending", data=data))
+    db.session.commit()
+
+
+def find_and_consume_pending_telegram(phone):
+    for draft in ConversationDraft.query.filter_by(kind="unmatched_phone").all():
+        try:
+            data = json.loads(draft.data or "{}")
+        except ValueError:
+            continue
+        if data.get("phone") == phone:
+            result = {
+                "chat_id": draft.telegram_chat_id,
+                "user_id": data.get("user_id"),
+                "lang": data.get("lang") or "uz",
+            }
+            db.session.delete(draft)
+            db.session.commit()
+            return result
+    return None
 
 
 @bot.message_handler(commands=["start"])
@@ -500,6 +555,8 @@ def handle_contact(message):
     if resolve_phone_match(message, phone, lang):
         return
 
+    remember_unmatched_phone(message, phone, lang)
+
     bot.send_message(
         message.chat.id,
         bt("not_matched_try_manual", lang, form_link=VOLUNTEER_FORM_URL),
@@ -643,6 +700,7 @@ def handle_text(message):
             phone = normalize_phone(message.text)
             if resolve_phone_match(message, phone, phone_lang):
                 return
+            remember_unmatched_phone(message, phone, phone_lang)
             bot.send_message(message.chat.id, bt("manual_phone_not_found", phone_lang, form_link=VOLUNTEER_FORM_URL))
             return
 
