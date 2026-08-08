@@ -20,8 +20,13 @@
             <option value="connected" {{ 'selected' if bot_filter == 'connected' }}>{{ t('adm_bot_connected') }}</option>
             <option value="not_connected" {{ 'selected' if bot_filter == 'not_connected' }}>{{ t('adm_bot_not_connected') }}</option>
         </select>
+        <select name="car" onchange="this.form.submit()" class="status-select">
+            <option value="" {{ 'selected' if not car_filter }}>{{ t('adm_bot_filter_all') }}</option>
+            <option value="with_car" {{ 'selected' if car_filter == 'with_car' }}>{{ t('adm_car_with') }}</option>
+            <option value="without_car" {{ 'selected' if car_filter == 'without_car' }}>{{ t('adm_car_without') }}</option>
+        </select>
         <button type="submit" class="btn btn-outline">{{ t('adm_search_btn') }}</button>
-        {% if search_query or bot_filter %}
+        {% if search_query or bot_filter or car_filter %}
         <a href="{{ url_for('admin_active_volunteers') }}" class="btn-small">{{ t('adm_cancel') }}</a>
         {% endif %}
     </form>

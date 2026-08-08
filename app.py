@@ -641,6 +641,7 @@ def admin_volunteer_accept(app_id):
 def admin_active_volunteers():
     search_query = request.args.get("q", "").strip()
     bot_filter = request.args.get("bot", "").strip()
+    car_filter = request.args.get("car", "").strip()
 
     volunteers_query = Volunteer.query
     if search_query:
@@ -652,6 +653,10 @@ def admin_active_volunteers():
         volunteers_query = volunteers_query.filter(Volunteer.telegram_chat_id.isnot(None))
     elif bot_filter == "not_connected":
         volunteers_query = volunteers_query.filter(Volunteer.telegram_chat_id.is_(None))
+    if car_filter == "with_car":
+        volunteers_query = volunteers_query.filter(Volunteer.has_car.is_(True))
+    elif car_filter == "without_car":
+        volunteers_query = volunteers_query.filter(Volunteer.has_car.isnot(True))
 
     volunteers = volunteers_query.order_by(Volunteer.created_at.desc()).all()
     return render_template(
@@ -659,6 +664,7 @@ def admin_active_volunteers():
         volunteers=volunteers,
         search_query=search_query,
         bot_filter=bot_filter,
+        car_filter=car_filter,
     )
  
  
