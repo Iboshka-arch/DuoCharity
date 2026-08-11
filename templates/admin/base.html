@@ -55,5 +55,72 @@
         </main>
     </div>
 
+    <script>
+    (function () {
+        var MAX_DIMENSION = 1920;
+        var JPEG_QUALITY = 0.82;
+        var SIZE_THRESHOLD = 1.5 * 1024 * 1024;
+
+        function compressFile(file) {
+            return new Promise(function (resolve) {
+                if (!file || !file.type || file.type.indexOf('image/') !== 0 || file.size <= SIZE_THRESHOLD) {
+                    resolve(file);
+                    return;
+                }
+                var img = new Image();
+                var url = URL.createObjectURL(file);
+                img.onload = function () {
+                    URL.revokeObjectURL(url);
+                    var scale = Math.min(1, MAX_DIMENSION / Math.max(img.width, img.height));
+                    var canvas = document.createElement('canvas');
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
+                    var ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    canvas.toBlob(function (blob) {
+                        if (!blob) { resolve(file); return; }
+                        resolve(new File([blob], file.name.replace(/\.\w+$/, '.jpg'), { type: 'image/jpeg' }));
+                    }, 'image/jpeg', JPEG_QUALITY);
+                };
+                img.onerror = function () {
+                    URL.revokeObjectURL(url);
+                    resolve(file);
+                };
+                img.src = url;
+            });
+        }
+
+        document.querySelectorAll('form[enctype="multipart/form-data"]').forEach(function (form) {
+            var input = form.querySelector('input[type="file"]');
+            if (!input) return;
+
+            form.addEventListener('submit', function (e) {
+                var file = input.files && input.files[0];
+                if (!file) return;
+
+                e.preventDefault();
+                var submitBtn = form.querySelector('button[type="submit"]');
+                var originalText = submitBtn ? submitBtn.textContent : null;
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = '...';
+                }
+
+                compressFile(file).then(function (result) {
+                    var dt = new DataTransfer();
+                    dt.items.add(result);
+                    input.files = dt.files;
+                    form.submit();
+                }).catch(function () {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }
+                    form.submit();
+                });
+            });
+        });
+    })();
+    </script>
 </body>
 </html>
