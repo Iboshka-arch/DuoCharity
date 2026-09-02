@@ -1,13 +1,13 @@
 import os
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from functools import wraps
 
 from flask import Flask, render_template, request, redirect, url_for, flash, session, make_response, send_from_directory
 from flask_wtf import CSRFProtect
 from werkzeug.utils import secure_filename
 
-from models import db, Admin, Post, GalleryImage, HeroImage, VolunteerApplication, Volunteer, SiteSetting, Event, EventRegistration, EventFeedback, ActivityLog, AdminLoginEvent
+from models import db, Admin, Post, GalleryImage, HeroImage, VolunteerApplication, Volunteer, SiteSetting, Event, EventRegistration, EventFeedback, ActivityLog, AdminLoginEvent, NO_TELEGRAM_USERNAME
 from translations import get_translator, LANGUAGES, DEFAULT_LANGUAGE
 from activity_log import log_activity
 
@@ -111,6 +111,15 @@ INVALID_NAME_CHARS = re.compile(r'[\d"();<>=\[\]{}\\/]')
 
 def is_valid_name_part(value):
     return bool(value) and len(value) <= 40 and not INVALID_NAME_CHARS.search(value)
+
+def calculate_age(birth_date):
+    if not birth_date:
+        return None
+    today = date.today()
+    years = today.year - birth_date.year
+    if (today.month, today.day) < (birth_date.month, birth_date.day):
+        years -= 1
+    return years
 
 def save_uploaded_file(file_storage):
     if not file_storage or file_storage.filename == "":
@@ -692,13 +701,16 @@ def _apply_volunteer_form(volunteer):
     volunteer.phone = request.form.get("phone", "").strip()
     volunteer.telegram = request.form.get("telegram", "").strip() or None
     volunteer.gender = request.form.get("gender", "").strip() or None
-    age = request.form.get("age", "").strip()
-    volunteer.age = int(age) if age.isdigit() else None
+
     birth_date = request.form.get("birth_date", "").strip()
     try:
         volunteer.birth_date = datetime.strptime(birth_date, "%Y-%m-%d").date() if birth_date else None
     except ValueError:
         volunteer.birth_date = None
+
+    age = request.form.get("age", "").strip()
+    volunteer.age = int(age) if age.isdigit() else calculate_age(volunteer.birth_date)
+
     volunteer.occupation = request.form.get("occupation", "").strip() or None
 
     has_car = request.form.get("has_car", "")
@@ -943,54 +955,55 @@ def admin_normalize_names():
     return redirect(url_for("admin_settings"))
 
 
-# (full_name, phone, telegram_username, telegram_user_id, birth_date "YYYY-MM-DD" or None)
+# (full_name, phone, telegram_username, telegram_user_id, birth_date "YYYY-MM-DD" or None, gender)
+# gender определён по имени/суффиксам фамилии — не 100% гарантия, при желании поправить вручную в /admin/active-volunteers
 LEGACY_VOLUNTEERS_2025 = [
-    ("Temur Saxatov", "998999785570", "temursaxatov", 977708328, "2005-04-09"),
-    ("Мадина Саидкаримова", "998998485624", "Dumpling5", 669296132, None),
-    ("Муйдинова", "998998188160", "wwc_ms", 7134319752, "2008-08-18"),
-    ("Юсупбаева Шахноза", "998913844649", None, 1601905656, "2005-04-15"),
-    ("Бахор Абдиалимова", "998919521809", None, 6891476532, "2006-10-09"),
-    ("Дониёр панаев", "998977679615", "Laawrencce", 249600587, "2001-09-07"),
-    ("Исмоил Хаитматов", "998903353996", "ismoil_hs", 151332640, "2003-11-22"),
-    ("Мирхалил Мирюнусов", "998998333863", "mirxalil_721", 575596775, "2001-07-21"),
-    ("Бекбергенова Айзада", "998770101013", None, 5434386561, "2003-03-19"),
-    ("Ruzibaeva Laylo", "998930061888", "Laylo_r8", 1016466295, "1990-10-09"),
-    ("Binafsha Tadjiboyeva", "998977772967", "binafsha_2509", 1330349778, "2004-09-25"),
-    ("Саидазиз Шоисломов", "998909777999", None, 74839853, "2001-02-09"),
-    ("Камилова Диёра", "998909549744", "di_kmlva", 2009626080, "2005-06-20"),
-    ("Манзура Искандаровна Абдурахманова", "998909489446", "manzura_abdurakhman", 2015824452, None),
-    ("Shoabbos Shomurodov", "998331851805", "shmrdv", 991688894, "2002-11-03"),
-    ("Турсунова Мадина", "998901144505", "maiidys", 811240623, "2008-09-09"),
-    ("Айбарова Зарина", "998931421360", "aybarovaz", 6614475034, "2006-11-08"),
-    ("Raupov Daler", "998997123343", "justDALER", 7217630462, "2007-12-26"),
-    ("Иззатхон Вахобжонова", "998933065226", "Izzatkhon_714", 1864246980, "2005-07-14"),
-    ("Исраилов Абдуллох", "998913270200", "u711z", 480469113, "2009-01-30"),
-    ("Азимбаева Мохидил", "998900015196", "mohidil15", 671858283, "2003-11-15"),
-    ("Бобуржон Бойматов", "998903751940", "okgoo", 1814162588, "2000-04-09"),
-    ("Хабиба Разакбергенова", "998331788866", None, 1772960531, "1999-08-17"),
-    ("Зиеда Аскарова", "998935273600", "ziyoodaa", 1096848488, "2005-04-26"),
-    ("Назарова Жасмин", "998940882244", "nazarrovn", 2095493012, "2005-03-01"),
-    ("Азиза Абдумаликова", "998991840717", None, 947276018, "2005-03-12"),
-    ("Шухрат Рахимжанов", "998888778778", "RakhimjonovShukhrat", 6489324562, "1998-09-09"),
-    ("Davlat Xudoykulov", "998334250596", "dkhudoykulov", 1069303370, "2004-12-22"),
-    ("Фарангиз Сирожиддинова", "998935188103", "xasanovnaa", 1166832924, "2006-04-14"),
-    ("Макнуна Каримжонова", "998974801106", "maknuna_k", 704711947, "2006-07-10"),
-    ("Фаррух Алижанов", "998979997722", "Farrukh_Alijanov", 999348381, "2005-05-07"),
-    ("Abdulaziz", "6584355264", None, 779108551, "2001-01-01"),
-    ("Диёрахон Мухиддинова", "998977325505", None, 634313742, "2006-09-17"),
-    ("Хакимова Нисонур", "998909416867", "Nisonuuur", 460706466, "2005-09-28"),
-    ("Наврузбек Журабеков", "998947315557", None, 7815682602, "2004-03-13"),
-    ("Abdukarimova Nigina", "998770167579", "nwjns_005", 1081487668, "2006-10-15"),
-    ("Комила Собиржонзода", "998909879667", "komila_khon", 1257978360, "2004-07-31"),
-    ("Баходиров Абдулазиз", "998917732232", "bakhod1_rof", 6032838700, "2005-01-25"),
-    ("Зокиров Нуриислом", "998909729050", "nuriislamzakirov", 927769938, "2003-08-29"),
-    ("Саидкаримова Нигина", "998998485642", "Niginasz", 649621945, "2003-06-13"),
-    ("Носиржонова Муниса", "998935177022", None, 1832641193, "2003-10-08"),
-    ("Махаммаджонов Абдурахим Махаммаджонович", "998997978989", "abduraxmm", 1851852120, "2002-11-06"),
-    ("Улугбек Нухритдинхаджаев", "998990017800", None, 457471867, "2004-05-11"),
-    ("Жасуржон Турдалиев", "998909114105", None, 5576002727, "2004-10-20"),
-    ("Axmadbekova Diyora", "998902008620", "one_love_eda", 1918909026, None),
-    ("Kalbaeva Dinara", "998937048278", None, 6631134405, "2005-09-24"),
+    ("Temur Saxatov", "998999785570", "temursaxatov", 977708328, "2005-04-09", "male"),
+    ("Мадина Саидкаримова", "998998485624", "Dumpling5", 669296132, None, "female"),
+    ("Муйдинова", "998998188160", "wwc_ms", 7134319752, "2008-08-18", "female"),
+    ("Юсупбаева Шахноза", "998913844649", None, 1601905656, "2005-04-15", "female"),
+    ("Бахор Абдиалимова", "998919521809", None, 6891476532, "2006-10-09", "female"),
+    ("Дониёр панаев", "998977679615", "Laawrencce", 249600587, "2001-09-07", "male"),
+    ("Исмоил Хаитматов", "998903353996", "ismoil_hs", 151332640, "2003-11-22", "male"),
+    ("Мирхалил Мирюнусов", "998998333863", "mirxalil_721", 575596775, "2001-07-21", "male"),
+    ("Бекбергенова Айзада", "998770101013", None, 5434386561, "2003-03-19", "female"),
+    ("Ruzibaeva Laylo", "998930061888", "Laylo_r8", 1016466295, "1990-10-09", "female"),
+    ("Binafsha Tadjiboyeva", "998977772967", "binafsha_2509", 1330349778, "2004-09-25", "female"),
+    ("Саидазиз Шоисломов", "998909777999", None, 74839853, "2001-02-09", "male"),
+    ("Камилова Диёра", "998909549744", "di_kmlva", 2009626080, "2005-06-20", "female"),
+    ("Манзура Искандаровна Абдурахманова", "998909489446", "manzura_abdurakhman", 2015824452, None, "female"),
+    ("Shoabbos Shomurodov", "998331851805", "shmrdv", 991688894, "2002-11-03", "male"),
+    ("Турсунова Мадина", "998901144505", "maiidys", 811240623, "2008-09-09", "female"),
+    ("Айбарова Зарина", "998931421360", "aybarovaz", 6614475034, "2006-11-08", "female"),
+    ("Raupov Daler", "998997123343", "justDALER", 7217630462, "2007-12-26", "male"),
+    ("Иззатхон Вахобжонова", "998933065226", "Izzatkhon_714", 1864246980, "2005-07-14", "female"),
+    ("Исраилов Абдуллох", "998913270200", "u711z", 480469113, "2009-01-30", "male"),
+    ("Азимбаева Мохидил", "998900015196", "mohidil15", 671858283, "2003-11-15", "female"),
+    ("Бобуржон Бойматов", "998903751940", "okgoo", 1814162588, "2000-04-09", "male"),
+    ("Хабиба Разакбергенова", "998331788866", None, 1772960531, "1999-08-17", "female"),
+    ("Зиеда Аскарова", "998935273600", "ziyoodaa", 1096848488, "2005-04-26", "female"),
+    ("Назарова Жасмин", "998940882244", "nazarrovn", 2095493012, "2005-03-01", "female"),
+    ("Азиза Абдумаликова", "998991840717", None, 947276018, "2005-03-12", "female"),
+    ("Шухрат Рахимжанов", "998888778778", "RakhimjonovShukhrat", 6489324562, "1998-09-09", "male"),
+    ("Davlat Xudoykulov", "998334250596", "dkhudoykulov", 1069303370, "2004-12-22", "male"),
+    ("Фарангиз Сирожиддинова", "998935188103", "xasanovnaa", 1166832924, "2006-04-14", "female"),
+    ("Макнуна Каримжонова", "998974801106", "maknuna_k", 704711947, "2006-07-10", "female"),
+    ("Фаррух Алижанов", "998979997722", "Farrukh_Alijanov", 999348381, "2005-05-07", "male"),
+    ("Abdulaziz", "6584355264", None, 779108551, "2001-01-01", "male"),
+    ("Диёрахон Мухиддинова", "998977325505", None, 634313742, "2006-09-17", "female"),
+    ("Хакимова Нисонур", "998909416867", "Nisonuuur", 460706466, "2005-09-28", "female"),
+    ("Наврузбек Журабеков", "998947315557", None, 7815682602, "2004-03-13", "male"),
+    ("Abdukarimova Nigina", "998770167579", "nwjns_005", 1081487668, "2006-10-15", "female"),
+    ("Комила Собиржонзода", "998909879667", "komila_khon", 1257978360, "2004-07-31", "female"),
+    ("Баходиров Абдулазиз", "998917732232", "bakhod1_rof", 6032838700, "2005-01-25", "male"),
+    ("Зокиров Нуриислом", "998909729050", "nuriislamzakirov", 927769938, "2003-08-29", "male"),
+    ("Саидкаримова Нигина", "998998485642", "Niginasz", 649621945, "2003-06-13", "female"),
+    ("Носиржонова Муниса", "998935177022", None, 1832641193, "2003-10-08", "female"),
+    ("Махаммаджонов Абдурахим Махаммаджонович", "998997978989", "abduraxmm", 1851852120, "2002-11-06", "male"),
+    ("Улугбек Нухритдинхаджаев", "998990017800", None, 457471867, "2004-05-11", "male"),
+    ("Жасуржон Турдалиев", "998909114105", None, 5576002727, "2004-10-20", "male"),
+    ("Axmadbekova Diyora", "998902008620", "one_love_eda", 1918909026, None, "female"),
+    ("Kalbaeva Dinara", "998937048278", None, 6631134405, "2005-09-24", "female"),
 ]
 
 
@@ -1004,10 +1017,12 @@ def admin_import_legacy_volunteers():
     skipped = []
     needs_review = []
 
-    for full_name, phone, telegram_username, telegram_user_id, birth_date_str in LEGACY_VOLUNTEERS_2025:
+    for full_name, phone, telegram_username, telegram_user_id, birth_date_str, gender in LEGACY_VOLUNTEERS_2025:
         name = normalize_name_part(full_name)
-        telegram = f"@{telegram_username}" if telegram_username else None
+        telegram = f"@{telegram_username}" if telegram_username else NO_TELEGRAM_USERNAME
         birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d").date() if birth_date_str else None
+        age = calculate_age(birth_date)
+        occupation = None if age is None else ("study" if age < 18 else "work")
 
         if not birth_date:
             needs_review.append(name)
@@ -1016,6 +1031,8 @@ def admin_import_legacy_volunteers():
         if existing:
             if birth_date and not existing.birth_date:
                 existing.birth_date = birth_date
+                if not existing.age:
+                    existing.age = age
                 backfilled += 1
             continue
 
@@ -1029,6 +1046,9 @@ def admin_import_legacy_volunteers():
             telegram=telegram,
             telegram_user_id=telegram_user_id,
             birth_date=birth_date,
+            age=age,
+            gender=gender,
+            occupation=occupation,
         ))
         inserted += 1
 
