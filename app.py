@@ -1029,10 +1029,23 @@ def admin_import_legacy_volunteers():
 
         existing = Volunteer.query.filter_by(telegram_user_id=telegram_user_id).first()
         if existing:
+            changed = False
             if birth_date and not existing.birth_date:
                 existing.birth_date = birth_date
-                if not existing.age:
-                    existing.age = age
+                changed = True
+            if age and not existing.age:
+                existing.age = age
+                changed = True
+            if gender and not existing.gender:
+                existing.gender = gender
+                changed = True
+            if occupation and not existing.occupation:
+                existing.occupation = occupation
+                changed = True
+            if not existing.telegram:
+                existing.telegram = telegram
+                changed = True
+            if changed:
                 backfilled += 1
             continue
 
