@@ -269,6 +269,12 @@ def sitemap_xml():
 @login_required
 def admin_init_db():
     db.create_all()
+    try:
+        db.session.execute(db.text("ALTER TABLE volunteer ADD COLUMN IF NOT EXISTS birth_date DATE"))
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Не удалось добавить колонку birth_date: {e}")
     flash("База данных обновлена.", "success")
     return redirect(url_for("admin_dashboard"))
 
@@ -688,6 +694,11 @@ def _apply_volunteer_form(volunteer):
     volunteer.gender = request.form.get("gender", "").strip() or None
     age = request.form.get("age", "").strip()
     volunteer.age = int(age) if age.isdigit() else None
+    birth_date = request.form.get("birth_date", "").strip()
+    try:
+        volunteer.birth_date = datetime.strptime(birth_date, "%Y-%m-%d").date() if birth_date else None
+    except ValueError:
+        volunteer.birth_date = None
     volunteer.occupation = request.form.get("occupation", "").strip() or None
 
     has_car = request.form.get("has_car", "")
@@ -930,6 +941,109 @@ def admin_normalize_names():
     log_activity(f"admin:{admin.username}", "normalize_names", f"обновлено записей: {updated}")
     flash(f"Обновлено имён: {updated}.", "success")
     return redirect(url_for("admin_settings"))
+
+
+# (full_name, phone, telegram_username, telegram_user_id, birth_date "YYYY-MM-DD" or None)
+LEGACY_VOLUNTEERS_2025 = [
+    ("Temur Saxatov", "998999785570", "temursaxatov", 977708328, "2005-04-09"),
+    ("Мадина Саидкаримова", "998998485624", "Dumpling5", 669296132, None),
+    ("Муйдинова", "998998188160", "wwc_ms", 7134319752, "2008-08-18"),
+    ("Юсупбаева Шахноза", "998913844649", None, 1601905656, "2005-04-15"),
+    ("Бахор Абдиалимова", "998919521809", None, 6891476532, "2006-10-09"),
+    ("Дониёр панаев", "998977679615", "Laawrencce", 249600587, "2001-09-07"),
+    ("Исмоил Хаитматов", "998903353996", "ismoil_hs", 151332640, "2003-11-22"),
+    ("Мирхалил Мирюнусов", "998998333863", "mirxalil_721", 575596775, "2001-07-21"),
+    ("Бекбергенова Айзада", "998770101013", None, 5434386561, "2003-03-19"),
+    ("Ruzibaeva Laylo", "998930061888", "Laylo_r8", 1016466295, "1990-10-09"),
+    ("Binafsha Tadjiboyeva", "998977772967", "binafsha_2509", 1330349778, "2004-09-25"),
+    ("Саидазиз Шоисломов", "998909777999", None, 74839853, "2001-02-09"),
+    ("Камилова Диёра", "998909549744", "di_kmlva", 2009626080, "2005-06-20"),
+    ("Манзура Искандаровна Абдурахманова", "998909489446", "manzura_abdurakhman", 2015824452, None),
+    ("Shoabbos Shomurodov", "998331851805", "shmrdv", 991688894, "2002-11-03"),
+    ("Турсунова Мадина", "998901144505", "maiidys", 811240623, "2008-09-09"),
+    ("Айбарова Зарина", "998931421360", "aybarovaz", 6614475034, "2006-11-08"),
+    ("Raupov Daler", "998997123343", "justDALER", 7217630462, "2007-12-26"),
+    ("Иззатхон Вахобжонова", "998933065226", "Izzatkhon_714", 1864246980, "2005-07-14"),
+    ("Исраилов Абдуллох", "998913270200", "u711z", 480469113, "2009-01-30"),
+    ("Азимбаева Мохидил", "998900015196", "mohidil15", 671858283, "2003-11-15"),
+    ("Бобуржон Бойматов", "998903751940", "okgoo", 1814162588, "2000-04-09"),
+    ("Хабиба Разакбергенова", "998331788866", None, 1772960531, "1999-08-17"),
+    ("Зиеда Аскарова", "998935273600", "ziyoodaa", 1096848488, "2005-04-26"),
+    ("Назарова Жасмин", "998940882244", "nazarrovn", 2095493012, "2005-03-01"),
+    ("Азиза Абдумаликова", "998991840717", None, 947276018, "2005-03-12"),
+    ("Шухрат Рахимжанов", "998888778778", "RakhimjonovShukhrat", 6489324562, "1998-09-09"),
+    ("Davlat Xudoykulov", "998334250596", "dkhudoykulov", 1069303370, "2004-12-22"),
+    ("Фарангиз Сирожиддинова", "998935188103", "xasanovnaa", 1166832924, "2006-04-14"),
+    ("Макнуна Каримжонова", "998974801106", "maknuna_k", 704711947, "2006-07-10"),
+    ("Фаррух Алижанов", "998979997722", "Farrukh_Alijanov", 999348381, "2005-05-07"),
+    ("Abdulaziz", "6584355264", None, 779108551, "2001-01-01"),
+    ("Диёрахон Мухиддинова", "998977325505", None, 634313742, "2006-09-17"),
+    ("Хакимова Нисонур", "998909416867", "Nisonuuur", 460706466, "2005-09-28"),
+    ("Наврузбек Журабеков", "998947315557", None, 7815682602, "2004-03-13"),
+    ("Abdukarimova Nigina", "998770167579", "nwjns_005", 1081487668, "2006-10-15"),
+    ("Комила Собиржонзода", "998909879667", "komila_khon", 1257978360, "2004-07-31"),
+    ("Баходиров Абдулазиз", "998917732232", "bakhod1_rof", 6032838700, "2005-01-25"),
+    ("Зокиров Нуриислом", "998909729050", "nuriislamzakirov", 927769938, "2003-08-29"),
+    ("Саидкаримова Нигина", "998998485642", "Niginasz", 649621945, "2003-06-13"),
+    ("Носиржонова Муниса", "998935177022", None, 1832641193, "2003-10-08"),
+    ("Махаммаджонов Абдурахим Махаммаджонович", "998997978989", "abduraxmm", 1851852120, "2002-11-06"),
+    ("Улугбек Нухритдинхаджаев", "998990017800", None, 457471867, "2004-05-11"),
+    ("Жасуржон Турдалиев", "998909114105", None, 5576002727, "2004-10-20"),
+    ("Axmadbekova Diyora", "998902008620", "one_love_eda", 1918909026, None),
+    ("Kalbaeva Dinara", "998937048278", None, 6631134405, "2005-09-24"),
+]
+
+
+@app.route("/admin/import-legacy-volunteers", methods=["POST"])
+@login_required
+def admin_import_legacy_volunteers():
+    admin = db.session.get(Admin, session["admin_id"])
+
+    backfilled = 0
+    inserted = 0
+    skipped = []
+    needs_review = []
+
+    for full_name, phone, telegram_username, telegram_user_id, birth_date_str in LEGACY_VOLUNTEERS_2025:
+        name = normalize_name_part(full_name)
+        telegram = f"@{telegram_username}" if telegram_username else None
+        birth_date = datetime.strptime(birth_date_str, "%Y-%m-%d").date() if birth_date_str else None
+
+        if not birth_date:
+            needs_review.append(name)
+
+        existing = Volunteer.query.filter_by(telegram_user_id=telegram_user_id).first()
+        if existing:
+            if birth_date and not existing.birth_date:
+                existing.birth_date = birth_date
+                backfilled += 1
+            continue
+
+        if Volunteer.query.filter_by(phone=phone).first():
+            skipped.append(f"{name} (телефон {phone} уже занят другим волонтёром)")
+            continue
+
+        db.session.add(Volunteer(
+            full_name=name,
+            phone=phone,
+            telegram=telegram,
+            telegram_user_id=telegram_user_id,
+            birth_date=birth_date,
+        ))
+        inserted += 1
+
+    db.session.commit()
+
+    summary = f"дозаполнено: {backfilled}, создано новых: {inserted}, пропущено: {len(skipped)}"
+    log_activity(f"admin:{admin.username}", "import_legacy_volunteers", summary)
+
+    flash(f"Импорт старой базы завершён — {summary}.", "success")
+    if needs_review:
+        flash("Дату рождения не удалось разобрать, проверьте вручную: " + ", ".join(needs_review), "error")
+    if skipped:
+        flash("Пропущены из-за конфликта телефона: " + ", ".join(skipped), "error")
+
+    return redirect(url_for("admin_active_volunteers"))
 
 
 @app.route("/admin/volunteers/export")

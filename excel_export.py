@@ -31,7 +31,7 @@ def build_active_volunteers_workbook(volunteers):
     ws = wb.active
     ws.title = "Волонтёры"
 
-    headers = ["ФИО", "Телефон", "Telegram", "Пол", "Возраст", "Занятость", "Есть авто", "Марка авто", "Номер авто", "Дата регистрации"]
+    headers = ["ФИО", "Телефон", "Telegram", "Пол", "Возраст", "Дата рождения", "Занятость", "Есть авто", "Марка авто", "Номер авто", "Дата регистрации"]
     ws.append(headers)
     for cell in ws[1]:
         cell.font = Font(bold=True)
@@ -45,6 +45,7 @@ def build_active_volunteers_workbook(volunteers):
             _telegram_label(v.telegram),
             gender_label,
             v.age or "",
+            v.birth_date.strftime("%d.%m.%Y") if v.birth_date else "",
             _occupation_label(v.occupation),
             car_label,
             v.car_brand or "",

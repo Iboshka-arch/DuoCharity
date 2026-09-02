@@ -28,6 +28,11 @@
             </label>
 
             <label>
+                {{ t('adm_birth_date') }}
+                <input type="date" name="birth_date" value="{{ volunteer.birth_date.isoformat() if volunteer and volunteer.birth_date else '' }}">
+            </label>
+
+            <label>
                 {{ t('vf_gender') }}
                 <select name="gender">
                     <option value="">—</option>

@@ -87,6 +87,7 @@ class Volunteer(db.Model):
     telegram = db.Column(db.String(100), nullable=True)
     gender = db.Column(db.String(10), nullable=True)  # male / female
     age = db.Column(db.Integer, nullable=True)
+    birth_date = db.Column(db.Date, nullable=True)
     occupation = db.Column(db.String(200), nullable=True)  # учится / работает / др.
 
     telegram_user_id = db.Column(db.BigInteger, nullable=True, unique=True)
