@@ -140,6 +140,8 @@ class Event(db.Model):
     location_message_id = db.Column(db.BigInteger, nullable=True)
     admin_roster_chat_id = db.Column(db.BigInteger, nullable=True)
     admin_roster_message_id = db.Column(db.BigInteger, nullable=True)
+    last_publish_dm_sent = db.Column(db.Integer, nullable=True)
+    last_publish_dm_total = db.Column(db.Integer, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def formatted_date(self):

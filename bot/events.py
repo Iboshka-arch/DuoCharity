@@ -202,11 +202,14 @@ def handle_event_approve(call):
         return
 
     bot.answer_callback_query(call.id, "Публикую ✅")
-    publish_event(event)
+    group_published, dm_sent, dm_total = publish_event(event)
+
+    group_status = "группа: ✅" if group_published else "группа: ❌ не удалось"
+    status_line = f"\n\n✅ Опубликовано\n{group_status}\nличные сообщения: {dm_sent}/{dm_total}"
 
     try:
         bot.edit_message_text(
-            call.message.html_text + "\n\n✅ Опубликовано волонтёрам",
+            call.message.html_text + status_line,
             call.message.chat.id,
             call.message.message_id,
             reply_markup=None,
@@ -359,7 +362,9 @@ def create_admin_roster(event):
 
 
 def publish_event(event):
+    """Публикует мероприятие. Возвращает (опубликовано_в_группу, отправлено_в_личку, всего_волонтёров)."""
     group_text = _build_announcement_text(event)
+    group_published = False
 
     try:
         msg = bot.send_message(
@@ -369,12 +374,15 @@ def publish_event(event):
         event.announcement_message_id = msg.message_id
         db.session.commit()
         pin_announcement(event)
+        group_published = True
     except Exception as e:
         print(f"Не удалось опубликовать мероприятие в группе: {e}")
 
     create_admin_roster(event)
 
-    for volunteer in Volunteer.query.filter(Volunteer.telegram_chat_id.isnot(None)).all():
+    volunteers = Volunteer.query.filter(Volunteer.telegram_chat_id.isnot(None)).all()
+    dm_sent = 0
+    for volunteer in volunteers:
         lang = volunteer.language or "uz"
         try:
             bot.send_message(
@@ -383,8 +391,15 @@ def publish_event(event):
                 parse_mode="HTML",
                 reply_markup=_event_register_keyboard(event.id, lang),
             )
+            dm_sent += 1
         except Exception as e:
             print(f"Не удалось разослать мероприятие волонтёру {volunteer.id}: {e}")
+
+    event.last_publish_dm_sent = dm_sent
+    event.last_publish_dm_total = len(volunteers)
+    db.session.commit()
+
+    return group_published, dm_sent, len(volunteers)
 
 
 def close_event_and_notify(event):
@@ -436,6 +451,7 @@ def close_event_and_notify(event):
                 r.telegram_chat_id,
                 bt("event_feedback_request", lang, title=html.escape(event.title)),
                 reply_markup=markup,
+                parse_mode="HTML",
             )
         except Exception as e:
             print(f"Не удалось запросить отзыв: {e}")
@@ -585,6 +601,6 @@ def kick_registration(registration):
     if volunteer and volunteer.telegram_chat_id and event:
         try:
             lang = volunteer.language or "uz"
-            bot.send_message(volunteer.telegram_chat_id, bt("event_kicked", lang, title=html.escape(event.title)))
+            bot.send_message(volunteer.telegram_chat_id, bt("event_kicked", lang, title=html.escape(event.title)), parse_mode="HTML")
         except Exception as e:
             print(f"Не удалось уведомить волонтёра об исключении: {e}")

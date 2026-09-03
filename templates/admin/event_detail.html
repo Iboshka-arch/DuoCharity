@@ -15,6 +15,12 @@
                     <span class="status-badge status-badge-new">{{ t('adm_event_open') }}</span>
                 {% endif %}
             </p>
+            {% if event.last_publish_dm_total is not none %}
+            <p class="page-subtitle">
+                📨 Разослано в личку: {{ event.last_publish_dm_sent }}/{{ event.last_publish_dm_total }} волонтёрам
+                {% if event.announcement_chat_id %} · группа: ✅{% endif %}
+            </p>
+            {% endif %}
         </div>
         <div class="table-actions">
             {% if event.is_closed %}
