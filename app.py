@@ -12,11 +12,19 @@ from translations import get_translator, LANGUAGES, DEFAULT_LANGUAGE
 from activity_log import log_activity
 
 import telebot
-from bot.handlers import bot as telegram_bot
+from bot.handlers import bot as telegram_bot, process_due_deletions
 from bot.notifications import notify_new_application
 from bot.actions import accept_application
 from bot.spam_guard import check_and_handle_spam
-from bot.events import request_event_approval, close_event_and_notify, reopen_event
+from bot.events import (
+    request_event_approval,
+    close_event_and_notify,
+    reopen_event,
+    kick_registration,
+    pin_announcement,
+    create_admin_roster,
+    request_event_location,
+)
 
 from excel_export import build_active_volunteers_workbook, build_applications_workbook
 from flask import send_file
@@ -206,6 +214,12 @@ def bot_webhook():
         telegram_bot.process_new_updates([update])
     except Exception as e:
         print(f"Ошибка обработки апдейта бота: {e}")
+
+    try:
+        process_due_deletions()
+    except Exception as e:
+        print(f"Ошибка отложенного удаления сообщений: {e}")
+
     return "", 200
 
 @app.route("/set-language/<lang_code>")
@@ -818,7 +832,11 @@ def admin_event_new():
 @app.route("/admin/events/<int:event_id>")
 @login_required
 def admin_event_detail(event_id):
-    event = Event.query.get_or_404(event_id)
+    event = Event.query.get(event_id)
+    if not event:
+        flash("Это мероприятие отменено или удалено.", "error")
+        return redirect(url_for("admin_events"))
+
     registrations = EventRegistration.query.filter_by(event_id=event.id).order_by(EventRegistration.created_at.asc()).all()
 
     volunteer_ids = [r.volunteer_id for r in registrations]
@@ -854,6 +872,54 @@ def admin_event_attendance(event_id):
     db.session.commit()
     flash("Явка сохранена.", "success")
     return redirect(url_for("admin_event_detail", event_id=event.id))
+
+
+@app.route("/admin/events/<int:event_id>/registrations/<int:reg_id>/kick", methods=["POST"])
+@login_required
+def admin_event_kick(event_id, reg_id):
+    registration = EventRegistration.query.get_or_404(reg_id)
+    if registration.event_id != event_id:
+        flash("Ошибка: запись не относится к этому мероприятию.", "error")
+        return redirect(url_for("admin_event_detail", event_id=event_id))
+
+    admin = db.session.get(Admin, session["admin_id"])
+    volunteer = Volunteer.query.get(registration.volunteer_id)
+    kick_registration(registration)
+    log_activity(f"admin:{admin.username}", "event_kick", volunteer.full_name if volunteer else str(reg_id))
+
+    flash("Волонтёр исключён из мероприятия.", "success")
+    return redirect(url_for("admin_event_detail", event_id=event_id))
+
+
+@app.route("/admin/events/<int:event_id>/pin-announcement", methods=["POST"])
+@login_required
+def admin_event_pin_announcement(event_id):
+    event = Event.query.get_or_404(event_id)
+    if pin_announcement(event):
+        flash("Объявление закреплено в группе.", "success")
+    else:
+        flash("Не удалось закрепить — мероприятие ещё не опубликовано или нет прав у бота.", "error")
+    return redirect(url_for("admin_event_detail", event_id=event_id))
+
+
+@app.route("/admin/events/<int:event_id>/create-admin-roster", methods=["POST"])
+@login_required
+def admin_event_create_admin_roster(event_id):
+    event = Event.query.get_or_404(event_id)
+    if create_admin_roster(event):
+        flash("Список закреплён в админ-группе.", "success")
+    else:
+        flash("Не удалось отправить список — проверь ADMIN_GROUP_CHAT_ID.", "error")
+    return redirect(url_for("admin_event_detail", event_id=event_id))
+
+
+@app.route("/admin/events/<int:event_id>/request-location", methods=["POST"])
+@login_required
+def admin_event_request_location(event_id):
+    event = Event.query.get_or_404(event_id)
+    request_event_location(event)
+    flash("Запрос на локацию отправлен вам в личку бота.", "success")
+    return redirect(url_for("admin_event_detail", event_id=event_id))
 
 
 @app.route("/admin/events/<int:event_id>/close", methods=["POST"])

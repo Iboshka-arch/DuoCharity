@@ -9,12 +9,13 @@ from telebot import types
 from bot.config import BOT_TOKEN, VOLUNTEER_GROUP_CHAT_ID, ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID
 from bot.keyboards import phone_request_keyboard, car_question_keyboard, car_confirm_keyboard, language_keyboard, language_change_keyboard
 from bot.translations import bt
-from models import db, Volunteer, VolunteerApplication, BotStartCooldown, ConversationDraft
+from models import db, Volunteer, VolunteerApplication, BotStartCooldown, ConversationDraft, ScheduledDeletion
 
 bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
 
 VOLUNTEER_FORM_URL = "https://duocharity.uz/volunteer-form"
 START_COOLDOWN_SECONDS = 5
+WELCOME_MESSAGE_TTL_SECONDS = 5 * 60  # через сколько бот сам удалит длинное приветствие в группе
 
 
 def normalize_phone(raw):
@@ -40,6 +41,29 @@ def safe_delete_message(chat_id, message_id):
             print(f"Не удалось убрать кнопки у сообщения {message_id}: {e2}")
 
 
+def schedule_deletion(chat_id, message_id, delay_seconds):
+    """Отложенное удаление сообщения. На Vercel нет фонового процесса, который может
+    просто подождать и удалить — поэтому пишем в базу 'когда удалить', а реально
+    удаляем при следующем обращении к боту (см. process_due_deletions)."""
+    db.session.add(
+        ScheduledDeletion(
+            chat_id=chat_id,
+            message_id=message_id,
+            delete_at=datetime.utcnow() + timedelta(seconds=delay_seconds),
+        )
+    )
+    db.session.commit()
+
+
+def process_due_deletions():
+    due = ScheduledDeletion.query.filter(ScheduledDeletion.delete_at <= datetime.utcnow()).all()
+    for item in due:
+        safe_delete_message(item.chat_id, item.message_id)
+        db.session.delete(item)
+    if due:
+        db.session.commit()
+
+
 def is_in_volunteer_group(user_id):
     if not VOLUNTEER_GROUP_CHAT_ID or not user_id:
         return False
@@ -55,8 +79,10 @@ def announce_existing_member(volunteer):
         return
     mention = f'<a href="tg://user?id={volunteer.telegram_user_id}">{html.escape(volunteer.full_name)}</a>'
     try:
-        bot.send_message(int(VOLUNTEER_GROUP_CHAT_ID), bt("welcome_message", "uz", mention=mention), parse_mode="HTML")
-        bot.send_message(int(VOLUNTEER_GROUP_CHAT_ID), bt("welcome_message", "ru", mention=mention), parse_mode="HTML")
+        msg_uz = bot.send_message(int(VOLUNTEER_GROUP_CHAT_ID), bt("welcome_message", "uz", mention=mention), parse_mode="HTML")
+        msg_ru = bot.send_message(int(VOLUNTEER_GROUP_CHAT_ID), bt("welcome_message", "ru", mention=mention), parse_mode="HTML")
+        schedule_deletion(msg_uz.chat.id, msg_uz.message_id, WELCOME_MESSAGE_TTL_SECONDS)
+        schedule_deletion(msg_ru.chat.id, msg_ru.message_id, WELCOME_MESSAGE_TTL_SECONDS)
     except Exception as e:
         print(f"Не удалось объявить об успешной регистрации в группе: {e}")
 
@@ -759,8 +785,10 @@ def handle_join_request(request):
             elif volunteer.has_car is False:
                 car_line = "Без авто"
 
-            bot.send_message(request.chat.id, text_uz, parse_mode="HTML")
-            bot.send_message(request.chat.id, text_ru, parse_mode="HTML")
+            msg_uz = bot.send_message(request.chat.id, text_uz, parse_mode="HTML")
+            msg_ru = bot.send_message(request.chat.id, text_ru, parse_mode="HTML")
+            schedule_deletion(msg_uz.chat.id, msg_uz.message_id, WELCOME_MESSAGE_TTL_SECONDS)
+            schedule_deletion(msg_ru.chat.id, msg_ru.message_id, WELCOME_MESSAGE_TTL_SECONDS)
 
             admin_text = (
                 f"✅ <b>{html.escape(volunteer.full_name)}</b> вступил(а) в группу волонтёров.\n"

@@ -33,6 +33,7 @@ BOT_TEXTS = {
 
         "event_registered": "Siz yozildingiz ✅",
         "event_registration_confirmed": "🎉 Siz «{title}» tadbiriga yozildingiz!",
+        "event_kicked": "Siz «{title}» tadbiridan chiqarildingiz.",
         "event_unregistered": "Yozuv bekor qilindi ❌",
         "event_full": "Joy yo'q 😔",
         "event_closed_alert": "Ro'yxat yopiq",
@@ -78,6 +79,7 @@ BOT_TEXTS = {
 
         "event_registered": "Вы записаны ✅",
         "event_registration_confirmed": "🎉 Вы записаны на «{title}»!",
+        "event_kicked": "Вас исключили из мероприятия «{title}».",
         "event_unregistered": "Запись отменена ❌",
         "event_full": "Мест больше нет 😔",
         "event_closed_alert": "Регистрация закрыта",

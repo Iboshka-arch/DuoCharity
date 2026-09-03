@@ -36,6 +36,23 @@
     <p>{{ event.description }}</p>
     {% endif %}
 
+    {% if event.announcement_chat_id %}
+    <div class="table-actions" style="margin-bottom: 20px;">
+        <form method="post" action="{{ url_for('admin_event_pin_announcement', event_id=event.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-outline">📌 Закрепить объявление в группе</button>
+        </form>
+        <form method="post" action="{{ url_for('admin_event_create_admin_roster', event_id=event.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-outline">📌 Список в админ-группу</button>
+        </form>
+        <form method="post" action="{{ url_for('admin_event_request_location', event_id=event.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-outline">📍 Прикрепить локацию</button>
+        </form>
+    </div>
+    {% endif %}
+
     <h3>{{ t('adm_col_registrations') }} ({{ rows|length }}{% if event.capacity %} / {{ event.capacity }}{% endif %})</h3>
 
     {% if rows %}
@@ -49,6 +66,7 @@
                         <th>{{ t('adm_col_phone') }}</th>
                         <th>{{ t('adm_col_car') }}</th>
                         <th>{{ t('adm_attendance_status') }}</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,6 +88,14 @@
                                 <option value="late" {{ 'selected' if r.status == 'late' }}>{{ t('adm_status_late') }}</option>
                                 <option value="no_show" {{ 'selected' if r.status == 'no_show' }}>{{ t('adm_status_no_show') }}</option>
                             </select>
+                        </td>
+                        <td class="table-actions" data-label="">
+                            <button type="submit"
+                                    formaction="{{ url_for('admin_event_kick', event_id=event.id, reg_id=r.id) }}"
+                                    class="btn-small btn-small-danger"
+                                    onclick="return confirm('{{ t('adm_confirm_kick') }}');">
+                                {{ t('adm_kick') }}
+                            </button>
                         </td>
                     </tr>
                     {% endfor %}

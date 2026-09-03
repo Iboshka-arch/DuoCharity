@@ -4,7 +4,7 @@ import json
 from telebot import types
 
 from bot.handlers import bot
-from bot.config import VOLUNTEER_GROUP_CHAT_ID, OWNER_CHAT_ID
+from bot.config import VOLUNTEER_GROUP_CHAT_ID, OWNER_CHAT_ID, ADMIN_GROUP_CHAT_ID
 from bot.translations import bt
 from models import db, Event, EventRegistration, EventFeedback, VolunteerPenalty, Volunteer, ConversationDraft
 
@@ -50,9 +50,10 @@ def _collect_registrants(event):
     return names, drivers
 
 
-def _build_text_for_lang(event, names, drivers, lang):
+def _build_event_info(event, names_count, lang):
+    """Только описание мероприятия (без списка записавшихся) — на одном языке."""
     labels = _LABELS[lang]
-    count_suffix = f"{len(names)}/{event.capacity}" if event.capacity else f"{len(names)}"
+    count_suffix = f"{names_count}/{event.capacity}" if event.capacity else f"{names_count}"
 
     parts = [f"📅 <b>{html.escape(event.title)}</b>"]
     if event.date_text:
@@ -64,13 +65,6 @@ def _build_text_for_lang(event, names, drivers, lang):
         parts.append(html.escape(event.description))
     parts.append("")
     parts.append(f"{labels['seats']}: {count_suffix}")
-    parts.append("")
-    parts.append(labels["registered_header"])
-    parts.append("\n".join(f"{i + 1}. {n}" for i, n in enumerate(names)) if names else labels["none"])
-    if drivers:
-        parts.append("")
-        parts.append(labels["drivers_header"])
-        parts.append("\n".join(f"- {n}" for n in drivers))
     if event.is_closed:
         parts.append("")
         parts.append(labels["closed"])
@@ -78,18 +72,43 @@ def _build_text_for_lang(event, names, drivers, lang):
     return "\n".join(parts)
 
 
+def _build_roster_text(names, drivers, title=None):
+    """Список записавшихся — общий, без разделения по языку (имена не переводятся)."""
+    parts = []
+    if title:
+        parts.append(f"📌 <b>{html.escape(title)}</b>")
+        parts.append("")
+    parts.append("📝 Ro'yxatdagilar / Записавшиеся:")
+    parts.append("\n".join(f"{i + 1}. {n}" for i, n in enumerate(names)) if names else "—")
+    if drivers:
+        parts.append("")
+        parts.append("🚗 Haydovchilar / Водители:")
+        parts.append("\n".join(f"- {n}" for n in drivers))
+    return "\n".join(parts)
+
+
 def _build_announcement_text(event):
-    """Двуязычный текст для общего объявления в группе — не трогаем без отдельного решения."""
+    """Двуязычное описание мероприятия + ОДИН общий список записавшихся снизу."""
     names, drivers = _collect_registrants(event)
-    uz_text = _build_text_for_lang(event, names, drivers, "uz")
-    ru_text = _build_text_for_lang(event, names, drivers, "ru")
-    return f"{uz_text}\n\n〰️〰️〰️\n\n{ru_text}"
+    uz_info = _build_event_info(event, len(names), "uz")
+    ru_info = _build_event_info(event, len(names), "ru")
+    roster = _build_roster_text(names, drivers)
+    return f"{uz_info}\n\n〰️〰️〰️\n\n{ru_info}\n\n〰️〰️〰️\n\n{roster}"
 
 
 def _build_announcement_text_lang(event, lang):
     """Одноязычный текст — для личных сообщений, каждому на его языке."""
+    lang = lang if lang in _LABELS else "uz"
+    labels = _LABELS[lang]
     names, drivers = _collect_registrants(event)
-    return _build_text_for_lang(event, names, drivers, lang if lang in _LABELS else "uz")
+
+    parts = [_build_event_info(event, len(names), lang), "", labels["registered_header"]]
+    parts.append("\n".join(f"{i + 1}. {n}" for i, n in enumerate(names)) if names else labels["none"])
+    if drivers:
+        parts.append("")
+        parts.append(labels["drivers_header"])
+        parts.append("\n".join(f"- {n}" for n in drivers))
+    return "\n".join(parts)
 
 
 def _build_registration_confirmation(event, lang):
@@ -129,10 +148,22 @@ def _refresh_announcement(event):
     _refresh_message(event.announcement_chat_id, event.announcement_message_id, event)
 
 
+def _refresh_admin_roster(event):
+    if not event.admin_roster_chat_id or not event.admin_roster_message_id:
+        return
+    names, drivers = _collect_registrants(event)
+    text = _build_roster_text(names, drivers, title=event.title)
+    try:
+        bot.edit_message_text(text, event.admin_roster_chat_id, event.admin_roster_message_id, parse_mode="HTML")
+    except Exception as e:
+        print(f"Не удалось обновить список в админ-группе: {e}")
+
+
 def _approval_keyboard(event_id):
     markup = types.InlineKeyboardMarkup()
+    markup.add(types.InlineKeyboardButton("✅ Всё верно", callback_data=f"event_approve_{event_id}"))
     markup.add(
-        types.InlineKeyboardButton("✅ Всё верно", callback_data=f"event_approve_{event_id}"),
+        types.InlineKeyboardButton("📍 Локация", callback_data=f"event_location_{event_id}"),
         types.InlineKeyboardButton("✏️ Редактировать", callback_data=f"event_edit_{event_id}"),
     )
     return markup
@@ -214,6 +245,119 @@ def handle_event_edit_request(call):
         print(f"Не удалось обновить сообщение проверки: {e}")
 
 
+def request_event_location(event):
+    """Попросить владельца прислать геопозицию для мероприятия. Можно вызывать
+    и из превью на проверку, и отдельно (кнопкой с сайта) для уже опубликованного."""
+    if not OWNER_CHAT_ID:
+        print("OWNER_CHAT_ID не задан — не могу запросить локацию.")
+        return
+
+    data = json.dumps({"event_id": event.id})
+    draft = ConversationDraft.query.get(int(OWNER_CHAT_ID))
+    if draft:
+        draft.kind = "event_location"
+        draft.state = "awaiting_location"
+        draft.data = data
+    else:
+        db.session.add(
+            ConversationDraft(telegram_chat_id=int(OWNER_CHAT_ID), kind="event_location", state="awaiting_location", data=data)
+        )
+    db.session.commit()
+
+    try:
+        bot.send_message(
+            int(OWNER_CHAT_ID),
+            f"📍 Отправьте локацию мероприятия «{html.escape(event.title)}» (скрепка → Геопозиция).",
+            parse_mode="HTML",
+        )
+    except Exception as e:
+        print(f"Не удалось запросить локацию у владельца: {e}")
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("event_location_"))
+def handle_event_location_request(call):
+    if str(call.message.chat.id) != str(OWNER_CHAT_ID):
+        bot.answer_callback_query(call.id, "Недостаточно прав.")
+        return
+
+    event_id = int(call.data.rsplit("_", 1)[1])
+    event = Event.query.get(event_id)
+
+    if not event:
+        bot.answer_callback_query(call.id, "Мероприятие не найдено (возможно, уже удалено).", show_alert=True)
+        return
+
+    bot.answer_callback_query(call.id)
+    request_event_location(event)
+
+
+@bot.message_handler(content_types=["location"])
+def handle_location_message(message):
+    if message.chat.type != "private":
+        return
+
+    draft = ConversationDraft.query.get(message.chat.id)
+    if not draft or draft.kind != "event_location" or draft.state != "awaiting_location":
+        return
+
+    data = json.loads(draft.data or "{}")
+    event = Event.query.get(data.get("event_id"))
+    db.session.delete(draft)
+    db.session.commit()
+
+    if not event:
+        bot.send_message(message.chat.id, "Мероприятие не найдено, локация не сохранена.")
+        return
+
+    event.location_chat_id = message.chat.id
+    event.location_message_id = message.message_id
+    db.session.commit()
+
+    bot.send_message(
+        message.chat.id,
+        f"📍 Локация сохранена для «{html.escape(event.title)}» — будет отправляться волонтёрам после регистрации.",
+        parse_mode="HTML",
+    )
+
+
+def pin_announcement(event):
+    """Закрепить уже существующее объявление в группе волонтёров.
+    Можно вызывать и сразу после публикации, и отдельно (кнопкой с сайта) позже."""
+    if not event.announcement_chat_id or not event.announcement_message_id:
+        return False
+    try:
+        bot.pin_chat_message(event.announcement_chat_id, event.announcement_message_id, disable_notification=True)
+        return True
+    except Exception as e:
+        print(f"Не удалось закрепить объявление в группе: {e}")
+        return False
+
+
+def create_admin_roster(event):
+    """Отправить и закрепить в админ-группе отдельное сообщение со списком записавшихся.
+    Можно вызывать и сразу после публикации, и отдельно (кнопкой с сайта) для уже опубликованного."""
+    if not ADMIN_GROUP_CHAT_ID:
+        return False
+    try:
+        names, drivers = _collect_registrants(event)
+        roster_msg = bot.send_message(
+            int(ADMIN_GROUP_CHAT_ID),
+            _build_roster_text(names, drivers, title=event.title),
+            parse_mode="HTML",
+        )
+        event.admin_roster_chat_id = roster_msg.chat.id
+        event.admin_roster_message_id = roster_msg.message_id
+        db.session.commit()
+        try:
+            bot.pin_chat_message(roster_msg.chat.id, roster_msg.message_id, disable_notification=True)
+        except Exception as e:
+            print(f"Не удалось закрепить список в админ-группе: {e}")
+        return True
+    except Exception as e:
+        print(f"Не удалось отправить список в админ-группу: {e}")
+        return False
+
+
 def publish_event(event):
     group_text = _build_announcement_text(event)
 
@@ -224,8 +368,11 @@ def publish_event(event):
         event.announcement_chat_id = msg.chat.id
         event.announcement_message_id = msg.message_id
         db.session.commit()
+        pin_announcement(event)
     except Exception as e:
         print(f"Не удалось опубликовать мероприятие в группе: {e}")
+
+    create_admin_roster(event)
 
     for volunteer in Volunteer.query.filter(Volunteer.telegram_chat_id.isnot(None)).all():
         lang = volunteer.language or "uz"
@@ -351,7 +498,24 @@ def handle_event_register(call):
             except Exception as e:
                 print(f"Не удалось отправить подтверждение записи: {e}")
 
+            if event.location_chat_id and event.location_message_id:
+                try:
+                    bot.forward_message(volunteer.telegram_chat_id, event.location_chat_id, event.location_message_id)
+                except Exception as e:
+                    print(f"Не удалось переслать локацию волонтёру: {e}")
+
+        if ADMIN_GROUP_CHAT_ID:
+            try:
+                bot.send_message(
+                    int(ADMIN_GROUP_CHAT_ID),
+                    f"✅ {html.escape(volunteer.full_name)} записался(-ась) на «{html.escape(event.title)}»",
+                    parse_mode="HTML",
+                )
+            except Exception as e:
+                print(f"Не удалось уведомить админ-группу о записи: {e}")
+
     _refresh_announcement(event)
+    _refresh_admin_roster(event)
 
     if call.message.chat.id != event.announcement_chat_id:
         _refresh_message(call.message.chat.id, call.message.message_id, event, lang=lang)
@@ -404,3 +568,23 @@ def process_feedback_comment(message, draft):
     db.session.commit()
 
     bot.send_message(message.chat.id, bt("event_feedback_thanks", lang))
+
+
+def kick_registration(registration):
+    """Убрать волонтёра из мероприятия (действие админа с сайта)."""
+    event = Event.query.get(registration.event_id)
+    volunteer = Volunteer.query.get(registration.volunteer_id)
+
+    db.session.delete(registration)
+    db.session.commit()
+
+    if event:
+        _refresh_announcement(event)
+        _refresh_admin_roster(event)
+
+    if volunteer and volunteer.telegram_chat_id and event:
+        try:
+            lang = volunteer.language or "uz"
+            bot.send_message(volunteer.telegram_chat_id, bt("event_kicked", lang, title=html.escape(event.title)))
+        except Exception as e:
+            print(f"Не удалось уведомить волонтёра об исключении: {e}")

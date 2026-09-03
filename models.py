@@ -136,6 +136,10 @@ class Event(db.Model):
     is_closed = db.Column(db.Boolean, default=False)
     announcement_chat_id = db.Column(db.BigInteger, nullable=True)
     announcement_message_id = db.Column(db.BigInteger, nullable=True)
+    location_chat_id = db.Column(db.BigInteger, nullable=True)
+    location_message_id = db.Column(db.BigInteger, nullable=True)
+    admin_roster_chat_id = db.Column(db.BigInteger, nullable=True)
+    admin_roster_message_id = db.Column(db.BigInteger, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def formatted_date(self):
@@ -167,6 +171,12 @@ class ConversationDraft(db.Model):
     kind = db.Column(db.String(30))
     state = db.Column(db.String(30))
     data = db.Column(db.Text)
+
+class ScheduledDeletion(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    chat_id = db.Column(db.BigInteger, nullable=False)
+    message_id = db.Column(db.BigInteger, nullable=False)
+    delete_at = db.Column(db.DateTime, nullable=False)
 
 class ActivityLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
