@@ -92,6 +92,16 @@ def _build_announcement_text_lang(event, lang):
     return _build_text_for_lang(event, names, drivers, lang if lang in _LABELS else "uz")
 
 
+def _build_registration_confirmation(event, lang):
+    labels = _LABELS[lang if lang in _LABELS else "uz"]
+    parts = [bt("event_registration_confirmed", lang, title=html.escape(event.title))]
+    if event.date_text:
+        parts.append(f"{labels['date']} {html.escape(event.date_text)}")
+    if event.location:
+        parts.append(f"{labels['location']} {html.escape(event.location)}")
+    return "\n".join(parts)
+
+
 def _event_register_keyboard(event_id, lang=None):
     if lang == "uz":
         label = "📝 Yozilish"
@@ -245,6 +255,16 @@ def handle_event_register(call):
         )
         db.session.commit()
         bot.answer_callback_query(call.id, bt("event_registered", lang), show_alert=True)
+
+        if volunteer.telegram_chat_id:
+            try:
+                bot.send_message(
+                    volunteer.telegram_chat_id,
+                    _build_registration_confirmation(event, lang),
+                    parse_mode="HTML",
+                )
+            except Exception as e:
+                print(f"Не удалось отправить подтверждение записи: {e}")
 
     _refresh_announcement(event)
 

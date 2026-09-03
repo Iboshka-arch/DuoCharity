@@ -32,6 +32,7 @@ BOT_TEXTS = {
         "support_sent": "Rahmat! Xabaringiz yuborildi, tez orada javob beramiz. ✅",
 
         "event_registered": "Siz yozildingiz ✅",
+        "event_registration_confirmed": "🎉 Siz «{title}» tadbiriga yozildingiz!",
         "event_unregistered": "Yozuv bekor qilindi ❌",
         "event_full": "Joy yo'q 😔",
         "event_closed_alert": "Ro'yxat yopiq",
@@ -76,6 +77,7 @@ BOT_TEXTS = {
         "support_sent": "Спасибо! Ваше сообщение отправлено, скоро ответим. ✅",
 
         "event_registered": "Вы записаны ✅",
+        "event_registration_confirmed": "🎉 Вы записаны на «{title}»!",
         "event_unregistered": "Запись отменена ❌",
         "event_full": "Мест больше нет 😔",
         "event_closed_alert": "Регистрация закрыта",
