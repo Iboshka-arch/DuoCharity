@@ -4,7 +4,7 @@ import json
 from telebot import types
 
 from bot.handlers import bot
-from bot.config import VOLUNTEER_GROUP_CHAT_ID
+from bot.config import VOLUNTEER_GROUP_CHAT_ID, OWNER_CHAT_ID
 from bot.translations import bt
 from models import db, Event, EventRegistration, EventFeedback, VolunteerPenalty, Volunteer, ConversationDraft
 
@@ -127,6 +127,91 @@ def _refresh_message(chat_id, message_id, event, lang=None):
 
 def _refresh_announcement(event):
     _refresh_message(event.announcement_chat_id, event.announcement_message_id, event)
+
+
+def _approval_keyboard(event_id):
+    markup = types.InlineKeyboardMarkup()
+    markup.add(
+        types.InlineKeyboardButton("✅ Всё верно", callback_data=f"event_approve_{event_id}"),
+        types.InlineKeyboardButton("✏️ Редактировать", callback_data=f"event_edit_{event_id}"),
+    )
+    return markup
+
+
+def request_event_approval(event):
+    if not OWNER_CHAT_ID:
+        print("OWNER_CHAT_ID не задан — публикую мероприятие сразу, без проверки.")
+        publish_event(event)
+        return
+
+    preview_text = "Так будет выглядеть объявление в группе волонтёров:\n\n" + _build_announcement_text(event)
+
+    try:
+        bot.send_message(
+            int(OWNER_CHAT_ID),
+            preview_text,
+            parse_mode="HTML",
+            reply_markup=_approval_keyboard(event.id),
+        )
+    except Exception as e:
+        print(f"Не удалось отправить мероприятие на проверку владельцу: {e}")
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("event_approve_"))
+def handle_event_approve(call):
+    if str(call.message.chat.id) != str(OWNER_CHAT_ID):
+        bot.answer_callback_query(call.id, "Недостаточно прав.")
+        return
+
+    event_id = int(call.data.rsplit("_", 1)[1])
+    event = Event.query.get(event_id)
+
+    if not event:
+        bot.answer_callback_query(call.id, "Мероприятие не найдено (возможно, уже удалено).", show_alert=True)
+        return
+
+    bot.answer_callback_query(call.id, "Публикую ✅")
+    publish_event(event)
+
+    try:
+        bot.edit_message_text(
+            call.message.html_text + "\n\n✅ Опубликовано волонтёрам",
+            call.message.chat.id,
+            call.message.message_id,
+            reply_markup=None,
+            parse_mode="HTML",
+        )
+    except Exception as e:
+        print(f"Не удалось обновить сообщение проверки: {e}")
+
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith("event_edit_"))
+def handle_event_edit_request(call):
+    if str(call.message.chat.id) != str(OWNER_CHAT_ID):
+        bot.answer_callback_query(call.id, "Недостаточно прав.")
+        return
+
+    event_id = int(call.data.rsplit("_", 1)[1])
+    event = Event.query.get(event_id)
+
+    bot.answer_callback_query(call.id, "Отменено")
+
+    if event:
+        EventRegistration.query.filter_by(event_id=event.id).delete()
+        EventFeedback.query.filter_by(event_id=event.id).delete()
+        db.session.delete(event)
+        db.session.commit()
+
+    try:
+        bot.edit_message_text(
+            call.message.html_text + "\n\n✏️ Отменено — отредактируйте и создайте заново на сайте",
+            call.message.chat.id,
+            call.message.message_id,
+            reply_markup=None,
+            parse_mode="HTML",
+        )
+    except Exception as e:
+        print(f"Не удалось обновить сообщение проверки: {e}")
 
 
 def publish_event(event):

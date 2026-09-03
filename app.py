@@ -16,7 +16,7 @@ from bot.handlers import bot as telegram_bot
 from bot.notifications import notify_new_application
 from bot.actions import accept_application
 from bot.spam_guard import check_and_handle_spam
-from bot.events import publish_event, close_event_and_notify, reopen_event
+from bot.events import request_event_approval, close_event_and_notify, reopen_event
 
 from excel_export import build_active_volunteers_workbook, build_applications_workbook
 from flask import send_file
@@ -807,9 +807,9 @@ def admin_event_new():
         db.session.add(event)
         db.session.commit()
 
-        publish_event(event)
+        request_event_approval(event)
 
-        flash("Мероприятие создано и разослано волонтёрам.", "success")
+        flash("Мероприятие создано, отправлено вам в личку бота на проверку.", "success")
         return redirect(url_for("admin_event_detail", event_id=event.id))
 
     return render_template("admin/event_form.html", event=None)
