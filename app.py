@@ -24,6 +24,8 @@ from bot.events import (
     pin_announcement,
     create_admin_roster,
     request_event_location,
+    refresh_event_displays,
+    announce_more_spots,
 )
 
 from excel_export import build_active_volunteers_workbook, build_applications_workbook
@@ -888,6 +890,30 @@ def admin_event_kick(event_id, reg_id):
     log_activity(f"admin:{admin.username}", "event_kick", volunteer.full_name if volunteer else str(reg_id))
 
     flash("Волонтёр исключён из мероприятия.", "success")
+    return redirect(url_for("admin_event_detail", event_id=event_id))
+
+
+@app.route("/admin/events/<int:event_id>/capacity", methods=["POST"])
+@login_required
+def admin_event_update_capacity(event_id):
+    event = Event.query.get_or_404(event_id)
+
+    capacity_raw = request.form.get("capacity", "").strip()
+    new_capacity = int(capacity_raw) if capacity_raw.isdigit() and int(capacity_raw) > 0 else None
+
+    old_capacity = event.capacity
+    event.capacity = new_capacity
+    db.session.commit()
+
+    refresh_event_displays(event)
+
+    opened_spots = new_capacity is not None and (old_capacity is None or new_capacity > old_capacity)
+    if opened_spots:
+        announce_more_spots(event)
+        flash("Мест стало больше — бот сообщил об этом в группе.", "success")
+    else:
+        flash("Количество мест обновлено.", "success")
+
     return redirect(url_for("admin_event_detail", event_id=event_id))
 
 

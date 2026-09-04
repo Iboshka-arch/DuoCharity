@@ -159,6 +159,37 @@ def _refresh_admin_roster(event):
         print(f"Не удалось обновить список в админ-группе: {e}")
 
 
+def refresh_event_displays(event):
+    """Обновить и объявление в группе, и список в админ-группе — вызывать после
+    любого изменения, которое влияет на счётчик мест/список (кик, смена вместимости и т.д.)."""
+    _refresh_announcement(event)
+    _refresh_admin_roster(event)
+
+
+def announce_more_spots(event):
+    """Ответом на объявление в группе сообщить, что появились свободные места
+    (например, админ увеличил вместимость мероприятия)."""
+    if not event.announcement_chat_id or not event.announcement_message_id:
+        return
+
+    names, _ = _collect_registrants(event)
+    available = (event.capacity - len(names)) if event.capacity else None
+
+    text = "🎉 Появились свободные места / Bo'sh joylar paydo bo'ldi!"
+    if available is not None and available > 0:
+        text += f"\n👥 Свободно: {available} / Bo'sh: {available}"
+    text += "\n📝 Успейте записаться по кнопке выше / Yuqoridagi tugma orqali yoziling."
+
+    try:
+        bot.send_message(
+            event.announcement_chat_id,
+            text,
+            reply_to_message_id=event.announcement_message_id,
+        )
+    except Exception as e:
+        print(f"Не удалось анонсировать свободные места: {e}")
+
+
 def _approval_keyboard(event_id):
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("✅ Всё верно", callback_data=f"event_approve_{event_id}"))

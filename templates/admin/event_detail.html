@@ -56,6 +56,11 @@
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-outline">📍 Прикрепить локацию</button>
         </form>
+        <form method="post" action="{{ url_for('admin_event_update_capacity', event_id=event.id) }}" style="display:flex; gap:8px; align-items:center;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="number" name="capacity" min="1" value="{{ event.capacity or '' }}" placeholder="{{ t('adm_event_capacity_hint') }}" style="width:110px;">
+            <button type="submit" class="btn btn-outline">👥 Обновить места</button>
+        </form>
     </div>
     {% endif %}
 
