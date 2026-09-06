@@ -64,6 +64,46 @@
     </div>
     {% endif %}
 
+    <details style="margin-bottom: 20px;">
+        <summary class="btn btn-outline" style="display:inline-block; cursor:pointer;">✏️ Редактировать детали (название/дата/место/описание)</summary>
+        <form method="post" action="{{ url_for('admin_event_edit', event_id=event.id) }}" class="admin-form" style="margin-top: 14px;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>
+                {{ t('adm_event_title') }}
+                <input type="text" name="title" value="{{ event.title }}" required>
+            </label>
+            <label>
+                {{ t('adm_event_date') }}
+                <input type="text" name="date_text" value="{{ event.date_text or '' }}" placeholder="28.07.2026, 10:00">
+            </label>
+            <label>
+                {{ t('adm_event_location') }}
+                <input type="text" name="location" value="{{ event.location or '' }}">
+            </label>
+            <label>
+                {{ t('adm_content') }}
+                <textarea name="description" rows="4">{{ event.description or '' }}</textarea>
+            </label>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+            </div>
+        </form>
+    </details>
+
+    <details style="margin-bottom: 20px;">
+        <summary class="btn btn-outline" style="display:inline-block; cursor:pointer;">📣 Отправить своё сообщение (в группу + всем записавшимся в личку)</summary>
+        <form method="post" action="{{ url_for('admin_event_broadcast', event_id=event.id) }}" class="admin-form" style="margin-top: 14px;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>
+                Текст сообщения
+                <textarea name="message" rows="4" placeholder="Например: напоминаем, встречаемся завтра в 10:00 у входа"></textarea>
+            </label>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </div>
+        </form>
+    </details>
+
     <h3>{{ t('adm_col_registrations') }} ({{ rows|length }}{% if event.capacity %} / {{ event.capacity }}{% endif %})</h3>
 
     {% if rows %}

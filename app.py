@@ -26,6 +26,7 @@ from bot.events import (
     request_event_location,
     refresh_event_displays,
     announce_more_spots,
+    broadcast_custom_message,
 )
 
 from excel_export import build_active_volunteers_workbook, build_applications_workbook
@@ -890,6 +891,43 @@ def admin_event_kick(event_id, reg_id):
     log_activity(f"admin:{admin.username}", "event_kick", volunteer.full_name if volunteer else str(reg_id))
 
     flash("Волонтёр исключён из мероприятия.", "success")
+    return redirect(url_for("admin_event_detail", event_id=event_id))
+
+
+@app.route("/admin/events/<int:event_id>/edit", methods=["POST"])
+@login_required
+def admin_event_edit(event_id):
+    event = Event.query.get_or_404(event_id)
+
+    title = request.form.get("title", "").strip()
+    if not title:
+        flash("Название обязательно.", "error")
+        return redirect(url_for("admin_event_detail", event_id=event_id))
+
+    event.title = title
+    event.date_text = request.form.get("date_text", "").strip() or None
+    event.location = request.form.get("location", "").strip() or None
+    event.description = request.form.get("description", "").strip() or None
+    db.session.commit()
+
+    refresh_event_displays(event)
+
+    flash("Детали мероприятия обновлены.", "success")
+    return redirect(url_for("admin_event_detail", event_id=event_id))
+
+
+@app.route("/admin/events/<int:event_id>/broadcast", methods=["POST"])
+@login_required
+def admin_event_broadcast(event_id):
+    event = Event.query.get_or_404(event_id)
+    text = request.form.get("message", "").strip()
+
+    if not text:
+        flash("Введите текст сообщения.", "error")
+        return redirect(url_for("admin_event_detail", event_id=event_id))
+
+    group_sent, dm_sent, dm_total = broadcast_custom_message(event, text)
+    flash(f"Отправлено — группа: {'✅' if group_sent else '❌'}, в личку: {dm_sent}/{dm_total}.", "success")
     return redirect(url_for("admin_event_detail", event_id=event_id))
 
 

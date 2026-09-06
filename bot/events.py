@@ -190,6 +190,34 @@ def announce_more_spots(event):
         print(f"Не удалось анонсировать свободные места: {e}")
 
 
+def broadcast_custom_message(event, text):
+    """Разослать произвольный текст: в группу (ответом на объявление, если оно есть)
+    и каждому записавшемуся на мероприятие волонтёру в личку."""
+    group_sent = False
+    if event.announcement_chat_id and event.announcement_message_id:
+        try:
+            bot.send_message(event.announcement_chat_id, text, reply_to_message_id=event.announcement_message_id)
+            group_sent = True
+        except Exception as e:
+            print(f"Не удалось отправить сообщение в группу: {e}")
+
+    registrations = EventRegistration.query.filter_by(event_id=event.id).all()
+    volunteer_ids = [r.volunteer_id for r in registrations]
+    volunteers = Volunteer.query.filter(Volunteer.id.in_(volunteer_ids)).all() if volunteer_ids else []
+
+    dm_sent = 0
+    for volunteer in volunteers:
+        if not volunteer.telegram_chat_id:
+            continue
+        try:
+            bot.send_message(volunteer.telegram_chat_id, text)
+            dm_sent += 1
+        except Exception as e:
+            print(f"Не удалось отправить сообщение волонтёру {volunteer.id}: {e}")
+
+    return group_sent, dm_sent, len(volunteers)
+
+
 def _approval_keyboard(event_id):
     markup = types.InlineKeyboardMarkup()
     markup.add(types.InlineKeyboardButton("✅ Всё верно", callback_data=f"event_approve_{event_id}"))
