@@ -167,9 +167,9 @@ def refresh_event_displays(event):
 
 
 def announce_more_spots(event):
-    """Ответом на объявление в группе сообщить, что появились свободные места
-    (например, админ увеличил вместимость мероприятия)."""
-    if not event.announcement_chat_id or not event.announcement_message_id:
+    """Сообщить в группе, что появились свободные места (например, админ увеличил
+    вместимость мероприятия). Отдельным сообщением, не цитатой/ответом."""
+    if not event.announcement_chat_id:
         return
 
     names, _ = _collect_registrants(event)
@@ -181,22 +181,18 @@ def announce_more_spots(event):
     text += "\n📝 Успейте записаться по кнопке выше / Yuqoridagi tugma orqali yoziling."
 
     try:
-        bot.send_message(
-            event.announcement_chat_id,
-            text,
-            reply_to_message_id=event.announcement_message_id,
-        )
+        bot.send_message(event.announcement_chat_id, text)
     except Exception as e:
         print(f"Не удалось анонсировать свободные места: {e}")
 
 
 def broadcast_custom_message(event, text):
-    """Разослать произвольный текст: в группу (ответом на объявление, если оно есть)
+    """Разослать произвольный текст: в группу отдельным сообщением (без цитирования)
     и каждому записавшемуся на мероприятие волонтёру в личку."""
     group_sent = False
-    if event.announcement_chat_id and event.announcement_message_id:
+    if event.announcement_chat_id:
         try:
-            bot.send_message(event.announcement_chat_id, text, reply_to_message_id=event.announcement_message_id)
+            bot.send_message(event.announcement_chat_id, text)
             group_sent = True
         except Exception as e:
             print(f"Не удалось отправить сообщение в группу: {e}")
@@ -393,6 +389,40 @@ def pin_announcement(event):
     except Exception as e:
         print(f"Не удалось закрепить объявление в группе: {e}")
         return False
+
+
+def repost_announcement(event):
+    """Отправить объявление (с актуальным списком записавшихся) заново, свежим
+    сообщением — напомнить о наборе, когда старое потерялось в переписке.
+    Старое сообщение остаётся в истории, но живым (обновляемым/закреплённым)
+    становится новое."""
+    if not VOLUNTEER_GROUP_CHAT_ID:
+        return False
+
+    old_chat_id = event.announcement_chat_id
+    old_message_id = event.announcement_message_id
+
+    group_text = _build_announcement_text(event)
+    try:
+        msg = bot.send_message(
+            int(VOLUNTEER_GROUP_CHAT_ID), group_text, parse_mode="HTML", reply_markup=_event_register_keyboard(event.id)
+        )
+    except Exception as e:
+        print(f"Не удалось переотправить объявление в группу: {e}")
+        return False
+
+    if old_chat_id and old_message_id:
+        try:
+            bot.unpin_chat_message(old_chat_id, old_message_id)
+        except Exception as e:
+            print(f"Не удалось открепить старое объявление: {e}")
+
+    event.announcement_chat_id = msg.chat.id
+    event.announcement_message_id = msg.message_id
+    db.session.commit()
+
+    pin_announcement(event)
+    return True
 
 
 def create_admin_roster(event):

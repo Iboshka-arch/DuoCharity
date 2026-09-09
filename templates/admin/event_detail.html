@@ -44,6 +44,11 @@
 
     {% if event.announcement_chat_id %}
     <div class="table-actions" style="margin-bottom: 20px;">
+        <form method="post" action="{{ url_for('admin_event_repost', event_id=event.id) }}"
+              onsubmit="return confirm('Отправить объявление заново свежим сообщением? Старое останется в чате, но перестанет обновляться.');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-outline">🔄 Напомнить о наборе (новое сообщение)</button>
+        </form>
         <form method="post" action="{{ url_for('admin_event_pin_announcement', event_id=event.id) }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="btn btn-outline">📌 Закрепить объявление в группе</button>
