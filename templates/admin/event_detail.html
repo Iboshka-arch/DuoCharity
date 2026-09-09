@@ -42,71 +42,80 @@
     <p>{{ event.description }}</p>
     {% endif %}
 
-    {% if event.announcement_chat_id %}
-    <div class="table-actions" style="margin-bottom: 20px;">
-        <form method="post" action="{{ url_for('admin_event_repost', event_id=event.id) }}"
-              onsubmit="return confirm('Отправить объявление заново свежим сообщением? Старое останется в чате, но перестанет обновляться.');">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="btn btn-outline">🔄 Напомнить о наборе (новое сообщение)</button>
-        </form>
-        <form method="post" action="{{ url_for('admin_event_pin_announcement', event_id=event.id) }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="btn btn-outline">📌 Закрепить объявление в группе</button>
-        </form>
-        <form method="post" action="{{ url_for('admin_event_create_admin_roster', event_id=event.id) }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="btn btn-outline">📌 Список в админ-группу</button>
-        </form>
-        <form method="post" action="{{ url_for('admin_event_request_location', event_id=event.id) }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="btn btn-outline">📍 Прикрепить локацию</button>
-        </form>
-        <form method="post" action="{{ url_for('admin_event_update_capacity', event_id=event.id) }}" style="display:flex; gap:8px; align-items:center;">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <input type="number" name="capacity" min="1" value="{{ event.capacity or '' }}" placeholder="{{ t('adm_event_capacity_hint') }}" style="width:110px;">
-            <button type="submit" class="btn btn-outline">👥 Обновить места</button>
-        </form>
-    </div>
-    {% endif %}
+    <details class="admin-details-panel" style="margin-bottom: 24px;">
+        <summary class="btn btn-outline" style="display:inline-block; cursor:pointer;">⚙️ Управление мероприятием</summary>
 
-    <details style="margin-bottom: 20px;">
-        <summary class="btn btn-outline" style="display:inline-block; cursor:pointer;">✏️ Редактировать детали (название/дата/место/описание)</summary>
-        <form method="post" action="{{ url_for('admin_event_edit', event_id=event.id) }}" class="admin-form" style="margin-top: 14px;">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <label>
-                {{ t('adm_event_title') }}
-                <input type="text" name="title" value="{{ event.title }}" required>
-            </label>
-            <label>
-                {{ t('adm_event_date') }}
-                <input type="text" name="date_text" value="{{ event.date_text or '' }}" placeholder="28.07.2026, 10:00">
-            </label>
-            <label>
-                {{ t('adm_event_location') }}
-                <input type="text" name="location" value="{{ event.location or '' }}">
-            </label>
-            <label>
-                {{ t('adm_content') }}
-                <textarea name="description" rows="4">{{ event.description or '' }}</textarea>
-            </label>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
-            </div>
-        </form>
-    </details>
+        <div style="margin-top: 16px; display:flex; flex-direction:column; gap:14px;">
 
-    <details style="margin-bottom: 20px;">
-        <summary class="btn btn-outline" style="display:inline-block; cursor:pointer;">📣 Отправить своё сообщение (в группу + всем записавшимся в личку)</summary>
-        <form method="post" action="{{ url_for('admin_event_broadcast', event_id=event.id) }}" class="admin-form" style="margin-top: 14px;">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <label>
-                Текст сообщения
-                <textarea name="message" rows="4" placeholder="Например: напоминаем, встречаемся завтра в 10:00 у входа"></textarea>
-            </label>
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Отправить</button>
+            {% if event.announcement_chat_id %}
+            <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                <form method="post" action="{{ url_for('admin_event_repost', event_id=event.id) }}"
+                      onsubmit="return confirm('Отправить объявление заново свежим сообщением? Старое останется в чате, но перестанет обновляться.');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-small">🔄 Напомнить о наборе</button>
+                </form>
+                <form method="post" action="{{ url_for('admin_event_pin_announcement', event_id=event.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-small">📌 Закрепить в группе</button>
+                </form>
+                <form method="post" action="{{ url_for('admin_event_create_admin_roster', event_id=event.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-small">📌 Список в админ-группу</button>
+                </form>
+                <form method="post" action="{{ url_for('admin_event_request_location', event_id=event.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-small">📍 Прикрепить локацию</button>
+                </form>
+                <form method="post" action="{{ url_for('admin_event_update_capacity', event_id=event.id) }}" style="display:flex; gap:6px; align-items:center;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="number" name="capacity" min="1" value="{{ event.capacity or '' }}" placeholder="{{ t('adm_event_capacity_hint') }}" style="width:90px;">
+                    <button type="submit" class="btn-small">👥 Обновить места</button>
+                </form>
             </div>
-        </form>
+            <hr style="border:none; border-top:1px solid var(--border, #e5e5e5); margin:0;">
+            {% endif %}
+
+            <details>
+                <summary style="cursor:pointer; font-weight:600;">✏️ Редактировать детали (название/дата/место/описание)</summary>
+                <form method="post" action="{{ url_for('admin_event_edit', event_id=event.id) }}" class="admin-form" style="margin-top: 14px;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <label>
+                        {{ t('adm_event_title') }}
+                        <input type="text" name="title" value="{{ event.title }}" required>
+                    </label>
+                    <label>
+                        {{ t('adm_event_date') }}
+                        <input type="text" name="date_text" value="{{ event.date_text or '' }}" placeholder="28.07.2026, 10:00">
+                    </label>
+                    <label>
+                        {{ t('adm_event_location') }}
+                        <input type="text" name="location" value="{{ event.location or '' }}">
+                    </label>
+                    <label>
+                        {{ t('adm_content') }}
+                        <textarea name="description" rows="4">{{ event.description or '' }}</textarea>
+                    </label>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    </div>
+                </form>
+            </details>
+
+            <details>
+                <summary style="cursor:pointer; font-weight:600;">📣 Отправить своё сообщение (в группу + всем записавшимся в личку)</summary>
+                <form method="post" action="{{ url_for('admin_event_broadcast', event_id=event.id) }}" class="admin-form" style="margin-top: 14px;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <label>
+                        Текст сообщения
+                        <textarea name="message" rows="4" placeholder="Например: напоминаем, встречаемся завтра в 10:00 у входа"></textarea>
+                    </label>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Отправить</button>
+                    </div>
+                </form>
+            </details>
+
+        </div>
     </details>
 
     <h3>{{ t('adm_col_registrations') }} ({{ rows|length }}{% if event.capacity %} / {{ event.capacity }}{% endif %})</h3>
