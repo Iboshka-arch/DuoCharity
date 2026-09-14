@@ -6,7 +6,7 @@ from telebot import types
 from bot.handlers import bot
 from bot.config import VOLUNTEER_GROUP_CHAT_ID, OWNER_CHAT_ID, ADMIN_GROUP_CHAT_ID
 from bot.translations import bt
-from models import db, Event, EventRegistration, EventFeedback, VolunteerPenalty, Volunteer, ConversationDraft
+from models import db, Event, EventRegistration, EventFeedback, VolunteerPenalty, Volunteer, ConversationDraft, EventBroadcast
 
 _LABELS = {
     "uz": {
@@ -87,13 +87,34 @@ def _build_roster_text(names, drivers, title=None):
     return "\n".join(parts)
 
 
+def _build_event_info_bilingual(event, names_count):
+    """Описание мероприятия ОДИН раз (название/дата/место/описание не переводятся,
+    это просто данные), подписи полей — сразу на двух языках."""
+    count_suffix = f"{names_count}/{event.capacity}" if event.capacity else f"{names_count}"
+
+    parts = [f"📅 <b>{html.escape(event.title)}</b>"]
+    if event.date_text:
+        parts.append(f"🗓 {html.escape(event.date_text)}")
+    if event.location:
+        parts.append(f"📍 {html.escape(event.location)}")
+    if event.description:
+        parts.append("")
+        parts.append(html.escape(event.description))
+    parts.append("")
+    parts.append(f"👥 Joylar / Мест: {count_suffix}")
+    if event.is_closed:
+        parts.append("")
+        parts.append("🔒 Ro'yxatga olish yopiq / Регистрация закрыта")
+
+    return "\n".join(parts)
+
+
 def _build_announcement_text(event):
-    """Двуязычное описание мероприятия + ОДИН общий список записавшихся снизу."""
+    """Описание мероприятия один раз + ОДИН общий список записавшихся снизу."""
     names, drivers = _collect_registrants(event)
-    uz_info = _build_event_info(event, len(names), "uz")
-    ru_info = _build_event_info(event, len(names), "ru")
+    info = _build_event_info_bilingual(event, len(names))
     roster = _build_roster_text(names, drivers)
-    return f"{uz_info}\n\n〰️〰️〰️\n\n{ru_info}\n\n〰️〰️〰️\n\n{roster}"
+    return f"{info}\n\n〰️〰️〰️\n\n{roster}"
 
 
 def _build_announcement_text_lang(event, lang):
@@ -159,11 +180,30 @@ def _refresh_admin_roster(event):
         print(f"Не удалось обновить список в админ-группе: {e}")
 
 
+def _refresh_personal_broadcasts(event):
+    """Обновить у КАЖДОГО волонтёра его личную копию объявления (список
+    записавшихся/места) — иначе у всех, кроме того, кто только что нажал кнопку,
+    в личке будут висеть устаревшие данные."""
+    broadcasts = EventBroadcast.query.filter_by(event_id=event.id).all()
+    if not broadcasts:
+        return
+
+    volunteer_ids = [b.volunteer_id for b in broadcasts]
+    volunteers_by_id = {v.id: v for v in Volunteer.query.filter(Volunteer.id.in_(volunteer_ids)).all()}
+
+    for b in broadcasts:
+        volunteer = volunteers_by_id.get(b.volunteer_id)
+        lang = (volunteer.language or "uz") if volunteer else "uz"
+        _refresh_message(b.chat_id, b.message_id, event, lang=lang)
+
+
 def refresh_event_displays(event):
-    """Обновить и объявление в группе, и список в админ-группе — вызывать после
-    любого изменения, которое влияет на счётчик мест/список (кик, смена вместимости и т.д.)."""
+    """Обновить объявление в группе, список в админ-группе и личные копии у всех
+    волонтёров — вызывать после любого изменения, которое влияет на счётчик
+    мест/список (регистрация, кик, смена вместимости и т.д.)."""
     _refresh_announcement(event)
     _refresh_admin_roster(event)
+    _refresh_personal_broadcasts(event)
 
 
 def announce_more_spots(event):
@@ -474,11 +514,14 @@ def publish_event(event):
     for volunteer in volunteers:
         lang = volunteer.language or "uz"
         try:
-            bot.send_message(
+            msg = bot.send_message(
                 volunteer.telegram_chat_id,
                 _build_announcement_text_lang(event, lang),
                 parse_mode="HTML",
                 reply_markup=_event_register_keyboard(event.id, lang),
+            )
+            db.session.add(
+                EventBroadcast(event_id=event.id, volunteer_id=volunteer.id, chat_id=msg.chat.id, message_id=msg.message_id)
             )
             dm_sent += 1
         except Exception as e:
@@ -494,7 +537,7 @@ def publish_event(event):
 def close_event_and_notify(event):
     event.is_closed = True
     db.session.commit()
-    _refresh_announcement(event)
+    refresh_event_displays(event)
 
     registrations = EventRegistration.query.filter_by(event_id=event.id).all()
 
@@ -549,7 +592,7 @@ def close_event_and_notify(event):
 def reopen_event(event):
     event.is_closed = False
     db.session.commit()
-    _refresh_announcement(event)
+    refresh_event_displays(event)
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("event_register_"))
@@ -619,11 +662,7 @@ def handle_event_register(call):
             except Exception as e:
                 print(f"Не удалось уведомить админ-группу о записи: {e}")
 
-    _refresh_announcement(event)
-    _refresh_admin_roster(event)
-
-    if call.message.chat.id != event.announcement_chat_id:
-        _refresh_message(call.message.chat.id, call.message.message_id, event, lang=lang)
+    refresh_event_displays(event)
 
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith("fbstar_"))
@@ -684,8 +723,7 @@ def kick_registration(registration):
     db.session.commit()
 
     if event:
-        _refresh_announcement(event)
-        _refresh_admin_roster(event)
+        refresh_event_displays(event)
 
     if volunteer and volunteer.telegram_chat_id and event:
         try:

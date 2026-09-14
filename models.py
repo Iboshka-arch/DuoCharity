@@ -180,6 +180,16 @@ class ScheduledDeletion(db.Model):
     message_id = db.Column(db.BigInteger, nullable=False)
     delete_at = db.Column(db.DateTime, nullable=False)
 
+class EventBroadcast(db.Model):
+    """Личная копия объявления о мероприятии, отправленная конкретному волонтёру —
+    чтобы можно было обновить её текст (список записавшихся/места), когда кто-то
+    записывается/отписывается/исключается."""
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, nullable=False)
+    volunteer_id = db.Column(db.Integer, nullable=False)
+    chat_id = db.Column(db.BigInteger, nullable=False)
+    message_id = db.Column(db.BigInteger, nullable=False)
+
 class ActivityLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     actor = db.Column(db.String(200), nullable=False)
