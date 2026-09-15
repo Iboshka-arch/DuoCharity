@@ -13,47 +13,52 @@ _LABELS = {
         "date": "🗓",
         "location": "📍",
         "seats": "👥 Joylar",
-        "registered_header": "📝 Ro'yxatdagilar:",
-        "none": "—",
+        "driver_seats": "🚗 Haydovchilar joyi",
+        "registered_header": "👥 Volontyorlar:",
         "drivers_header": "🚗 Haydovchilar:",
+        "none": "—",
         "closed": "🔒 Ro'yxatga olish yopiq",
     },
     "ru": {
         "date": "🗓",
         "location": "📍",
         "seats": "👥 Мест",
-        "registered_header": "📝 Записавшиеся:",
-        "none": "—",
+        "driver_seats": "🚗 Мест водителям",
+        "registered_header": "👥 Волонтёры:",
         "drivers_header": "🚗 Водители:",
+        "none": "—",
         "closed": "🔒 Регистрация закрыта",
     },
 }
 
 
 def _collect_registrants(event):
+    """Возвращает (volunteers, drivers) — ДВЕ взаимоисключающие группы: у кого
+    указана машина — попадает только в drivers, остальные — только в volunteers."""
     registrations = EventRegistration.query.filter_by(event_id=event.id).all()
     volunteer_ids = [r.volunteer_id for r in registrations]
     volunteers_by_id = {}
     if volunteer_ids:
         volunteers_by_id = {v.id: v for v in Volunteer.query.filter(Volunteer.id.in_(volunteer_ids)).all()}
 
-    names = []
+    volunteers = []
     drivers = []
     for r in registrations:
         v = volunteers_by_id.get(r.volunteer_id)
         if not v:
             continue
-        names.append(html.escape(v.full_name))
         if v.has_car:
             drivers.append(html.escape(v.full_name))
+        else:
+            volunteers.append(html.escape(v.full_name))
 
-    return names, drivers
+    return volunteers, drivers
 
 
-def _build_event_info(event, names_count, lang):
-    """Только описание мероприятия (без списка записавшихся) — на одном языке."""
+def _build_event_info(event, volunteer_count, driver_count, lang):
+    """Только описание мероприятия (без списков) — на одном языке."""
     labels = _LABELS[lang]
-    count_suffix = f"{names_count}/{event.capacity}" if event.capacity else f"{names_count}"
+    vol_suffix = f"{volunteer_count}/{event.capacity}" if event.capacity else f"{volunteer_count}"
 
     parts = [f"📅 <b>{html.escape(event.title)}</b>"]
     if event.date_text:
@@ -64,7 +69,9 @@ def _build_event_info(event, names_count, lang):
         parts.append("")
         parts.append(html.escape(event.description))
     parts.append("")
-    parts.append(f"{labels['seats']}: {count_suffix}")
+    parts.append(f"{labels['seats']}: {vol_suffix}")
+    if event.driver_capacity:
+        parts.append(f"{labels['driver_seats']}: {driver_count}/{event.driver_capacity}")
     if event.is_closed:
         parts.append("")
         parts.append(labels["closed"])
@@ -72,25 +79,25 @@ def _build_event_info(event, names_count, lang):
     return "\n".join(parts)
 
 
-def _build_roster_text(names, drivers, title=None):
-    """Список записавшихся — общий, без разделения по языку (имена не переводятся)."""
+def _build_roster_text(volunteers, drivers, title=None):
+    """Два ОТДЕЛЬНЫХ нумерованных списка — волонтёры и водители, без разделения
+    по языку (имена не переводятся)."""
     parts = []
     if title:
         parts.append(f"📌 <b>{html.escape(title)}</b>")
         parts.append("")
-    parts.append("📝 Ro'yxatdagilar / Записавшиеся:")
-    parts.append("\n".join(f"{i + 1}. {n}" for i, n in enumerate(names)) if names else "—")
-    if drivers:
-        parts.append("")
-        parts.append("🚗 Haydovchilar / Водители:")
-        parts.append("\n".join(f"- {n}" for n in drivers))
+    parts.append("👥 Volontyorlar / Волонтёры:")
+    parts.append("\n".join(f"{i + 1}. {n}" for i, n in enumerate(volunteers)) if volunteers else "—")
+    parts.append("")
+    parts.append("🚗 Haydovchilar / Водители:")
+    parts.append("\n".join(f"{i + 1}. {n}" for i, n in enumerate(drivers)) if drivers else "—")
     return "\n".join(parts)
 
 
-def _build_event_info_bilingual(event, names_count):
+def _build_event_info_bilingual(event, volunteer_count, driver_count):
     """Описание мероприятия ОДИН раз (название/дата/место/описание не переводятся,
     это просто данные), подписи полей — сразу на двух языках."""
-    count_suffix = f"{names_count}/{event.capacity}" if event.capacity else f"{names_count}"
+    vol_suffix = f"{volunteer_count}/{event.capacity}" if event.capacity else f"{volunteer_count}"
 
     parts = [f"📅 <b>{html.escape(event.title)}</b>"]
     if event.date_text:
@@ -101,7 +108,9 @@ def _build_event_info_bilingual(event, names_count):
         parts.append("")
         parts.append(html.escape(event.description))
     parts.append("")
-    parts.append(f"👥 Joylar / Мест: {count_suffix}")
+    parts.append(f"👥 Joylar / Мест: {vol_suffix}")
+    if event.driver_capacity:
+        parts.append(f"🚗 Haydovchilar joyi / Мест водителям: {driver_count}/{event.driver_capacity}")
     if event.is_closed:
         parts.append("")
         parts.append("🔒 Ro'yxatga olish yopiq / Регистрация закрыта")
@@ -110,10 +119,10 @@ def _build_event_info_bilingual(event, names_count):
 
 
 def _build_announcement_text(event):
-    """Описание мероприятия один раз + ОДИН общий список записавшихся снизу."""
-    names, drivers = _collect_registrants(event)
-    info = _build_event_info_bilingual(event, len(names))
-    roster = _build_roster_text(names, drivers)
+    """Описание мероприятия один раз + два отдельных списка (волонтёры/водители) снизу."""
+    volunteers, drivers = _collect_registrants(event)
+    info = _build_event_info_bilingual(event, len(volunteers), len(drivers))
+    roster = _build_roster_text(volunteers, drivers)
     return f"{info}\n\n〰️〰️〰️\n\n{roster}"
 
 
@@ -121,14 +130,14 @@ def _build_announcement_text_lang(event, lang):
     """Одноязычный текст — для личных сообщений, каждому на его языке."""
     lang = lang if lang in _LABELS else "uz"
     labels = _LABELS[lang]
-    names, drivers = _collect_registrants(event)
+    volunteers, drivers = _collect_registrants(event)
 
-    parts = [_build_event_info(event, len(names), lang), "", labels["registered_header"]]
-    parts.append("\n".join(f"{i + 1}. {n}" for i, n in enumerate(names)) if names else labels["none"])
-    if drivers:
-        parts.append("")
-        parts.append(labels["drivers_header"])
-        parts.append("\n".join(f"- {n}" for n in drivers))
+    parts = [_build_event_info(event, len(volunteers), len(drivers), lang), ""]
+    parts.append(labels["registered_header"])
+    parts.append("\n".join(f"{i + 1}. {n}" for i, n in enumerate(volunteers)) if volunteers else labels["none"])
+    parts.append("")
+    parts.append(labels["drivers_header"])
+    parts.append("\n".join(f"{i + 1}. {n}" for i, n in enumerate(drivers)) if drivers else labels["none"])
     return "\n".join(parts)
 
 
@@ -212,12 +221,15 @@ def announce_more_spots(event):
     if not event.announcement_chat_id:
         return
 
-    names, _ = _collect_registrants(event)
-    available = (event.capacity - len(names)) if event.capacity else None
+    volunteers, drivers = _collect_registrants(event)
+    available = (event.capacity - len(volunteers)) if event.capacity else None
+    driver_available = (event.driver_capacity - len(drivers)) if event.driver_capacity else None
 
     text = "🎉 Появились свободные места / Bo'sh joylar paydo bo'ldi!"
     if available is not None and available > 0:
-        text += f"\n👥 Свободно: {available} / Bo'sh: {available}"
+        text += f"\n👥 Свободно (волонтёры): {available}"
+    if driver_available is not None and driver_available > 0:
+        text += f"\n🚗 Свободно (водители): {driver_available}"
     text += "\n📝 Успейте записаться по кнопке выше / Yuqoridagi tugma orqali yoziling."
 
     try:
@@ -625,9 +637,12 @@ def handle_event_register(call):
         db.session.commit()
         bot.answer_callback_query(call.id, bt("event_unregistered", lang), show_alert=True)
     else:
-        if event.capacity:
-            current_count = EventRegistration.query.filter_by(event_id=event.id).count()
-            if current_count >= event.capacity:
+        is_driver = bool(volunteer.has_car)
+        limit = event.driver_capacity if is_driver else event.capacity
+        if limit:
+            volunteers, drivers = _collect_registrants(event)
+            current_count = len(drivers) if is_driver else len(volunteers)
+            if current_count >= limit:
                 bot.answer_callback_query(call.id, bt("event_full", lang), show_alert=True)
                 return
         db.session.add(

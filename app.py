@@ -808,12 +808,14 @@ def admin_event_new():
         description = request.form.get("description", "").strip()
         location = request.form.get("location", "").strip()
         capacity_raw = request.form.get("capacity", "").strip()
+        driver_capacity_raw = request.form.get("driver_capacity", "").strip()
 
         if not title:
             flash("Название обязательно.", "error")
             return render_template("admin/event_form.html", event=None)
 
         capacity = int(capacity_raw) if capacity_raw.isdigit() and int(capacity_raw) > 0 else None
+        driver_capacity = int(driver_capacity_raw) if driver_capacity_raw.isdigit() and int(driver_capacity_raw) > 0 else None
 
         event = Event(
             title=title,
@@ -821,6 +823,7 @@ def admin_event_new():
             description=description or None,
             location=location or None,
             capacity=capacity,
+            driver_capacity=driver_capacity,
         )
         db.session.add(event)
         db.session.commit()
@@ -949,15 +952,22 @@ def admin_event_update_capacity(event_id):
     event = Event.query.get_or_404(event_id)
 
     capacity_raw = request.form.get("capacity", "").strip()
+    driver_capacity_raw = request.form.get("driver_capacity", "").strip()
     new_capacity = int(capacity_raw) if capacity_raw.isdigit() and int(capacity_raw) > 0 else None
+    new_driver_capacity = int(driver_capacity_raw) if driver_capacity_raw.isdigit() and int(driver_capacity_raw) > 0 else None
 
     old_capacity = event.capacity
+    old_driver_capacity = event.driver_capacity
     event.capacity = new_capacity
+    event.driver_capacity = new_driver_capacity
     db.session.commit()
 
     refresh_event_displays(event)
 
-    opened_spots = new_capacity is not None and (old_capacity is None or new_capacity > old_capacity)
+    opened_spots = (
+        (new_capacity is not None and (old_capacity is None or new_capacity > old_capacity))
+        or (new_driver_capacity is not None and (old_driver_capacity is None or new_driver_capacity > old_driver_capacity))
+    )
     if opened_spots:
         announce_more_spots(event)
         flash("Мест стало больше — бот сообщил об этом в группе.", "success")

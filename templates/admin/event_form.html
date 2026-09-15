@@ -31,6 +31,11 @@
             <input type="number" name="capacity" min="1" placeholder="{{ t('adm_event_capacity_hint') }}">
         </label>
 
+        <label>
+            🚗 Мест для водителей (отдельно от обычных)
+            <input type="number" name="driver_capacity" min="1" placeholder="необязательно">
+        </label>
+
         <div class="form-actions">
             <button type="submit" class="btn btn-primary">{{ t('adm_publish_event') }}</button>
             <a href="{{ url_for('admin_events') }}" class="btn btn-outline">{{ t('adm_cancel') }}</a>

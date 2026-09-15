@@ -68,8 +68,9 @@
                 </form>
                 <form method="post" action="{{ url_for('admin_event_update_capacity', event_id=event.id) }}" style="display:flex; gap:6px; align-items:center;">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <input type="number" name="capacity" min="1" value="{{ event.capacity or '' }}" placeholder="{{ t('adm_event_capacity_hint') }}" style="width:90px;">
-                    <button type="submit" class="btn-small">👥 Обновить места</button>
+                    <input type="number" name="capacity" min="1" value="{{ event.capacity or '' }}" placeholder="👥 волонтёры" style="width:100px;">
+                    <input type="number" name="driver_capacity" min="1" value="{{ event.driver_capacity or '' }}" placeholder="🚗 водители" style="width:100px;">
+                    <button type="submit" class="btn-small">Обновить места</button>
                 </form>
             </div>
             <hr style="border:none; border-top:1px solid var(--border, #e5e5e5); margin:0;">
@@ -118,7 +119,12 @@
         </div>
     </details>
 
-    <h3>{{ t('adm_col_registrations') }} ({{ rows|length }}{% if event.capacity %} / {{ event.capacity }}{% endif %})</h3>
+    {% set driver_rows = rows|selectattr('1.has_car')|list %}
+    <h3>
+        {{ t('adm_col_registrations') }} ({{ rows|length }})
+        — 👥 {{ rows|length - driver_rows|length }}{% if event.capacity %}/{{ event.capacity }}{% endif %}
+        · 🚗 {{ driver_rows|length }}{% if event.driver_capacity %}/{{ event.driver_capacity }}{% endif %}
+    </h3>
 
     {% if rows %}
     <form method="post" action="{{ url_for('admin_event_attendance', event_id=event.id) }}">

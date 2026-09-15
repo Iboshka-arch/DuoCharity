@@ -133,6 +133,7 @@ class Event(db.Model):
     description = db.Column(db.Text, nullable=True)
     location = db.Column(db.String(200), nullable=True)
     capacity = db.Column(db.Integer, nullable=True)
+    driver_capacity = db.Column(db.Integer, nullable=True)
     is_closed = db.Column(db.Boolean, default=False)
     announcement_chat_id = db.Column(db.BigInteger, nullable=True)
     announcement_message_id = db.Column(db.BigInteger, nullable=True)
