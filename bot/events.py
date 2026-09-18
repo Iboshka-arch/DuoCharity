@@ -4,7 +4,7 @@ import json
 from telebot import types
 
 from bot.handlers import bot
-from bot.config import VOLUNTEER_GROUP_CHAT_ID, OWNER_CHAT_ID, ADMIN_GROUP_CHAT_ID
+from bot.config import VOLUNTEER_GROUP_CHAT_ID, OWNER_CHAT_ID, ADMIN_GROUP_CHAT_ID, DEVELOPER_CHAT_ID
 from bot.translations import bt
 from models import db, Event, EventRegistration, EventFeedback, VolunteerPenalty, Volunteer, ConversationDraft, EventBroadcast
 
@@ -306,6 +306,10 @@ def handle_event_approve(call):
 
     if not event:
         bot.answer_callback_query(call.id, "Мероприятие не найдено (возможно, уже удалено).", show_alert=True)
+        return
+
+    if event.announcement_chat_id:
+        bot.answer_callback_query(call.id, "Уже опубликовано ранее — повторно не отправляю.", show_alert=True)
         return
 
     bot.answer_callback_query(call.id, "Публикую ✅")
@@ -667,15 +671,17 @@ def handle_event_register(call):
                 except Exception as e:
                     print(f"Не удалось переслать локацию волонтёру: {e}")
 
+        reg_text = f"✅ {html.escape(volunteer.full_name)} записался(-ась) на «{html.escape(event.title)}»"
         if ADMIN_GROUP_CHAT_ID:
             try:
-                bot.send_message(
-                    int(ADMIN_GROUP_CHAT_ID),
-                    f"✅ {html.escape(volunteer.full_name)} записался(-ась) на «{html.escape(event.title)}»",
-                    parse_mode="HTML",
-                )
+                bot.send_message(int(ADMIN_GROUP_CHAT_ID), reg_text, parse_mode="HTML")
             except Exception as e:
                 print(f"Не удалось уведомить админ-группу о записи: {e}")
+        if DEVELOPER_CHAT_ID:
+            try:
+                bot.send_message(int(DEVELOPER_CHAT_ID), reg_text, parse_mode="HTML")
+            except Exception as e:
+                print(f"Не удалось уведомить разработчика о записи: {e}")
 
     refresh_event_displays(event)
 

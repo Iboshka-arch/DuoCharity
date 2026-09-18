@@ -4,7 +4,7 @@ from telebot import types
 
 from bot.handlers import bot
 from bot.utils import safe_send_message
-from bot.config import ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID
+from bot.config import ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID, DEVELOPER_CHAT_ID
 from bot.actions import accept_application, decline_application
 from models import VolunteerApplication, NO_TELEGRAM_USERNAME
 
@@ -36,6 +36,10 @@ def notify_new_application(application):
         if not chat_id:
             continue
         safe_send_message(chat_id, text, reply_markup=keyboard, parse_mode="HTML")
+
+    if DEVELOPER_CHAT_ID:
+        # Разработчику — та же информация, но без кнопок принять/отклонить (только для чтения).
+        safe_send_message(DEVELOPER_CHAT_ID, text, parse_mode="HTML")
 
 ADMIN_CHAT_IDS = {str(ADMIN_GROUP_CHAT_ID), str(OWNER_CHAT_ID)}
 

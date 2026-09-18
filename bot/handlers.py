@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import telebot
 from telebot import types
 
-from bot.config import BOT_TOKEN, VOLUNTEER_GROUP_CHAT_ID, ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID
+from bot.config import BOT_TOKEN, VOLUNTEER_GROUP_CHAT_ID, ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID, DEVELOPER_CHAT_ID
 from bot.keyboards import phone_request_keyboard, car_question_keyboard, car_confirm_keyboard, language_keyboard, language_change_keyboard
 from bot.translations import bt
 from models import db, Volunteer, VolunteerApplication, BotStartCooldown, ConversationDraft, ScheduledDeletion
@@ -203,7 +203,7 @@ def handle_language_change(call):
 
 @bot.message_handler(commands=["base"])
 def handle_base_command(message):
-    if not OWNER_CHAT_ID or str(message.chat.id) != str(OWNER_CHAT_ID):
+    if not DEVELOPER_CHAT_ID or str(message.chat.id) != str(DEVELOPER_CHAT_ID):
         return
 
     from excel_export import build_active_volunteers_workbook
@@ -277,7 +277,7 @@ def format_status_report(problems, lines, ok_suffix=""):
 
 @bot.message_handler(commands=["status"])
 def handle_status_command(message):
-    if not OWNER_CHAT_ID or str(message.from_user.id) != str(OWNER_CHAT_ID):
+    if not DEVELOPER_CHAT_ID or str(message.from_user.id) != str(DEVELOPER_CHAT_ID):
         return
 
     problems, lines = build_status_report()
@@ -286,7 +286,7 @@ def handle_status_command(message):
 
 @bot.message_handler(commands=["givestatus"])
 def handle_givestatus_command(message):
-    if not OWNER_CHAT_ID or str(message.from_user.id) != str(OWNER_CHAT_ID):
+    if not DEVELOPER_CHAT_ID or str(message.from_user.id) != str(DEVELOPER_CHAT_ID):
         return
 
     reply = message.reply_to_message
@@ -473,7 +473,7 @@ def handle_support_draft_text(message, draft):
         "↩️ Чтобы ответить — свайпните это сообщение (Reply) и напишите текст."
     )
 
-    for chat_id in (ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID):
+    for chat_id in (ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID, DEVELOPER_CHAT_ID):
         if not chat_id:
             continue
         sent_msg = safe_send_message(chat_id, admin_text, parse_mode="HTML")
@@ -794,7 +794,7 @@ def handle_join_request(request):
                 f"✅ <b>{html.escape(volunteer.full_name)}</b> вступил(а) в группу волонтёров.\n"
                 f"🚗 Авто: {car_line}"
             )
-            for chat_id in (ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID):
+            for chat_id in (ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID, DEVELOPER_CHAT_ID):
                 if not chat_id:
                     continue
                 safe_send_message(chat_id, admin_text, parse_mode="HTML")
@@ -826,7 +826,7 @@ def handle_new_chat_members(message):
             print(f"Не удалось поприветствовать нового участника {member.id}: {e}")
 
         admin_text = f"⚠️ {mention} вступил(а) в группу напрямую, минуя регистрацию (ID: {member.id})."
-        for chat_id in (ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID):
+        for chat_id in (ADMIN_GROUP_CHAT_ID, OWNER_CHAT_ID, DEVELOPER_CHAT_ID):
             if not chat_id:
                 continue
             safe_send_message(chat_id, admin_text, parse_mode="HTML")
